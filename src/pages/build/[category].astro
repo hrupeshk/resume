@@ -1,0 +1,17 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ResumeBuilder from '../../components/builder/ResumeBuilder';
+import { VALID_CATEGORIES, type DocumentCategory } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return VALID_CATEGORIES.map((category) => ({
+    params: { category },
+  }));
+}
+
+const { category } = Astro.params as { category: DocumentCategory };
+---
+
+<Layout title={`Builder — ${category} | Resume & Biodata`}>
+  <ResumeBuilder client:load category={category} />
+</Layout>

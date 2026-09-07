@@ -1,17 +1,37 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Free Resume & Indian Marriage Biodata Builder">
+  <main class="max-w-4xl mx-auto px-6 py-20 text-center">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-hairline bg-canvas-elevated text-xs font-mono text-mute mb-8">
+      <span>100% Free</span>
+      <span>•</span>
+      <span>No Login Required</span>
+      <span>•</span>
+      <span>No Watermark</span>
+    </div>
+
+    <h1 class="text-4xl sm:text-5xl font-semibold tracking-tight text-ink mb-6">
+      Build Resumes & Indian Biodata with Ease
+    </h1>
+    <p class="text-lg text-body max-w-2xl mx-auto mb-10 leading-relaxed">
+      Craft ATS-friendly tech resumes or traditional marriage biodata in minutes. Download high-quality, selectable-text PDFs without account lock-in.
+    </p>
+
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <a
+        href="/build/tech_resume"
+        class="inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-on-primary text-sm font-medium hover:opacity-90 transition-opacity"
+      >
+        Build Tech Resume
+      </a>
+      <a
+        href="/build/marriage_biodata"
+        class="inline-flex items-center justify-center px-6 py-3 rounded-full border border-hairline bg-canvas-elevated text-ink text-sm font-medium hover:border-mute transition-colors"
+      >
+        Build Marriage Biodata
+      </a>
+    </div>
+  </main>
+</Layout>
