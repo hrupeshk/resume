@@ -43,6 +43,7 @@ export interface SocialLink {
 
 export interface ResumePersonalInfo {
   fullName: string;
+  title?: string;
   email: string;
   phone: string;
   location: string;
@@ -77,6 +78,7 @@ export interface CertificationEntry {
   name: string;
   issuer: string;
   year: string;
+  description?: string;
 }
 
 export interface ReferenceEntry {
@@ -88,6 +90,19 @@ export interface ReferenceEntry {
   relationship?: string;
 }
 
+export interface LanguageEntry {
+  language: string;
+  proficiency: string;
+}
+
+export interface VolunteerEntry {
+  organization: string;
+  role?: string;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+}
+
 export interface ResumeSections {
   education: EducationEntry[];
   experience: ExperienceEntry[];
@@ -95,6 +110,8 @@ export interface ResumeSections {
   projects?: ProjectEntry[];
   certifications?: CertificationEntry[];
   references?: ReferenceEntry[];
+  languages?: LanguageEntry[];
+  volunteer?: VolunteerEntry[];
 }
 
 export interface ResumeDocument extends BaseDocument {

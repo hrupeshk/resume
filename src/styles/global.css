@@ -37,3 +37,187 @@ body {
   margin: 0;
   padding: 0;
 }
+
+/* ---------------------------------------------------------------------------
+   Print & PDF Stylesheet (Selectable Vector Text, Zero Rasterization)
+   --------------------------------------------------------------------------- */
+#resume-print-area,
+#resume-print-area * {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0mm !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 210mm !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    position: static !important;
+    overflow: visible !important;
+  }
+
+  /* Hide all UI chrome completely from print */
+  #builder-header,
+  #builder-editor-column,
+  .no-print,
+  button,
+  nav,
+  input,
+  select,
+  footer,
+  aside {
+    display: none !important;
+  }
+
+  /* Reset all ancestor wrappers of #resume-print-area to prevent ghost height */
+  body > div,
+  main,
+  main > div,
+  main > div > div,
+  [data-preview-root],
+  [data-preview-container],
+  [data-preview-canvas-wrapper] {
+    display: block !important;
+    position: static !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    overflow: visible !important;
+  }
+
+  /* Resume Print Canvas: Natural document flow starting at (0,0) */
+  #resume-print-area {
+    display: block !important;
+    position: relative !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    transform: none !important;
+    background: #ffffff !important;
+    overflow: visible !important;
+  }
+
+  article,
+  .single-page-resume {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    overflow: visible !important;
+  }
+
+  /* Scoped page-break controls:
+     - Headings must stay with their following content (no orphan headers)
+     - Headers must not split in half
+     - Atomic list items / certificates avoid page breaks inside themselves
+     - Large multi-bullet sections can split cleanly across pages instead of creating huge empty voids */
+  #resume-print-area header {
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+
+  #resume-print-area h1,
+  #resume-print-area h2,
+  #resume-print-area h3 {
+    break-after: avoid-page;
+    page-break-after: avoid;
+  }
+
+  #resume-print-area .avoid-break,
+  #resume-print-area [data-avoid-break],
+  #resume-print-area li {
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+
+  /* Force skill chips to print with background and white text */
+  #resume-print-area [data-skill-chip],
+  #resume-print-area .skill-chip {
+    background-color: #2e3d49 !important;
+    color: #ffffff !important;
+    border-color: #2e3d49 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Typography Scaling Engine (applied to both screen preview and print)
+   Scales text sizes proportionally based on --fs without altering 210mm paper width
+   -------------------------------------------------------------------------- */
+#resume-print-area {
+  --fs: 1;
+}
+
+#resume-print-area .text-xs {
+  font-size: calc(0.75rem * var(--fs, 1)) !important;
+  line-height: calc(1rem * var(--fs, 1)) !important;
+}
+
+#resume-print-area .text-sm {
+  font-size: calc(0.875rem * var(--fs, 1)) !important;
+  line-height: calc(1.25rem * var(--fs, 1)) !important;
+}
+
+#resume-print-area .text-base {
+  font-size: calc(1rem * var(--fs, 1)) !important;
+  line-height: calc(1.5rem * var(--fs, 1)) !important;
+}
+
+#resume-print-area .text-lg {
+  font-size: calc(1.125rem * var(--fs, 1)) !important;
+  line-height: calc(1.75rem * var(--fs, 1)) !important;
+}
+
+#resume-print-area .text-xl {
+  font-size: calc(1.25rem * var(--fs, 1)) !important;
+  line-height: calc(1.75rem * var(--fs, 1)) !important;
+}
+
+#resume-print-area .text-2xl {
+  font-size: calc(1.5rem * var(--fs, 1)) !important;
+  line-height: calc(2rem * var(--fs, 1)) !important;
+}
+
+#resume-print-area .text-3xl {
+  font-size: calc(1.875rem * var(--fs, 1)) !important;
+  line-height: calc(2.25rem * var(--fs, 1)) !important;
+}
+
