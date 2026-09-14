@@ -53,18 +53,21 @@ export default function NovoresumeModern({
   // Spacing gap styles according to user density selection
   const densityConfig = {
     compact: {
+      padding: '20px 36px',
       columnGap: 'space-y-1.5',
       entryGap: 'space-y-1',
       headerMargin: 'mb-1.5 pb-1',
       sectionHeaderMargin: 'mb-1 pb-0.5',
     },
     balanced: {
+      padding: '26px 40px',
       columnGap: 'space-y-2',
       entryGap: 'space-y-1.5',
       headerMargin: 'mb-2 pb-1',
       sectionHeaderMargin: 'mb-1 pb-0.5',
     },
     spacious: {
+      padding: '32px 46px',
       columnGap: 'space-y-3.5',
       entryGap: 'space-y-2',
       headerMargin: 'mb-3 pb-1.5',
@@ -448,7 +451,7 @@ export default function NovoresumeModern({
       style={{
         fontFamily: 'var(--font-sans, "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
         boxSizing: 'border-box',
-        padding: '38px 50px',
+        padding: config.padding,
         width: '100%',
         maxWidth: '100%',
         WebkitFontSmoothing: 'antialiased',
@@ -629,6 +632,7 @@ export default function NovoresumeModern({
           2-Column Body Layout with Dynamic Column Split ("Moving Bar")
           -------------------------------------------------------------------- */}
       <div
+        data-novoresume-grid="true"
         className="flex-1 items-start"
         style={{
           display: 'grid',
@@ -637,7 +641,7 @@ export default function NovoresumeModern({
         }}
       >
         {/* Main Column (Left) */}
-        <div className={`flex flex-col min-w-0 overflow-hidden break-words ${config.columnGap}`}>
+        <div className={`flex flex-col min-w-0 break-words ${config.columnGap}`}>
           {renderExperience()}
           {renderProjects()}
           {placeEducationOnLeft && renderEducation()}
@@ -645,7 +649,7 @@ export default function NovoresumeModern({
         </div>
 
         {/* Sidebar Column (Right) */}
-        <div className={`flex flex-col min-w-0 overflow-hidden break-words ${config.columnGap}`}>
+        <div className={`flex flex-col min-w-0 break-words ${config.columnGap}`}>
           {renderSkills()}
           {!placeCertificationsOnLeft && renderCertifications()}
           {renderVolunteer()}

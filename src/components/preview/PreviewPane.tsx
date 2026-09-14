@@ -25,7 +25,6 @@ export default function PreviewPane({
   const [autoBalance, setAutoBalance] = useState<boolean>(false);
   const [spacingDensity, setSpacingDensity] = useState<SpacingDensity>('balanced');
   const [fontSizeScale, setFontSizeScale] = useState<number>(100);
-  const [contentHeight, setContentHeight] = useState<number>(1123);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const categoryTemplates = getTemplatesForCategory(data.category);
@@ -35,6 +34,11 @@ export default function PreviewPane({
   // Standard A4 width in pixels at standard 96 DPI: 210mm = 794px, 297mm = 1123px
   const A4_WIDTH_PX = 794;
   const A4_HEIGHT_PX = 1123;
+  const PAGE_GAP = 28; // Visual gap between A4 sheets in preview
+  const PAGE_TOP_PAD = 36; // Top padding for content on page 2+
+
+  const [pageCount, setPageCount] = useState<number>(1);
+  const [pageBreaks, setPageBreaks] = useState<number[]>([]);
 
   // Automatically calculate scale to fit the preview container comfortably
   useEffect(() => {
@@ -78,27 +82,95 @@ export default function PreviewPane({
     setCustomZoom((prev) => Math.min(140, Math.max(40, prev + delta)));
   };
 
-  // Measure actual rendered resume height so user can scroll to see overflowing content
+  // Intelligently calculate live pages and section breaks matching print pagination
   useEffect(() => {
     const el = document.getElementById('resume-print-area');
     if (!el) return;
-    const updateContentHeight = () => {
-      const art = el.querySelector('article');
-      const h = art ? art.scrollHeight : el.scrollHeight;
-      if (h > 0) {
-        setContentHeight(h);
+
+    const recalculatePagination = () => {
+      // 1. Reset any previous page break targets to measure natural heights
+      const prevTargets = el.querySelectorAll('[data-page-break-target]');
+      prevTargets.forEach((t) => {
+        (t as HTMLElement).style.marginTop = '';
+        t.removeAttribute('data-page-break-target');
+      });
+
+      const art = el.querySelector('article') || el;
+      const artRect = art.getBoundingClientRect();
+      const artTop = artRect.top;
+
+      // 2. Measure actual max bottom of visible content elements
+      let maxBottom = 0;
+      const allContentNodes = art.querySelectorAll(
+        'header, section, .avoid-break, [data-avoid-break], li, p, h1, h2, h3, div'
+      );
+      allContentNodes.forEach((n) => {
+        const r = (n as HTMLElement).getBoundingClientRect();
+        if (r.bottom > 0) {
+          const relB = r.bottom - artTop;
+          if (relB > maxBottom) maxBottom = relB;
+        }
+      });
+
+      // 3. Single-page check with 24px tolerance for subpixel antialiasing & margins
+      if (maxBottom <= A4_HEIGHT_PX + 24) {
+        setPageCount(1);
+        setPageBreaks([]);
+        return;
       }
+
+      // 4. Multi-page: identify elements crossing page boundaries and shift them cleanly
+      const candidates = Array.from(
+        art.querySelectorAll(
+          'section, header, [data-avoid-break], .avoid-break, article > div > div, .grid > div > div, .grid > div > section'
+        )
+      ) as HTMLElement[];
+
+      candidates.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+
+      const breaks: number[] = [];
+      let accumulatedShift = 0;
+
+      for (const c of candidates) {
+        const rect = c.getBoundingClientRect();
+        const relTop = rect.top - artTop - accumulatedShift;
+        const relBottom = rect.bottom - artTop - accumulatedShift;
+
+        const targetBoundary = (breaks.length + 1) * A4_HEIGHT_PX - 42;
+
+        if (relTop < targetBoundary && relBottom > targetBoundary) {
+          const spaceRemaining = (breaks.length + 1) * A4_HEIGHT_PX - relTop;
+          const spacerHeight = spaceRemaining + PAGE_GAP + PAGE_TOP_PAD;
+
+          c.setAttribute('data-page-break-target', 'true');
+          c.style.marginTop = `${spacerHeight}px`;
+          accumulatedShift += spacerHeight;
+          breaks.push(relTop);
+        }
+      }
+
+      const calculatedPages = Math.max(1, breaks.length + 1);
+      setPageCount(calculatedPages);
+      setPageBreaks(breaks);
     };
-    updateContentHeight();
-    const ro = new ResizeObserver(updateContentHeight);
+
+    const frameId = window.requestAnimationFrame(recalculatePagination);
+    const ro = new ResizeObserver(() => {
+      window.requestAnimationFrame(recalculatePagination);
+    });
     ro.observe(el);
     if (el.firstElementChild) ro.observe(el.firstElementChild);
-    return () => ro.disconnect();
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      ro.disconnect();
+    };
   }, [data, spacingDensity, columnSplit, fontSizeScale, data.templateId]);
 
-  // Calculate live pages needed with 8px tolerance for subpixel rounding
-  const pageCount = Math.max(1, Math.ceil((contentHeight - 8) / A4_HEIGHT_PX));
-  const visualCanvasHeight = Math.max(pageCount * A4_HEIGHT_PX, contentHeight);
+  const visualCanvasHeight =
+    pageCount === 1
+      ? A4_HEIGHT_PX
+      : pageCount * A4_HEIGHT_PX + (pageCount - 1) * PAGE_GAP;
 
   return (
     <div
@@ -357,20 +429,63 @@ export default function PreviewPane({
             width: `${Math.round(A4_WIDTH_PX * activeScale)}px`,
             height: `${Math.round(visualCanvasHeight * activeScale)}px`,
           }}
-          className="relative flex-shrink-0 transition-[height] duration-150 print:!w-[210mm] print:!h-auto print:!min-h-0 print:static"
+          className="relative flex-shrink-0 transition-[height] duration-150 print:!w-full print:!h-auto print:!min-h-0 print:static"
         >
+          {/* Distinct Visual A4 Sheet Cards for Multi-Page and Single-Page Screen Preview */}
+          {Array.from({ length: pageCount }).map((_, i) => {
+            const pageNum = i + 1;
+            const topPx = i * (A4_HEIGHT_PX + PAGE_GAP);
+
+            return (
+              <React.Fragment key={pageNum}>
+                {/* Visual Sheet Paper Card with Shadow */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: `${Math.round(topPx * activeScale)}px`,
+                    left: 0,
+                    width: `${Math.round(A4_WIDTH_PX * activeScale)}px`,
+                    height: `${Math.round(A4_HEIGHT_PX * activeScale)}px`,
+                  }}
+                  className="no-print pointer-events-none rounded-xs border border-neutral-300/80 bg-white shadow-md z-0"
+                />
+
+                {/* Page Number Label between pages or above page 2 */}
+                {pageCount > 1 && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: `${Math.round((topPx - (i === 0 ? 0 : PAGE_GAP)) * activeScale)}px`,
+                      left: 0,
+                      width: `${Math.round(A4_WIDTH_PX * activeScale)}px`,
+                      height: `${Math.round(PAGE_GAP * activeScale)}px`,
+                    }}
+                    className={`no-print z-20 flex items-center justify-center pointer-events-none ${
+                      i === 0 ? '-translate-y-full mb-1' : ''
+                    }`}
+                  >
+                    <span className="px-2.5 py-0.5 rounded-full bg-neutral-800/90 text-white text-[10px] font-mono font-semibold shadow-xs">
+                      Page {pageNum} of {pageCount}
+                    </span>
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+
+          {/* Actual Resume Content Container */}
           <div
             id="resume-print-area"
             style={{
               width: `${A4_WIDTH_PX}px`,
-              minHeight: `${pageCount * A4_HEIGHT_PX}px`,
+              minHeight: `${A4_HEIGHT_PX}px`,
               transform: `scale(${activeScale})`,
               transformOrigin: 'top left',
               willChange: 'transform',
               backfaceVisibility: 'hidden',
               '--fs': fontSizeScale / 100,
             } as React.CSSProperties}
-            className="single-page-mode absolute top-0 left-0 bg-white shadow-lg print:shadow-none print:transform-none print:!w-[210mm] print:min-w-0 print:!min-h-0 print:!h-auto print:static"
+            className="single-page-mode absolute top-0 left-0 z-10 bg-transparent shadow-none print:shadow-none print:transform-none print:!w-full print:min-w-0 print:!min-h-0 print:!h-auto print:static print:bg-white"
           >
             {TemplateComponent ? (
               // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale
@@ -387,34 +502,6 @@ export default function PreviewPane({
               </div>
             )}
           </div>
-
-          {/* Visual Distinct A4 Page Cut Separator for Multi-Page Resumes */}
-          {pageCount > 1 &&
-            Array.from({ length: pageCount - 1 }).map((_, i) => {
-              const pageNum = i + 1;
-              const topPx = pageNum * A4_HEIGHT_PX;
-              return (
-                <div
-                  key={pageNum}
-                  style={{
-                    position: 'absolute',
-                    top: `${Math.round(topPx * activeScale)}px`,
-                    left: 0,
-                    width: `${Math.round(A4_WIDTH_PX * activeScale)}px`,
-                    pointerEvents: 'none',
-                  }}
-                  className="z-20 no-print flex items-center justify-between px-3 -translate-y-1/2"
-                >
-                  <div className="flex-1 h-[2px] bg-red-400/80 border-t border-b border-dashed border-red-500/90" />
-                  <div className="mx-2 px-2.5 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-mono font-bold shadow-sm tracking-wider flex items-center gap-1.5 whitespace-nowrap">
-                    <span>✂ End of Page {pageNum}</span>
-                    <span>•</span>
-                    <span>Start of Page {pageNum + 1}</span>
-                  </div>
-                  <div className="flex-1 h-[2px] bg-red-400/80 border-t border-b border-dashed border-red-500/90" />
-                </div>
-              );
-            })}
         </div>
       </div>
     </div>

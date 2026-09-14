@@ -50,7 +50,7 @@ body {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 0mm !important;
+    margin: 12mm 14mm 14mm 14mm !important;
   }
 
   *,
@@ -66,7 +66,8 @@ body {
     background: #ffffff !important;
     padding: 0 !important;
     margin: 0 !important;
-    width: 210mm !important;
+    width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
@@ -78,6 +79,7 @@ body {
   #builder-header,
   #builder-editor-column,
   .no-print,
+  .screen-only,
   button,
   nav,
   input,
@@ -97,8 +99,8 @@ body {
   [data-preview-canvas-wrapper] {
     display: block !important;
     position: static !important;
-    width: 210mm !important;
-    max-width: 210mm !important;
+    width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
@@ -114,8 +116,8 @@ body {
   #resume-print-area {
     display: block !important;
     position: relative !important;
-    width: 210mm !important;
-    max-width: 210mm !important;
+    width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
@@ -128,10 +130,14 @@ body {
     overflow: visible !important;
   }
 
+  #resume-print-area * {
+    overflow: visible !important;
+  }
+
   article,
   .single-page-resume {
-    width: 210mm !important;
-    max-width: 210mm !important;
+    width: 100% !important;
+    max-width: 100% !important;
     min-height: 0 !important;
     height: auto !important;
     max-height: none !important;
@@ -139,6 +145,7 @@ body {
     box-shadow: none !important;
     border: none !important;
     margin: 0 !important;
+    padding: 0 !important; /* Page margins from @page provide the spacing */
     background: #ffffff !important;
     overflow: visible !important;
   }
@@ -149,22 +156,35 @@ body {
      - Atomic list items / certificates avoid page breaks inside themselves
      - Large multi-bullet sections can split cleanly across pages instead of creating huge empty voids */
   #resume-print-area header {
-    break-inside: avoid-page;
-    page-break-inside: avoid;
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
   }
 
   #resume-print-area h1,
   #resume-print-area h2,
   #resume-print-area h3 {
-    break-after: avoid-page;
-    page-break-after: avoid;
+    break-after: avoid-page !important;
+    page-break-after: avoid !important;
   }
 
   #resume-print-area .avoid-break,
   #resume-print-area [data-avoid-break],
-  #resume-print-area li {
-    break-inside: avoid-page;
-    page-break-inside: avoid;
+  #resume-print-area li,
+  #resume-print-area section > div > div {
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Grid containers permit fragmentation */
+  #resume-print-area .grid,
+  #resume-print-area [style*="grid"] {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  /* Reset screen preview break spacers in print */
+  #resume-print-area [data-page-break-target] {
+    margin-top: 0 !important;
   }
 
   /* Force skill chips to print with background and white text */
