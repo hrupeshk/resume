@@ -287,7 +287,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
   };
 
   return (
-    <div className="min-h-screen bg-canvas text-ink flex flex-col">
+    <div className="min-h-screen bg-canvas text-ink flex flex-col print:bg-white print:min-h-0 print:block">
       {/* Toast Notification for PDF Import */}
       {importStatus && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-neutral-900 text-white px-4 py-2 rounded-md shadow-lg border border-neutral-700 text-xs flex items-center gap-2 animate-bounce">
@@ -423,7 +423,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
 
       {/* Main Dual-Column Builder Workspace */}
       <main
-        className={`flex-1 w-full mx-auto p-4 sm:p-6 lg:p-8 transition-all duration-300 ${
+        className={`flex-1 w-full mx-auto p-4 sm:p-6 lg:p-8 transition-all duration-300 print:bg-white print:p-0 print:m-0 print:max-w-none print:w-full print:block ${
           viewMode === 'preview' ? 'max-w-5xl' : viewMode === 'editor' ? 'max-w-4xl' : 'max-w-7xl'
         }`}
       >

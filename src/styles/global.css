@@ -89,7 +89,7 @@ body {
     display: none !important;
   }
 
-  /* Reset all ancestor wrappers of #resume-print-area to prevent ghost height */
+  /* Reset all ancestor wrappers of #resume-print-area to prevent ghost height & background leakage */
   body > div,
   main,
   main > div,
@@ -109,6 +109,8 @@ body {
     border: none !important;
     box-shadow: none !important;
     transform: none !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
     overflow: visible !important;
   }
 
@@ -202,44 +204,64 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   Typography Scaling Engine (applied to both screen preview and print)
-   Scales text sizes proportionally based on --fs without altering 210mm paper width
+   Typography Scaling & Uniform Page Dimensions Engine
+   Applies identically to both hidden print measurement canvas and preview sheets
    -------------------------------------------------------------------------- */
-#resume-print-area {
+#resume-print-area,
+[data-preview-sheet] {
   --fs: 1;
 }
 
-#resume-print-area .text-xs {
+#resume-print-area article,
+#resume-print-area .single-page-resume,
+[data-preview-sheet] article,
+[data-preview-sheet] .single-page-resume {
+  width: 688px !important;
+  max-width: 688px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#resume-print-area .text-xs,
+[data-preview-sheet] .text-xs {
   font-size: calc(0.75rem * var(--fs, 1)) !important;
   line-height: calc(1rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-sm {
+#resume-print-area .text-sm,
+[data-preview-sheet] .text-sm {
   font-size: calc(0.875rem * var(--fs, 1)) !important;
   line-height: calc(1.25rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-base {
+#resume-print-area .text-base,
+[data-preview-sheet] .text-base {
   font-size: calc(1rem * var(--fs, 1)) !important;
   line-height: calc(1.5rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-lg {
+#resume-print-area .text-lg,
+[data-preview-sheet] .text-lg {
   font-size: calc(1.125rem * var(--fs, 1)) !important;
   line-height: calc(1.75rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-xl {
+#resume-print-area .text-xl,
+[data-preview-sheet] .text-xl {
   font-size: calc(1.25rem * var(--fs, 1)) !important;
   line-height: calc(1.75rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-2xl {
+#resume-print-area .text-2xl,
+[data-preview-sheet] .text-2xl {
   font-size: calc(1.5rem * var(--fs, 1)) !important;
   line-height: calc(2rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-3xl {
+#resume-print-area .text-3xl,
+[data-preview-sheet] .text-3xl {
   font-size: calc(1.875rem * var(--fs, 1)) !important;
   line-height: calc(2.25rem * var(--fs, 1)) !important;
 }

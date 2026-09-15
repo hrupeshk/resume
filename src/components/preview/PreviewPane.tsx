@@ -35,10 +35,14 @@ export default function PreviewPane({
   const A4_WIDTH_PX = 794;
   const A4_HEIGHT_PX = 1123;
   // Print uses @page { margin: 12mm 14mm 14mm 14mm !important; }
-  // 12mm top = 45px, 14mm bottom = 53px
-  // Printable content height on an A4 page: 1123 - 45 - 53 = 1025px
+  // 12mm top = 45px, 14mm side/bottom = 53px
+  // Printable content dimensions:
+  // Width: 794 - 53 - 53 = 688px (182mm)
+  // Height: 1123 - 45 - 53 = 1025px (271mm)
+  const CONTENT_WIDTH_PX = 688;
   const PAGE_PRINTABLE_HEIGHT = 1025;
   const PAGE_TOP_MARGIN_PX = 45; // 12mm top margin matching print
+  const PAGE_SIDE_MARGIN_PX = 53; // 14mm side margin matching print
   const PAGE_GAP = 28; // Visual gap between A4 sheets in preview
 
   const [pageCount, setPageCount] = useState<number>(1);
@@ -107,8 +111,8 @@ export default function PreviewPane({
     }, 1200);
   };
 
-  // Intelligently calculate live pages and section breaks matching print pagination
-  // Measures actual content nodes (excluding flex-stretched container divs)
+  // Intelligently calculate live pages and section breaks matching print pagination exactly
+  // Measures content rendered at exact 688px print width with 0 padding
   useEffect(() => {
     const el = document.getElementById('resume-print-area');
     if (!el) return;
@@ -118,7 +122,7 @@ export default function PreviewPane({
       const artRect = art.getBoundingClientRect();
       const artTop = artRect.top;
 
-      // Measure actual content bottom from text, headers, and entries (NOT outer layout wrappers)
+      // Measure actual content bottom from text, headers, and entries
       let maxBottom = 0;
       const contentNodes = art.querySelectorAll(
         'header, section, li, p, h1, h2, h3, [data-skill-chip], [data-avoid-break], article > div > div > *'
@@ -131,48 +135,93 @@ export default function PreviewPane({
         }
       });
 
-      // Single-page check with 15px subpixel tolerance against exact printable height
-      if (maxBottom <= PAGE_PRINTABLE_HEIGHT + 15) {
+      // Single-page check with 10px subpixel tolerance against exact printable height (1025px)
+      if (maxBottom <= PAGE_PRINTABLE_HEIGHT + 10) {
         setPageCount(1);
         setPageBreaks([]);
         setActivePage(1);
         return;
       }
 
-      // Multi-page: identify clean section / item boundaries for each page break
-      const candidates = Array.from(
+      // Multi-page: identify clean atomic item boundaries for each page break
+      // Target entries, list items, cards, headings, and paragraph blocks
+      const atomicCandidates = Array.from(
         art.querySelectorAll(
-          'section > div > div, section, header, [data-avoid-break], .avoid-break'
+          'section > div > div, li, [data-avoid-break], .avoid-break, header, h1, h2, h3, section > div, section'
         )
       ) as HTMLElement[];
+
+      // Filter out ancestor containers whose children are already in candidates
+      const candidates = atomicCandidates.filter((item) => {
+        return !atomicCandidates.some((other) => other !== item && item.contains(other));
+      });
 
       candidates.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
 
       const breaks: number[] = [];
       let currentBreak = 0;
 
-      while (currentBreak + PAGE_PRINTABLE_HEIGHT < maxBottom - 15) {
+      while (currentBreak + PAGE_PRINTABLE_HEIGHT < maxBottom - 10) {
         const targetBoundary = currentBreak + PAGE_PRINTABLE_HEIGHT;
         let foundBreak = targetBoundary;
 
+        // Find candidate element crossing targetBoundary
+        let crossingCandidate: HTMLElement | null = null;
         for (const c of candidates) {
           const rect = c.getBoundingClientRect();
           const relTop = rect.top - artTop;
           const relBottom = rect.bottom - artTop;
 
-          // If this candidate element straddles the page boundary
           if (relTop < targetBoundary && relBottom > targetBoundary) {
-            // Break cleanly before this entry if it starts reasonably down the page
-            if (relTop > currentBreak + 350) {
-              foundBreak = relTop;
-            }
+            crossingCandidate = c;
             break;
           }
         }
 
+        if (crossingCandidate) {
+          const rect = crossingCandidate.getBoundingClientRect();
+          const relTop = rect.top - artTop;
+
+          // If the crossing element is a heading or header, break BEFORE it
+          if (/^H[1-6]$/i.test(crossingCandidate.tagName) || crossingCandidate.tagName === 'HEADER') {
+            foundBreak = relTop;
+          } else {
+            // Check if this item is right below a section heading
+            const section = crossingCandidate.closest('section');
+            const heading = section?.querySelector('h1, h2, h3');
+            if (heading && heading !== crossingCandidate) {
+              const hTop = heading.getBoundingClientRect().top - artTop;
+              const hBottom = heading.getBoundingClientRect().bottom - artTop;
+              const previousItemsInSec = candidates.filter(
+                (c) => section?.contains(c) && c !== heading && (c.getBoundingClientRect().bottom - artTop) <= relTop
+              );
+
+              if (previousItemsInSec.length === 0 || hBottom > targetBoundary - 60) {
+                // Orphan prevention: push heading to next page along with this first item
+                foundBreak = hTop;
+              } else {
+                foundBreak = relTop;
+              }
+            } else {
+              foundBreak = relTop;
+            }
+          }
+        } else {
+          // Find first item starting after targetBoundary
+          const nextItem = candidates.find((c) => (c.getBoundingClientRect().top - artTop) >= targetBoundary);
+          if (nextItem) {
+            foundBreak = nextItem.getBoundingClientRect().top - artTop;
+          }
+        }
+
+        // Safety guard: ensure each page advances by at least 250px
+        if (foundBreak <= currentBreak + 250) {
+          foundBreak = currentBreak + PAGE_PRINTABLE_HEIGHT;
+        }
+
         breaks.push(Math.round(foundBreak));
         currentBreak = foundBreak;
-        if (breaks.length >= 5) break; // safety guard
+        if (breaks.length >= 6) break; // safety guard
       }
 
       const calculatedPages = Math.max(1, breaks.length + 1);
@@ -489,10 +538,8 @@ export default function PreviewPane({
               const pageNum = i + 1;
               const startOffset = i === 0 ? 0 : pageBreaks[i - 1] || i * PAGE_PRINTABLE_HEIGHT;
               const endOffset = i < pageBreaks.length ? pageBreaks[i] : undefined;
-              const viewportHeight =
-                i === 0
-                  ? pageBreaks[0] ? pageBreaks[0] : A4_HEIGHT_PX
-                  : endOffset ? endOffset - startOffset : PAGE_PRINTABLE_HEIGHT;
+              const pageHeight = endOffset ? endOffset - startOffset : PAGE_PRINTABLE_HEIGHT;
+              const viewportHeight = Math.min(PAGE_PRINTABLE_HEIGHT, pageHeight);
 
               return (
                 <div
@@ -524,9 +571,9 @@ export default function PreviewPane({
                     <div
                       style={{
                         position: 'absolute',
-                        top: i === 0 ? 0 : `${PAGE_TOP_MARGIN_PX}px`,
-                        left: 0,
-                        width: `${A4_WIDTH_PX}px`,
+                        top: `${PAGE_TOP_MARGIN_PX}px`,
+                        left: `${PAGE_SIDE_MARGIN_PX}px`,
+                        width: `${CONTENT_WIDTH_PX}px`,
                         height: `${viewportHeight}px`,
                         overflow: 'hidden',
                       }}
@@ -537,7 +584,7 @@ export default function PreviewPane({
                           position: 'absolute',
                           top: `-${startOffset}px`,
                           left: 0,
-                          width: `${A4_WIDTH_PX}px`,
+                          width: `${CONTENT_WIDTH_PX}px`,
                           '--fs': fontSizeScale / 100,
                         } as React.CSSProperties}
                       >
@@ -567,7 +614,7 @@ export default function PreviewPane({
           <div
             id="resume-print-area"
             style={{
-              width: `${A4_WIDTH_PX}px`,
+              width: `${CONTENT_WIDTH_PX}px`,
               '--fs': fontSizeScale / 100,
             } as React.CSSProperties}
             className="fixed -left-[99999px] top-0 opacity-0 pointer-events-none print:!static print:!block print:!visible print:!opacity-100 print:!pointer-events-auto print:!w-full print:min-w-0 print:!min-h-0 print:!h-auto print:bg-white print:m-0 print:p-0"
