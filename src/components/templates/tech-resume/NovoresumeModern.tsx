@@ -512,7 +512,7 @@ export default function NovoresumeModern({
                 <img
                   src={personalInfo.photoUrl}
                   alt={personalInfo.fullName || 'Profile'}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-full"
                 />
               ) : (
                 <div className="text-center p-1 text-[#0d9488]">

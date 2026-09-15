@@ -31,14 +31,21 @@ export default function PreviewPane({
   const currentTemplate = getTemplateById(data.category, data.templateId);
   const TemplateComponent = currentTemplate ? currentTemplate.component : null;
 
-  // Standard A4 width in pixels at standard 96 DPI: 210mm = 794px, 297mm = 1123px
+  // Standard A4 dimensions in pixels at 96 DPI: 210mm = 794px, 297mm = 1123px
   const A4_WIDTH_PX = 794;
   const A4_HEIGHT_PX = 1123;
+  // Print uses @page { margin: 12mm 14mm 14mm 14mm !important; }
+  // 12mm top = 45px, 14mm bottom = 53px
+  // Printable content height on an A4 page: 1123 - 45 - 53 = 1025px
+  const PAGE_PRINTABLE_HEIGHT = 1025;
+  const PAGE_TOP_MARGIN_PX = 45; // 12mm top margin matching print
   const PAGE_GAP = 28; // Visual gap between A4 sheets in preview
-  const PAGE_TOP_PAD = 36; // Top padding for content on page 2+
 
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageBreaks, setPageBreaks] = useState<number[]>([]);
+  const [activePage, setActivePage] = useState<number>(1);
+  const [isScrolling, setIsScrolling] = useState<boolean>(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Automatically calculate scale to fit the preview container comfortably
   useEffect(() => {
@@ -82,29 +89,41 @@ export default function PreviewPane({
     setCustomZoom((prev) => Math.min(140, Math.max(40, prev + delta)));
   };
 
+  // Scroll listener to update active page indicator as user scrolls / slides
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    const scrollTop = containerRef.current.scrollTop;
+    const pageCardHeight = (A4_HEIGHT_PX + PAGE_GAP + 28) * activeScale;
+    const current = Math.min(
+      pageCount,
+      Math.max(1, Math.floor((scrollTop + 200 * activeScale) / pageCardHeight) + 1)
+    );
+    setActivePage(current);
+
+    setIsScrolling(true);
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = setTimeout(() => {
+      setIsScrolling(false);
+    }, 1200);
+  };
+
   // Intelligently calculate live pages and section breaks matching print pagination
+  // Measures actual content nodes (excluding flex-stretched container divs)
   useEffect(() => {
     const el = document.getElementById('resume-print-area');
     if (!el) return;
 
     const recalculatePagination = () => {
-      // 1. Reset any previous page break targets to measure natural heights
-      const prevTargets = el.querySelectorAll('[data-page-break-target]');
-      prevTargets.forEach((t) => {
-        (t as HTMLElement).style.marginTop = '';
-        t.removeAttribute('data-page-break-target');
-      });
-
       const art = el.querySelector('article') || el;
       const artRect = art.getBoundingClientRect();
       const artTop = artRect.top;
 
-      // 2. Measure actual max bottom of visible content elements
+      // Measure actual content bottom from text, headers, and entries (NOT outer layout wrappers)
       let maxBottom = 0;
-      const allContentNodes = art.querySelectorAll(
-        'header, section, .avoid-break, [data-avoid-break], li, p, h1, h2, h3, div'
+      const contentNodes = art.querySelectorAll(
+        'header, section, li, p, h1, h2, h3, [data-skill-chip], [data-avoid-break], article > div > div > *'
       );
-      allContentNodes.forEach((n) => {
+      contentNodes.forEach((n) => {
         const r = (n as HTMLElement).getBoundingClientRect();
         if (r.bottom > 0) {
           const relB = r.bottom - artTop;
@@ -112,41 +131,48 @@ export default function PreviewPane({
         }
       });
 
-      // 3. Single-page check with 24px tolerance for subpixel antialiasing & margins
-      if (maxBottom <= A4_HEIGHT_PX + 24) {
+      // Single-page check with 15px subpixel tolerance against exact printable height
+      if (maxBottom <= PAGE_PRINTABLE_HEIGHT + 15) {
         setPageCount(1);
         setPageBreaks([]);
+        setActivePage(1);
         return;
       }
 
-      // 4. Multi-page: identify elements crossing page boundaries and shift them cleanly
+      // Multi-page: identify clean section / item boundaries for each page break
       const candidates = Array.from(
         art.querySelectorAll(
-          'section, header, [data-avoid-break], .avoid-break, article > div > div, .grid > div > div, .grid > div > section'
+          'section > div > div, section, header, [data-avoid-break], .avoid-break'
         )
       ) as HTMLElement[];
 
       candidates.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
 
       const breaks: number[] = [];
-      let accumulatedShift = 0;
+      let currentBreak = 0;
 
-      for (const c of candidates) {
-        const rect = c.getBoundingClientRect();
-        const relTop = rect.top - artTop - accumulatedShift;
-        const relBottom = rect.bottom - artTop - accumulatedShift;
+      while (currentBreak + PAGE_PRINTABLE_HEIGHT < maxBottom - 15) {
+        const targetBoundary = currentBreak + PAGE_PRINTABLE_HEIGHT;
+        let foundBreak = targetBoundary;
 
-        const targetBoundary = (breaks.length + 1) * A4_HEIGHT_PX - 42;
+        for (const c of candidates) {
+          const rect = c.getBoundingClientRect();
+          const relTop = rect.top - artTop;
+          const relBottom = rect.bottom - artTop;
 
-        if (relTop < targetBoundary && relBottom > targetBoundary) {
-          const spaceRemaining = (breaks.length + 1) * A4_HEIGHT_PX - relTop;
-          const spacerHeight = spaceRemaining + PAGE_GAP + PAGE_TOP_PAD;
-
-          c.setAttribute('data-page-break-target', 'true');
-          c.style.marginTop = `${spacerHeight}px`;
-          accumulatedShift += spacerHeight;
-          breaks.push(relTop);
+          // If this candidate element straddles the page boundary
+          if (relTop < targetBoundary && relBottom > targetBoundary) {
+            // Break cleanly before this entry if it starts reasonably down the page
+            if (relTop > currentBreak + 350) {
+              foundBreak = relTop;
+            }
+            break;
+          }
         }
+
+        breaks.push(Math.round(foundBreak));
+        currentBreak = foundBreak;
+        if (breaks.length >= 5) break; // safety guard
       }
 
       const calculatedPages = Math.max(1, breaks.length + 1);
@@ -170,7 +196,7 @@ export default function PreviewPane({
   const visualCanvasHeight =
     pageCount === 1
       ? A4_HEIGHT_PX
-      : pageCount * A4_HEIGHT_PX + (pageCount - 1) * PAGE_GAP;
+      : pageCount * A4_HEIGHT_PX + (pageCount - 1) * PAGE_GAP + pageCount * 30;
 
   return (
     <div
@@ -256,7 +282,7 @@ export default function PreviewPane({
               title={
                 pageCount === 1
                   ? 'Resume fits on 1 standard A4 page with zero overflow.'
-                  : `Resume spans ${pageCount} pages. Adjust Font Size or Spacing if you want it to fit on 1 page.`
+                  : `Viewing Page ${activePage} of ${pageCount}. Adjust Font Size or Spacing if you want it to fit on 1 page.`
               }
             >
               <span
@@ -264,7 +290,11 @@ export default function PreviewPane({
                   pageCount === 1 ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'
                 }`}
               />
-              <span>{pageCount} {pageCount === 1 ? 'Page (Fit)' : `Pages (Overflow)`}</span>
+              <span>
+                {pageCount === 1
+                  ? '1 Page (Fit)'
+                  : `Page ${activePage} of ${pageCount} (Overflow)`}
+              </span>
             </div>
 
             <button
@@ -420,72 +450,127 @@ export default function PreviewPane({
       {/* Live Preview Document Canvas (Hardware-accelerated fixed 794px A4 coordinate system) */}
       <div
         ref={containerRef}
+        onScroll={handleScroll}
         data-preview-container="true"
-        className="flex-1 overflow-auto p-4 sm:p-6 bg-neutral-200/70 flex justify-center items-start min-h-[500px] [scrollbar-gutter:stable] print:bg-white print:p-0 print:overflow-visible print:!min-h-0 print:!h-auto"
+        className="flex-1 overflow-auto p-4 sm:p-6 bg-neutral-200/70 flex justify-center items-start min-h-[500px] [scrollbar-gutter:stable] print:bg-white print:p-0 print:overflow-visible print:!min-h-0 print:!h-auto relative"
       >
+        {/* Floating Active Page Indicator while scrolling / sliding */}
+        {pageCount > 1 && (
+          <div
+            className={`no-print fixed bottom-6 right-8 sm:right-12 z-30 transition-all duration-300 pointer-events-none ${
+              isScrolling ? 'opacity-100 translate-y-0 scale-100' : 'opacity-70 hover:opacity-100 translate-y-0'
+            }`}
+          >
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-900/90 text-white text-xs font-mono font-semibold shadow-lg backdrop-blur-xs border border-white/10">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Page {activePage} of {pageCount}</span>
+            </div>
+          </div>
+        )}
+
         <div
           data-preview-canvas-wrapper="true"
           style={{
             width: `${Math.round(A4_WIDTH_PX * activeScale)}px`,
             height: `${Math.round(visualCanvasHeight * activeScale)}px`,
           }}
-          className="relative flex-shrink-0 transition-[height] duration-150 print:!w-full print:!h-auto print:!min-h-0 print:static"
+          className="relative flex-shrink-0 transition-[height] duration-150 flex flex-col items-center print:!w-full print:!h-auto print:!min-h-0 print:static"
         >
           {/* Distinct Visual A4 Sheet Cards for Multi-Page and Single-Page Screen Preview */}
-          {Array.from({ length: pageCount }).map((_, i) => {
-            const pageNum = i + 1;
-            const topPx = i * (A4_HEIGHT_PX + PAGE_GAP);
+          <div
+            className="no-print flex flex-col items-center"
+            style={{
+              transform: `scale(${activeScale})`,
+              transformOrigin: 'top center',
+              willChange: 'transform',
+            }}
+          >
+            {Array.from({ length: pageCount }).map((_, i) => {
+              const pageNum = i + 1;
+              const startOffset = i === 0 ? 0 : pageBreaks[i - 1] || i * PAGE_PRINTABLE_HEIGHT;
+              const endOffset = i < pageBreaks.length ? pageBreaks[i] : undefined;
+              const viewportHeight =
+                i === 0
+                  ? pageBreaks[0] ? pageBreaks[0] : A4_HEIGHT_PX
+                  : endOffset ? endOffset - startOffset : PAGE_PRINTABLE_HEIGHT;
 
-            return (
-              <React.Fragment key={pageNum}>
-                {/* Visual Sheet Paper Card with Shadow */}
+              return (
                 <div
-                  style={{
-                    position: 'absolute',
-                    top: `${Math.round(topPx * activeScale)}px`,
-                    left: 0,
-                    width: `${Math.round(A4_WIDTH_PX * activeScale)}px`,
-                    height: `${Math.round(A4_HEIGHT_PX * activeScale)}px`,
-                  }}
-                  className="no-print pointer-events-none rounded-xs border border-neutral-300/80 bg-white shadow-md z-0"
-                />
+                  key={pageNum}
+                  data-preview-sheet={pageNum}
+                  className="flex flex-col items-center mb-7 last:mb-0"
+                >
+                  {/* Page Number Label between pages or above page 2 */}
+                  {pageCount > 1 && (
+                    <div className="mb-2 flex items-center justify-center">
+                      <span className="px-2.5 py-0.5 rounded-full bg-neutral-800/90 text-white text-[10px] font-mono font-semibold shadow-xs">
+                        Page {pageNum} of {pageCount}
+                      </span>
+                    </div>
+                  )}
 
-                {/* Page Number Label between pages or above page 2 */}
-                {pageCount > 1 && (
+                  {/* Visual Sheet Paper Card with Shadow */}
                   <div
                     style={{
-                      position: 'absolute',
-                      top: `${Math.round((topPx - (i === 0 ? 0 : PAGE_GAP)) * activeScale)}px`,
-                      left: 0,
-                      width: `${Math.round(A4_WIDTH_PX * activeScale)}px`,
-                      height: `${Math.round(PAGE_GAP * activeScale)}px`,
+                      width: `${A4_WIDTH_PX}px`,
+                      height: `${A4_HEIGHT_PX}px`,
+                      boxSizing: 'border-box',
+                      overflow: 'hidden',
+                      position: 'relative',
                     }}
-                    className={`no-print z-20 flex items-center justify-center pointer-events-none ${
-                      i === 0 ? '-translate-y-full mb-1' : ''
-                    }`}
+                    className="rounded-xs border border-neutral-300/80 bg-white shadow-md"
                   >
-                    <span className="px-2.5 py-0.5 rounded-full bg-neutral-800/90 text-white text-[10px] font-mono font-semibold shadow-xs">
-                      Page {pageNum} of {pageCount}
-                    </span>
+                    {/* Viewport container strictly clipped to this page's vertical segment */}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: i === 0 ? 0 : `${PAGE_TOP_MARGIN_PX}px`,
+                        left: 0,
+                        width: `${A4_WIDTH_PX}px`,
+                        height: `${viewportHeight}px`,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {/* Visual Content Slice */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: `-${startOffset}px`,
+                          left: 0,
+                          width: `${A4_WIDTH_PX}px`,
+                          '--fs': fontSizeScale / 100,
+                        } as React.CSSProperties}
+                      >
+                        {TemplateComponent ? (
+                          // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale
+                          <TemplateComponent
+                            data={data}
+                            autoBalance={autoBalance}
+                            spacingDensity={spacingDensity}
+                            columnSplit={columnSplit}
+                            fontSizeScale={fontSizeScale}
+                          />
+                        ) : (
+                          <div className="p-8 text-center text-mute bg-white rounded border border-hairline">
+                            No template found for ID: {data.templateId}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                )}
-              </React.Fragment>
-            );
-          })}
+                </div>
+              );
+            })}
+          </div>
 
-          {/* Actual Resume Content Container */}
+          {/* Actual Resume Content Container (Hardware-accelerated measurement and Chromium Print target) */}
           <div
             id="resume-print-area"
             style={{
               width: `${A4_WIDTH_PX}px`,
-              minHeight: `${A4_HEIGHT_PX}px`,
-              transform: `scale(${activeScale})`,
-              transformOrigin: 'top left',
-              willChange: 'transform',
-              backfaceVisibility: 'hidden',
               '--fs': fontSizeScale / 100,
             } as React.CSSProperties}
-            className="single-page-mode absolute top-0 left-0 z-10 bg-transparent shadow-none print:shadow-none print:transform-none print:!w-full print:min-w-0 print:!min-h-0 print:!h-auto print:static print:bg-white"
+            className="fixed -left-[99999px] top-0 opacity-0 pointer-events-none print:!static print:!block print:!visible print:!opacity-100 print:!pointer-events-auto print:!w-full print:min-w-0 print:!min-h-0 print:!h-auto print:bg-white print:m-0 print:p-0"
           >
             {TemplateComponent ? (
               // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale
@@ -496,11 +581,7 @@ export default function PreviewPane({
                 columnSplit={columnSplit}
                 fontSizeScale={fontSizeScale}
               />
-            ) : (
-              <div className="p-8 text-center text-mute bg-white rounded border border-hairline">
-                No template found for ID: {data.templateId}
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
