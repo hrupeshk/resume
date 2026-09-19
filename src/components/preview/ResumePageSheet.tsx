@@ -65,7 +65,7 @@ export default function ResumePageSheet({
             maxWidth: `${CONTENT_WIDTH_PX}px`,
             boxSizing: 'border-box',
           }}
-          className="resume-page-content mx-auto h-full overflow-hidden print:!w-full print:!max-w-none print:!h-full print:!max-h-full"
+          className="resume-page-content mx-auto h-full overflow-visible print:!w-full print:!max-w-none print:!h-full print:!max-h-full print:!overflow-visible"
         >
           {children}
         </div>

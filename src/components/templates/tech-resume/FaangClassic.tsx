@@ -206,7 +206,7 @@ export default function FaangClassic({
                     )}
                   </div>
                   {bullets.length > 0 && (
-                    <ul className="list-disc list-outside pl-4 space-y-0.5 text-[11px] text-neutral-800 leading-relaxed">
+                    <ul className="list-disc list-outside pl-5 space-y-0.5 text-[11px] text-neutral-800 leading-relaxed">
                       {bullets.map((bullet, bIdx) => (
                         <li key={bIdx}>{bullet}</li>
                       ))}
@@ -256,7 +256,7 @@ export default function FaangClassic({
                     )}
                   </div>
                   {descLines.length > 0 ? (
-                    <ul className="list-disc list-outside pl-4 space-y-0.5 text-[11px] text-neutral-800 leading-relaxed">
+                    <ul className="list-disc list-outside pl-5 space-y-0.5 text-[11px] text-neutral-800 leading-relaxed">
                       {descLines.map((line, lIdx) =>
                         line.trim() ? <li key={lIdx}>{line.trim()}</li> : null
                       )}

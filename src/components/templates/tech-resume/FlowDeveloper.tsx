@@ -163,7 +163,7 @@ export default function FlowDeveloper({
           <section data-section-type="skills">
             {!data.continuingSections?.includes('skills') && (
               <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 mb-2 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
+                <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 ml-0.5 shrink-0" />
                 Technical Stack
               </h2>
             )}
@@ -186,7 +186,7 @@ export default function FlowDeveloper({
           <section data-section-type="experience">
             {!data.continuingSections?.includes('experience') && (
               <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 mb-2 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
+                <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 ml-0.5 shrink-0" />
                 Experience
               </h2>
             )}
@@ -207,7 +207,7 @@ export default function FlowDeveloper({
                       )}
                     </div>
                     {bullets.length > 0 && (
-                      <ul className="list-disc list-outside pl-4 space-y-1 text-xs text-neutral-700 leading-relaxed">
+                      <ul className="list-disc list-outside pl-5 space-y-1 text-xs text-neutral-700 leading-relaxed">
                         {bullets.map((b, bIdx) => (
                           <li key={bIdx}>{b}</li>
                         ))}
@@ -225,7 +225,7 @@ export default function FlowDeveloper({
           <section data-section-type="projects">
             {!data.continuingSections?.includes('projects') && (
               <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 mb-2 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
+                <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 ml-0.5 shrink-0" />
                 Projects
               </h2>
             )}
@@ -260,7 +260,7 @@ export default function FlowDeveloper({
                     </div>
 
                     {descLines.length > 0 && (
-                      <ul className="list-disc list-outside pl-4 space-y-0.5 text-xs text-neutral-700 leading-relaxed">
+                      <ul className="list-disc list-outside pl-5 space-y-0.5 text-xs text-neutral-700 leading-relaxed">
                         {descLines.map((line, lIdx) =>
                           line.trim() ? <li key={lIdx}>{line.trim()}</li> : null
                         )}
@@ -281,7 +281,7 @@ export default function FlowDeveloper({
               <section data-section-type="education" className="avoid-break">
                 {!data.continuingSections?.includes('education') && (
                   <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 mb-2 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 ml-0.5 shrink-0" />
                     Education
                   </h2>
                 )}
@@ -314,7 +314,7 @@ export default function FlowDeveloper({
               <section data-section-type="certifications" className="avoid-break">
                 {!data.continuingSections?.includes('certifications') && (
                   <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 mb-2 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 ml-0.5 shrink-0" />
                     Certifications
                   </h2>
                 )}
@@ -344,7 +344,7 @@ export default function FlowDeveloper({
               <section data-section-type="volunteer" className="avoid-break">
                 {!data.continuingSections?.includes('volunteer') && (
                   <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 mb-2 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 ml-0.5 shrink-0" />
                     Leadership & Volunteer Experience
                   </h2>
                 )}
@@ -373,7 +373,7 @@ export default function FlowDeveloper({
               <section data-section-type="languages" className="avoid-break pt-1">
                 {!data.continuingSections?.includes('languages') && (
                   <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 mb-1.5 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 ml-0.5 shrink-0" />
                     Languages
                   </h2>
                 )}

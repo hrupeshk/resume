@@ -185,7 +185,7 @@ body {
     box-sizing: border-box !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
 
   article,
@@ -245,6 +245,14 @@ body {
   margin: 0 !important;
   min-height: 0 !important;
   box-sizing: border-box !important;
+}
+
+#resume-measure-sandbox ul.list-disc,
+.resume-page-sheet ul.list-disc,
+[data-resume-sheet] ul.list-disc,
+[data-preview-sheet] ul.list-disc,
+#resume-print-area ul.list-disc {
+  padding-left: calc(1.35rem * var(--fs, 1)) !important;
 }
 
 #resume-measure-sandbox .text-xs,

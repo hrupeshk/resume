@@ -196,7 +196,7 @@ export default function NovoresumeModern({
                       Responsibilities
                     </span>
                     <ul
-                      className="list-disc list-outside pl-3.5 space-y-0.5 text-[#475569] leading-relaxed"
+                      className="list-disc list-outside pl-5 space-y-0.5 text-[#475569] leading-relaxed"
                       style={{ fontSize: fs(9.5) }}
                     >
                       {bullets.map((bullet, bIdx) => (
@@ -260,7 +260,7 @@ export default function NovoresumeModern({
 
                 {descLines.length > 0 && (
                   <ul
-                    className="list-disc list-outside pl-3.5 space-y-0.5 text-[#475569] leading-relaxed"
+                    className="list-disc list-outside pl-5 space-y-0.5 text-[#475569] leading-relaxed"
                     style={{ fontSize: fs(9.5) }}
                   >
                     {descLines.map((line, lIdx) =>

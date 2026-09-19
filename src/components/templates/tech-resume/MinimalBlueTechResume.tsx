@@ -167,7 +167,7 @@ export default function MinimalBlueTechResume({
                     )}
                   </div>
                   {bullets.length > 0 && (
-                    <ul className="list-disc list-outside pl-4 space-y-1 text-xs text-neutral-700 leading-relaxed">
+                    <ul className="list-disc list-outside pl-5 space-y-1 text-xs text-neutral-700 leading-relaxed">
                       {bullets.map((b, bIdx) => (
                         <li key={bIdx}>{b}</li>
                       ))}
