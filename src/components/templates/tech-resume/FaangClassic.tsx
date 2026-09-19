@@ -3,12 +3,15 @@ import type { ResumeDocument } from '../../../lib/schema';
 
 interface TemplateProps {
   data: ResumeDocument;
+  pageNumber?: number;
+  totalPages?: number;
   spacingDensity?: 'compact' | 'balanced' | 'spacious';
   fontSizeScale?: number;
 }
 
 export default function FaangClassic({
   data,
+  pageNumber = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: TemplateProps) {
@@ -48,22 +51,22 @@ export default function FaangClassic({
 
   const densityConfig = {
     compact: {
-      padding: 'p-6 sm:p-8',
-      sectionMargin: 'mb-2.5',
+      padding: 'p-0',
+      sectionMargin: 'mb-2',
       entryGap: 'space-y-1',
       headerMargin: 'mb-2 pb-1',
     },
     balanced: {
-      padding: 'p-8 sm:p-12',
-      sectionMargin: 'mb-4',
-      entryGap: 'space-y-2',
-      headerMargin: 'mb-4 pb-2',
+      padding: 'p-0',
+      sectionMargin: 'mb-2.5',
+      entryGap: 'space-y-1.5',
+      headerMargin: 'mb-2.5 pb-1',
     },
     spacious: {
-      padding: 'p-10 sm:p-14',
-      sectionMargin: 'mb-5',
-      entryGap: 'space-y-3',
-      headerMargin: 'mb-5 pb-2.5',
+      padding: 'p-0',
+      sectionMargin: 'mb-4',
+      entryGap: 'space-y-2.5',
+      headerMargin: 'mb-4 pb-2',
     },
   };
   const config = densityConfig[spacingDensity] || densityConfig.balanced;
@@ -72,7 +75,7 @@ export default function FaangClassic({
 
   return (
     <article
-      className={`single-page-resume bg-white text-black min-h-[297mm] ${config.padding} font-sans shadow-none leading-normal selection:bg-neutral-200 w-full`}
+      className={`single-page-resume bg-white text-black min-h-0 ${config.padding} font-sans shadow-none leading-normal selection:bg-neutral-200 w-full`}
       style={
         {
           fontFamily:
@@ -83,72 +86,79 @@ export default function FaangClassic({
         } as React.CSSProperties
       }
     >
-      {/* Centered Top Header (Jake's Resume / Overleaf Gold Standard) */}
-      <header className={`text-center ${config.headerMargin}`}>
-        {personalInfo.fullName && (
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-normal uppercase text-black mb-1">
-            {personalInfo.fullName}
-          </h1>
-        )}
+      {/* Centered Top Header — Suppressed on Page 2+ */}
+      {pageNumber === 1 && (
+        <header className={`text-center ${config.headerMargin}`}>
+          {personalInfo.fullName && (
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-normal uppercase text-black mb-1">
+              {personalInfo.fullName}
+            </h1>
+          )}
 
-        {personalInfo.title && (
-          <div className="text-xs font-semibold text-neutral-700 mb-1.5 uppercase tracking-wider">
-            {personalInfo.title}
-          </div>
-        )}
+          {personalInfo.title && (
+            <div className="text-xs font-semibold text-neutral-700 mb-1.5 uppercase tracking-wider">
+              {personalInfo.title}
+            </div>
+          )}
 
-        {hasContact && (
-          <div className="flex flex-wrap items-center justify-center gap-x-2 text-[11px] text-neutral-800">
-            {personalInfo.phone && <span>{personalInfo.phone}</span>}
-            {personalInfo.phone && personalInfo.email && <span>|</span>}
+          {hasContact && (
+            <div className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-neutral-800">
+              {personalInfo.phone && <span>{personalInfo.phone}</span>}
+              {personalInfo.phone && personalInfo.email && <span>|</span>}
 
-            {personalInfo.email && (
-              <a href={`mailto:${personalInfo.email}`} className="hover:underline">
-                {personalInfo.email}
-              </a>
-            )}
-            {personalInfo.email && personalInfo.location && <span>|</span>}
+              {personalInfo.email && (
+                <a
+                  href={`mailto:${personalInfo.email}`}
+                  className="text-black hover:underline font-medium"
+                >
+                  {personalInfo.email}
+                </a>
+              )}
 
-            {personalInfo.location && <span>{personalInfo.location}</span>}
+              {personalInfo.location && (personalInfo.email || personalInfo.phone) && <span>|</span>}
+              {personalInfo.location && <span>{personalInfo.location}</span>}
 
-            {personalInfo.links &&
-              personalInfo.links
-                .filter((l) => l.url.trim())
-                .map((link, idx) => {
-                  const cleanUrl = link.url.replace(/^https?:\/\/(www\.)?/, '');
-                  return (
-                    <React.Fragment key={idx}>
-                      <span>|</span>
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-black hover:underline font-medium"
-                      >
-                        {link.label || cleanUrl}
-                      </a>
-                    </React.Fragment>
-                  );
-                })}
-          </div>
-        )}
+              {personalInfo.links &&
+                personalInfo.links
+                  .filter((l) => l.url.trim())
+                  .map((link, idx) => {
+                    const cleanUrl = link.url.replace(/^https?:\/\/(www\.)?/, '');
+                    return (
+                      <React.Fragment key={idx}>
+                        <span>|</span>
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-black hover:underline font-medium"
+                        >
+                          {link.label || cleanUrl}
+                        </a>
+                      </React.Fragment>
+                    );
+                  })}
+            </div>
+          )}
 
-        {summary && summary.trim().length > 0 && (
-          <p className="text-[11px] text-neutral-700 max-w-2xl mx-auto mt-2 leading-relaxed text-center">
-            {summary}
-          </p>
-        )}
-      </header>
+          {summary && summary.trim().length > 0 && (
+            <p className="text-[11px] text-neutral-700 max-w-2xl mx-auto mt-2 leading-relaxed text-center">
+              {summary}
+            </p>
+          )}
+        </header>
+      )}
 
       {/* Education Section */}
       {validEducation.length > 0 && (
-        <section className="mb-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-2">
-            Education
-          </h2>
-          <div className="space-y-2">
+        <section data-section-type="education" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('education') && (
+            <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-2">
+              Education
+            </h2>
+          )}
+          <div className={config.entryGap}>
             {validEducation.map((edu, idx) => (
-              <div key={idx} className="text-xs">
+              <div key={idx} data-entry-item="true" className="text-xs">
                 <div className="flex justify-between items-baseline font-bold text-black">
                   <span>{edu.institution}</span>
                   {(edu.startDate || edu.endDate) && (
@@ -172,29 +182,33 @@ export default function FaangClassic({
 
       {/* Experience Section */}
       {validExperience.length > 0 && (
-        <section className="mb-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-2">
-            Experience
-          </h2>
-          <div className="space-y-3">
+        <section data-section-type="experience" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('experience') && (
+            <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-2">
+              Experience
+            </h2>
+          )}
+          <div className={config.entryGap}>
             {validExperience.map((exp, idx) => {
               const bullets = (exp.bullets || []).filter((b) => b.trim().length > 0);
               return (
-                <div key={idx} className="space-y-1">
-                  <div className="flex justify-between items-baseline text-xs">
-                    <span className="font-bold text-black">
-                      {exp.role} <span className="font-normal text-neutral-700">| {exp.company}</span>
-                    </span>
+                <div key={idx} data-entry-item="true" className="space-y-1">
+                  <div className="flex justify-between items-baseline font-bold text-black text-xs">
+                    <div>
+                      <span>{exp.role}</span>
+                      {exp.role && exp.company && ' — '}
+                      <span className="font-semibold text-neutral-900">{exp.company}</span>
+                    </div>
                     {(exp.startDate || exp.endDate) && (
-                      <span className="text-[11px] text-neutral-700">
+                      <span className="font-normal text-[11px] text-neutral-700">
                         {exp.startDate} {exp.startDate && exp.endDate ? '–' : ''} {exp.endDate}
                       </span>
                     )}
                   </div>
                   {bullets.length > 0 && (
-                    <ul className="list-disc list-outside pl-4 space-y-1 text-[11px] text-neutral-800 leading-relaxed">
-                      {bullets.map((b, bIdx) => (
-                        <li key={bIdx}>{b}</li>
+                    <ul className="list-disc list-outside pl-4 space-y-0.5 text-[11px] text-neutral-800 leading-relaxed">
+                      {bullets.map((bullet, bIdx) => (
+                        <li key={bIdx}>{bullet}</li>
                       ))}
                     </ul>
                   )}
@@ -207,18 +221,20 @@ export default function FaangClassic({
 
       {/* Projects Section */}
       {validProjects.length > 0 && (
-        <section className="mb-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-2">
-            Projects
-          </h2>
-          <div className="space-y-2.5">
+        <section data-section-type="projects" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('projects') && (
+            <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-2">
+              Projects
+            </h2>
+          )}
+          <div className={config.entryGap}>
             {validProjects.map((proj, idx) => {
               const lines = proj.description.split('\n');
               const techLine = lines.find((l) => l.trim().toLowerCase().startsWith('tech:'));
               const descLines = lines.filter((l) => !l.trim().toLowerCase().startsWith('tech:'));
 
               return (
-                <div key={idx} className="text-xs space-y-0.5">
+                <div key={idx} data-entry-item="true" className="text-xs space-y-0.5">
                   <div className="flex justify-between items-baseline">
                     <div className="font-bold text-black flex items-center gap-1.5">
                       <span>{proj.name}</span>
@@ -257,10 +273,12 @@ export default function FaangClassic({
 
       {/* Technical Skills Section */}
       {validSkills.length > 0 && (
-        <section className="mb-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-1.5">
-            Technical Skills
-          </h2>
+        <section data-section-type="skills" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('skills') && (
+            <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-1.5">
+              Technical Skills
+            </h2>
+          )}
           <div className="text-[11px] leading-relaxed text-neutral-800">
             <span className="font-bold">Skills & Frameworks: </span>
             <span>{validSkills.join(', ')}</span>
@@ -270,13 +288,15 @@ export default function FaangClassic({
 
       {/* Certifications Section */}
       {validCertifications.length > 0 && (
-        <section className="mb-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-1.5">
-            Certifications & Training
-          </h2>
-          <ul className="space-y-1 text-[11px] text-neutral-800">
+        <section data-section-type="certifications" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('certifications') && (
+            <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-1.5">
+              Certifications & Training
+            </h2>
+          )}
+          <ul className={`text-[11px] text-neutral-800 ${config.entryGap}`}>
             {validCertifications.map((cert, idx) => (
-              <li key={idx} className="flex justify-between items-baseline">
+              <li key={idx} data-entry-item="true" className="flex justify-between items-baseline">
                 <span>
                   <strong className="font-semibold">{cert.name}</strong>
                   {cert.issuer && <span> — {cert.issuer}</span>}
@@ -293,10 +313,12 @@ export default function FaangClassic({
 
       {/* Languages Section */}
       {validLanguages.length > 0 && (
-        <section className="mb-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-1.5">
-            Languages
-          </h2>
+        <section data-section-type="languages" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('languages') && (
+            <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-1.5">
+              Languages
+            </h2>
+          )}
           <div className="text-[11px] leading-relaxed text-neutral-800">
             {validLanguages.map((l, idx) => (
               <span key={idx}>
@@ -310,13 +332,15 @@ export default function FaangClassic({
 
       {/* Volunteer & Leadership Experience */}
       {validVolunteer.length > 0 && (
-        <section className="mb-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-1.5">
-            Leadership & Volunteer Experience
-          </h2>
-          <div className="space-y-2">
+        <section data-section-type="volunteer" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('volunteer') && (
+            <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-1.5">
+              Leadership & Volunteer Experience
+            </h2>
+          )}
+          <div className={config.entryGap}>
             {validVolunteer.map((v, idx) => (
-              <div key={idx} className="text-xs">
+              <div key={idx} data-entry-item="true" className="text-xs">
                 <div className="flex justify-between items-baseline font-bold text-black">
                   <span>
                     {v.organization} {v.role ? `| ${v.role}` : ''}

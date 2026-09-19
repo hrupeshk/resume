@@ -3,6 +3,8 @@ import type { ResumeDocument } from '../../../lib/schema';
 
 interface TemplateProps {
   data: ResumeDocument;
+  pageNumber?: number;
+  totalPages?: number;
   autoBalance?: boolean;
   spacingDensity?: 'compact' | 'balanced' | 'spacious';
   columnSplit?: number; // percentage width of left column (45 to 70)
@@ -11,6 +13,7 @@ interface TemplateProps {
 
 export default function NovoresumeModern({
   data,
+  pageNumber = 1,
   autoBalance = false,
   spacingDensity = 'balanced',
   columnSplit = 58,
@@ -53,21 +56,21 @@ export default function NovoresumeModern({
   // Spacing gap styles according to user density selection
   const densityConfig = {
     compact: {
-      padding: '20px 36px',
+      padding: '0px',
       columnGap: 'space-y-1.5',
       entryGap: 'space-y-1',
       headerMargin: 'mb-1.5 pb-1',
       sectionHeaderMargin: 'mb-1 pb-0.5',
     },
     balanced: {
-      padding: '26px 40px',
+      padding: '0px',
       columnGap: 'space-y-2',
       entryGap: 'space-y-1.5',
       headerMargin: 'mb-2 pb-1',
       sectionHeaderMargin: 'mb-1 pb-0.5',
     },
     spacious: {
-      padding: '32px 46px',
+      padding: '0px',
       columnGap: 'space-y-3.5',
       entryGap: 'space-y-2',
       headerMargin: 'mb-3 pb-1.5',
@@ -143,6 +146,7 @@ export default function NovoresumeModern({
         style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
       />
       <h2
+        data-section-heading="true"
         className="font-bold uppercase tracking-wider text-[#2e3842]"
         style={{ fontSize: fs(11.5) }}
       >
@@ -153,13 +157,13 @@ export default function NovoresumeModern({
 
   const renderExperience = () =>
     validExperience.length > 0 && (
-      <section>
+      <section data-section-type="experience">
         {renderSectionHeader('Work Experience')}
         <div className={config.entryGap}>
           {validExperience.map((exp, idx) => {
             const bullets = (exp.bullets || []).filter((b) => b.trim().length > 0);
             return (
-              <div key={idx} className="space-y-0.5">
+              <div key={idx} data-entry-item="true" className="space-y-0.5">
                 <div>
                   <h3
                     className="font-bold text-[#2e3842] leading-snug"
@@ -210,7 +214,7 @@ export default function NovoresumeModern({
 
   const renderProjects = () =>
     validProjects.length > 0 && (
-      <section>
+      <section data-section-type="projects">
         {renderSectionHeader('Personal Projects')}
         <div className={config.entryGap}>
           {validProjects.map((proj, idx) => {
@@ -221,6 +225,7 @@ export default function NovoresumeModern({
             return (
               <div
                 key={idx}
+                data-entry-item="true"
                 className="space-y-0.5"
                 style={{ fontSize: fs(9.5) }}
               >
@@ -272,7 +277,7 @@ export default function NovoresumeModern({
 
   const renderSkills = () =>
     validSkills.length > 0 && (
-      <section>
+      <section data-section-type="skills">
         {renderSectionHeader('Skills')}
         <div className="flex flex-wrap gap-1.5">
           {validSkills.map((skill, idx) => (
@@ -299,12 +304,13 @@ export default function NovoresumeModern({
 
   const renderCertifications = () =>
     validCertifications.length > 0 && (
-      <section>
+      <section data-section-type="certifications">
         {renderSectionHeader('Certificates')}
         <div className={config.entryGap}>
           {validCertifications.map((cert, idx) => (
             <div
               key={idx}
+              data-entry-item="true"
               className="space-y-0.5"
               data-avoid-break="true"
               style={{ fontSize: fs(10) }}
@@ -334,12 +340,13 @@ export default function NovoresumeModern({
 
   const renderVolunteer = () =>
     validVolunteer.length > 0 && (
-      <section>
+      <section data-section-type="volunteer">
         {renderSectionHeader('Volunteer Experience')}
         <div className={config.entryGap}>
           {validVolunteer.map((v, idx) => (
             <div
               key={idx}
+              data-entry-item="true"
               className="space-y-0.5"
               data-avoid-break="true"
               style={{ fontSize: fs(10) }}
@@ -382,12 +389,13 @@ export default function NovoresumeModern({
 
   const renderEducation = () =>
     validEducation.length > 0 && (
-      <section>
+      <section data-section-type="education">
         {renderSectionHeader('Education')}
         <div className={config.entryGap}>
           {validEducation.map((edu, idx) => (
             <div
               key={idx}
+              data-entry-item="true"
               className="space-y-0.5"
               data-avoid-break="true"
               style={{ fontSize: fs(10) }}
@@ -423,12 +431,13 @@ export default function NovoresumeModern({
 
   const renderLanguages = () =>
     validLanguages.length > 0 && (
-      <section>
+      <section data-section-type="languages">
         {renderSectionHeader('Languages')}
         <div className="space-y-0.5">
           {validLanguages.map((lang, idx) => (
             <div
               key={idx}
+              data-entry-item="true"
               className="leading-tight"
               style={{ fontSize: fs(10) }}
             >
@@ -447,7 +456,7 @@ export default function NovoresumeModern({
 
   return (
     <article
-      className="single-page-resume bg-white text-[#1e293b] min-h-[297mm] font-sans shadow-none leading-normal selection:bg-teal-100 flex flex-col w-full"
+      className="single-page-resume bg-white text-[#1e293b] min-h-0 font-sans shadow-none leading-normal selection:bg-teal-100 flex flex-col w-full"
       style={{
         fontFamily: 'var(--font-sans, "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
         boxSizing: 'border-box',
@@ -464,8 +473,10 @@ export default function NovoresumeModern({
       {/* --------------------------------------------------------------------
           Header Section (Novorésumé Signature 3-Block Header)
           Exact A4 Coordinate Proportion: Left 52% | Center 16% | Right 32%
+          Suppressed on Page 2+
           -------------------------------------------------------------------- */}
-      <header className={`border-b border-[#cbd5e1] ${config.headerMargin}`}>
+      {pageNumber === 1 && (
+        <header className={`border-b border-[#cbd5e1] ${config.headerMargin}`}>
         <div className="flex items-center justify-between gap-3">
           {/* Left Block: Clean Name, Title, Bio aligned flush left */}
           <div className="w-[52%] min-w-0">
@@ -627,6 +638,7 @@ export default function NovoresumeModern({
           )}
         </div>
       </header>
+      )}
 
       {/* --------------------------------------------------------------------
           2-Column Body Layout with Dynamic Column Split ("Moving Bar")

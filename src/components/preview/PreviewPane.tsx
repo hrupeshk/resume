@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { ResumeDocument } from '../../lib/schema';
 import { getTemplateById, getTemplatesForCategory } from '../../lib/templateRegistry';
+import ResumePageSheet from './ResumePageSheet';
+import {
+  A4_WIDTH_PX,
+  A4_HEIGHT_PX,
+  CONTENT_WIDTH_PX,
+  measureRenderedTemplate,
+  partitionResumeIntoPages,
+  MAX_PAGE_CONTENT_HEIGHT,
+} from '../../lib/paginationEngine';
 
 interface PreviewPaneProps {
   data: ResumeDocument;
@@ -31,25 +40,13 @@ export default function PreviewPane({
   const currentTemplate = getTemplateById(data.category, data.templateId);
   const TemplateComponent = currentTemplate ? currentTemplate.component : null;
 
-  // Standard A4 dimensions in pixels at 96 DPI: 210mm = 794px, 297mm = 1123px
-  const A4_WIDTH_PX = 794;
-  const A4_HEIGHT_PX = 1123;
-  // Print uses @page { margin: 12mm 14mm 14mm 14mm !important; }
-  // 12mm top = 45px, 14mm side/bottom = 53px
-  // Printable content dimensions:
-  // Width: 794 - 53 - 53 = 688px (182mm)
-  // Height: 1123 - 45 - 53 = 1025px (271mm)
-  const CONTENT_WIDTH_PX = 688;
-  const PAGE_PRINTABLE_HEIGHT = 1025;
-  const PAGE_TOP_MARGIN_PX = 45; // 12mm top margin matching print
-  const PAGE_SIDE_MARGIN_PX = 53; // 14mm side margin matching print
-  const PAGE_GAP = 28; // Visual gap between A4 sheets in preview
-
+  const [pageSlices, setPageSlices] = useState<ResumeDocument[]>([data]);
   const [pageCount, setPageCount] = useState<number>(1);
-  const [pageBreaks, setPageBreaks] = useState<number[]>([]);
   const [activePage, setActivePage] = useState<number>(1);
   const [isScrolling, setIsScrolling] = useState<boolean>(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const PAGE_GAP = 28; // Visual gap between A4 sheets in preview
 
   // Automatically calculate scale to fit the preview container comfortably
   useEffect(() => {
@@ -111,122 +108,17 @@ export default function PreviewPane({
     }, 1200);
   };
 
-  // Intelligently calculate live pages and section breaks matching print pagination exactly
-  // Measures content rendered at exact 688px print width with 0 padding
+  // Intelligently calculate discrete pages using DOM sandbox measurement
   useEffect(() => {
-    const el = document.getElementById('resume-print-area');
+    const el = measureRef.current;
     if (!el) return;
 
     const recalculatePagination = () => {
-      const art = el.querySelector('article') || el;
-      const artRect = art.getBoundingClientRect();
-      const artTop = artRect.top;
-
-      // Measure actual content bottom from text, headers, and entries
-      let maxBottom = 0;
-      const contentNodes = art.querySelectorAll(
-        'header, section, li, p, h1, h2, h3, [data-skill-chip], [data-avoid-break], article > div > div > *'
-      );
-      contentNodes.forEach((n) => {
-        const r = (n as HTMLElement).getBoundingClientRect();
-        if (r.bottom > 0) {
-          const relB = r.bottom - artTop;
-          if (relB > maxBottom) maxBottom = relB;
-        }
-      });
-
-      // Single-page check with 10px subpixel tolerance against exact printable height (1025px)
-      if (maxBottom <= PAGE_PRINTABLE_HEIGHT + 10) {
-        setPageCount(1);
-        setPageBreaks([]);
-        setActivePage(1);
-        return;
-      }
-
-      // Multi-page: identify clean atomic item boundaries for each page break
-      // Target entries, list items, cards, headings, and paragraph blocks
-      const atomicCandidates = Array.from(
-        art.querySelectorAll(
-          'section > div > div, li, [data-avoid-break], .avoid-break, header, h1, h2, h3, section > div, section'
-        )
-      ) as HTMLElement[];
-
-      // Filter out ancestor containers whose children are already in candidates
-      const candidates = atomicCandidates.filter((item) => {
-        return !atomicCandidates.some((other) => other !== item && item.contains(other));
-      });
-
-      candidates.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
-
-      const breaks: number[] = [];
-      let currentBreak = 0;
-
-      while (currentBreak + PAGE_PRINTABLE_HEIGHT < maxBottom - 10) {
-        const targetBoundary = currentBreak + PAGE_PRINTABLE_HEIGHT;
-        let foundBreak = targetBoundary;
-
-        // Find candidate element crossing targetBoundary
-        let crossingCandidate: HTMLElement | null = null;
-        for (const c of candidates) {
-          const rect = c.getBoundingClientRect();
-          const relTop = rect.top - artTop;
-          const relBottom = rect.bottom - artTop;
-
-          if (relTop < targetBoundary && relBottom > targetBoundary) {
-            crossingCandidate = c;
-            break;
-          }
-        }
-
-        if (crossingCandidate) {
-          const rect = crossingCandidate.getBoundingClientRect();
-          const relTop = rect.top - artTop;
-
-          // If the crossing element is a heading or header, break BEFORE it
-          if (/^H[1-6]$/i.test(crossingCandidate.tagName) || crossingCandidate.tagName === 'HEADER') {
-            foundBreak = relTop;
-          } else {
-            // Check if this item is right below a section heading
-            const section = crossingCandidate.closest('section');
-            const heading = section?.querySelector('h1, h2, h3');
-            if (heading && heading !== crossingCandidate) {
-              const hTop = heading.getBoundingClientRect().top - artTop;
-              const hBottom = heading.getBoundingClientRect().bottom - artTop;
-              const previousItemsInSec = candidates.filter(
-                (c) => section?.contains(c) && c !== heading && (c.getBoundingClientRect().bottom - artTop) <= relTop
-              );
-
-              if (previousItemsInSec.length === 0 || hBottom > targetBoundary - 60) {
-                // Orphan prevention: push heading to next page along with this first item
-                foundBreak = hTop;
-              } else {
-                foundBreak = relTop;
-              }
-            } else {
-              foundBreak = relTop;
-            }
-          }
-        } else {
-          // Find first item starting after targetBoundary
-          const nextItem = candidates.find((c) => (c.getBoundingClientRect().top - artTop) >= targetBoundary);
-          if (nextItem) {
-            foundBreak = nextItem.getBoundingClientRect().top - artTop;
-          }
-        }
-
-        // Safety guard: ensure each page advances by at least 250px
-        if (foundBreak <= currentBreak + 250) {
-          foundBreak = currentBreak + PAGE_PRINTABLE_HEIGHT;
-        }
-
-        breaks.push(Math.round(foundBreak));
-        currentBreak = foundBreak;
-        if (breaks.length >= 6) break; // safety guard
-      }
-
-      const calculatedPages = Math.max(1, breaks.length + 1);
-      setPageCount(calculatedPages);
-      setPageBreaks(breaks);
+      if (!measureRef.current) return;
+      const measurements = measureRenderedTemplate(measureRef.current);
+      const slices = partitionResumeIntoPages(data, measurements, MAX_PAGE_CONTENT_HEIGHT);
+      setPageSlices(slices);
+      setPageCount(slices.length);
     };
 
     const frameId = window.requestAnimationFrame(recalculatePagination);
@@ -525,99 +417,65 @@ export default function PreviewPane({
           }}
           className="relative flex-shrink-0 transition-[height] duration-150 flex flex-col items-center print:!w-full print:!h-auto print:!min-h-0 print:static"
         >
-          {/* Distinct Visual A4 Sheet Cards for Multi-Page and Single-Page Screen Preview */}
+          {/* Discrete Visual A4 Sheet Cards for Screen Preview and Chromium Print */}
           <div
-            className="no-print flex flex-col items-center"
+            className="flex flex-col items-center print:!w-[210mm] print:!max-w-[210mm] print:!block print:!transform-none print:!m-0 print:!p-0"
             style={{
               transform: `scale(${activeScale})`,
               transformOrigin: 'top center',
               willChange: 'transform',
             }}
           >
-            {Array.from({ length: pageCount }).map((_, i) => {
+            {pageSlices.map((slice, i) => {
               const pageNum = i + 1;
-              const startOffset = i === 0 ? 0 : pageBreaks[i - 1] || i * PAGE_PRINTABLE_HEIGHT;
-              const endOffset = i < pageBreaks.length ? pageBreaks[i] : undefined;
-              const pageHeight = endOffset ? endOffset - startOffset : PAGE_PRINTABLE_HEIGHT;
-              const viewportHeight = Math.min(PAGE_PRINTABLE_HEIGHT, pageHeight);
-
               return (
-                <div
+                <ResumePageSheet
                   key={pageNum}
-                  data-preview-sheet={pageNum}
-                  className="flex flex-col items-center mb-7 last:mb-0"
+                  pageNumber={pageNum}
+                  totalPages={pageSlices.length}
+                  scale={activeScale}
                 >
-                  {/* Page Number Label between pages or above page 2 */}
-                  {pageCount > 1 && (
-                    <div className="mb-2 flex items-center justify-center">
-                      <span className="px-2.5 py-0.5 rounded-full bg-neutral-800/90 text-white text-[10px] font-mono font-semibold shadow-xs">
-                        Page {pageNum} of {pageCount}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Visual Sheet Paper Card with Shadow */}
                   <div
                     style={{
-                      width: `${A4_WIDTH_PX}px`,
-                      height: `${A4_HEIGHT_PX}px`,
-                      boxSizing: 'border-box',
-                      overflow: 'hidden',
-                      position: 'relative',
-                    }}
-                    className="rounded-xs border border-neutral-300/80 bg-white shadow-md"
+                      '--fs': fontSizeScale / 100,
+                    } as React.CSSProperties}
                   >
-                    {/* Viewport container strictly clipped to this page's vertical segment */}
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: `${PAGE_TOP_MARGIN_PX}px`,
-                        left: `${PAGE_SIDE_MARGIN_PX}px`,
-                        width: `${CONTENT_WIDTH_PX}px`,
-                        height: `${viewportHeight}px`,
-                        overflow: 'hidden',
-                      }}
-                    >
-                      {/* Visual Content Slice */}
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: `-${startOffset}px`,
-                          left: 0,
-                          width: `${CONTENT_WIDTH_PX}px`,
-                          '--fs': fontSizeScale / 100,
-                        } as React.CSSProperties}
-                      >
-                        {TemplateComponent ? (
-                          // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale
-                          <TemplateComponent
-                            data={data}
-                            autoBalance={autoBalance}
-                            spacingDensity={spacingDensity}
-                            columnSplit={columnSplit}
-                            fontSizeScale={fontSizeScale}
-                          />
-                        ) : (
-                          <div className="p-8 text-center text-mute bg-white rounded border border-hairline">
-                            No template found for ID: {data.templateId}
-                          </div>
-                        )}
+                    {TemplateComponent ? (
+                      // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale
+                      <TemplateComponent
+                        data={slice}
+                        pageNumber={pageNum}
+                        totalPages={pageSlices.length}
+                        autoBalance={autoBalance}
+                        spacingDensity={spacingDensity}
+                        columnSplit={columnSplit}
+                        fontSizeScale={fontSizeScale}
+                      />
+                    ) : (
+                      <div className="p-8 text-center text-mute bg-white rounded border border-hairline">
+                        No template found for ID: {data.templateId}
                       </div>
-                    </div>
+                    )}
                   </div>
-                </div>
+                </ResumePageSheet>
               );
             })}
           </div>
 
-          {/* Actual Resume Content Container (Hardware-accelerated measurement and Chromium Print target) */}
+          {/* Offscreen Measurement Sandbox (Strictly hidden from screen and print) */}
           <div
-            id="resume-print-area"
+            id="resume-measure-sandbox"
+            ref={measureRef}
             style={{
+              position: 'fixed',
+              left: '-99999px',
+              top: 0,
               width: `${CONTENT_WIDTH_PX}px`,
+              opacity: 0,
+              pointerEvents: 'none',
               '--fs': fontSizeScale / 100,
             } as React.CSSProperties}
-            className="fixed -left-[99999px] top-0 opacity-0 pointer-events-none print:!static print:!block print:!visible print:!opacity-100 print:!pointer-events-auto print:!w-full print:min-w-0 print:!min-h-0 print:!h-auto print:bg-white print:m-0 print:p-0"
+            className="no-print pointer-events-none"
           >
             {TemplateComponent ? (
               // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale

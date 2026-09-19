@@ -3,12 +3,15 @@ import type { ResumeDocument } from '../../../lib/schema';
 
 interface TemplateProps {
   data: ResumeDocument;
+  pageNumber?: number;
+  totalPages?: number;
   spacingDensity?: 'compact' | 'balanced' | 'spacious';
   fontSizeScale?: number;
 }
 
 export default function ExecutiveMba({
   data,
+  pageNumber = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: TemplateProps) {
@@ -48,15 +51,15 @@ export default function ExecutiveMba({
 
   const densityConfig = {
     compact: {
-      padding: 'p-6 sm:p-8',
+      padding: 'p-0',
       headerMargin: 'pb-2.5 mb-3',
     },
     balanced: {
-      padding: 'p-8 sm:p-12',
+      padding: 'p-0',
       headerMargin: 'pb-4 mb-5',
     },
     spacious: {
-      padding: 'p-10 sm:p-14',
+      padding: 'p-0',
       headerMargin: 'pb-5 mb-6',
     },
   };
@@ -65,7 +68,7 @@ export default function ExecutiveMba({
 
   return (
     <article
-      className={`single-page-resume bg-white text-neutral-900 w-full min-h-[297mm] ${config.padding} font-sans shadow-none leading-normal selection:bg-amber-100`}
+      className={`single-page-resume bg-white text-neutral-900 w-full min-h-0 ${config.padding} font-sans shadow-none leading-normal selection:bg-amber-100`}
       style={
         {
           fontFamily:
@@ -76,64 +79,70 @@ export default function ExecutiveMba({
         } as React.CSSProperties
       }
     >
-      {/* Executive Header */}
-      <header className={`text-center ${config.headerMargin} border-b border-neutral-300`}>
-        {personalInfo.fullName && (
-          <h1
-            className="text-3xl font-bold tracking-tight text-neutral-900 uppercase mb-1"
-            style={{ fontFamily: 'Georgia, Cambria, "Times New Roman", serif' }}
-          >
-            {personalInfo.fullName}
-          </h1>
-        )}
+      {/* Executive Header — Suppressed on Page 2+ */}
+      {pageNumber === 1 && (
+        <header className={`text-center ${config.headerMargin} border-b border-neutral-300`}>
+          {personalInfo.fullName && (
+            <h1
+              className="text-3xl font-bold tracking-tight text-neutral-900 uppercase mb-1"
+              style={{ fontFamily: 'Georgia, Cambria, "Times New Roman", serif' }}
+            >
+              {personalInfo.fullName}
+            </h1>
+          )}
 
-        {personalInfo.title && (
-          <div className="text-xs font-semibold uppercase tracking-widest text-neutral-600 mb-2">
-            {personalInfo.title}
-          </div>
-        )}
+          {personalInfo.title && (
+            <div className="text-xs font-semibold uppercase tracking-widest text-neutral-600 mb-2">
+              {personalInfo.title}
+            </div>
+          )}
 
-        {hasContact && (
-          <div className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-neutral-600 font-medium">
-            {personalInfo.location && <span>{personalInfo.location}</span>}
-            {personalInfo.location && personalInfo.phone && <span>•</span>}
+          {hasContact && (
+            <div className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-neutral-600 font-medium">
+              {personalInfo.location && <span>{personalInfo.location}</span>}
+              {personalInfo.location && personalInfo.phone && <span>•</span>}
 
-            {personalInfo.phone && <span>{personalInfo.phone}</span>}
-            {personalInfo.phone && personalInfo.email && <span>•</span>}
+              {personalInfo.phone && <span>{personalInfo.phone}</span>}
+              {personalInfo.phone && personalInfo.email && <span>•</span>}
 
-            {personalInfo.email && (
-              <a href={`mailto:${personalInfo.email}`} className="hover:text-neutral-900 underline">
-                {personalInfo.email}
-              </a>
-            )}
+              {personalInfo.email && (
+                <a
+                  href={`mailto:${personalInfo.email}`}
+                  className="hover:text-neutral-900 transition-colors"
+                >
+                  {personalInfo.email}
+                </a>
+              )}
 
-            {personalInfo.links &&
-              personalInfo.links
-                .filter((l) => l.url.trim())
-                .map((link, idx) => {
-                  const cleanUrl = link.url.replace(/^https?:\/\/(www\.)?/, '');
-                  return (
-                    <React.Fragment key={idx}>
-                      <span>•</span>
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-neutral-900 underline font-medium"
-                      >
-                        {link.label || cleanUrl}
-                      </a>
-                    </React.Fragment>
-                  );
-                })}
-          </div>
-        )}
-      </header>
+              {personalInfo.links &&
+                personalInfo.links
+                  .filter((l) => l.url.trim())
+                  .map((link, idx) => {
+                    const cleanUrl = link.url.replace(/^https?:\/\/(www\.)?/, '');
+                    return (
+                      <React.Fragment key={idx}>
+                        <span>•</span>
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-neutral-900 transition-colors underline decoration-neutral-300 hover:decoration-neutral-900"
+                        >
+                          {link.label || cleanUrl}
+                        </a>
+                      </React.Fragment>
+                    );
+                  })}
+            </div>
+          )}
+        </header>
+      )}
 
       {/* Executive Profile / Summary */}
       {summary && summary.trim().length > 0 && (
-        <section className="mb-5">
+        <section data-section-type="summary" className="mb-5">
           <h2
+            data-section-heading="true"
             className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2"
             style={{ fontFamily: 'Georgia, Cambria, serif' }}
           >
@@ -147,13 +156,16 @@ export default function ExecutiveMba({
 
       {/* Core Competencies Matrix */}
       {validSkills.length > 0 && (
-        <section className="mb-5">
-          <h2
-            className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2"
-            style={{ fontFamily: 'Georgia, Cambria, serif' }}
-          >
-            Core Competencies & Expertise
-          </h2>
+        <section data-section-type="skills" className="mb-5">
+          {!data.continuingSections?.includes('skills') && (
+            <h2
+              data-section-heading="true"
+              className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2"
+              style={{ fontFamily: 'Georgia, Cambria, serif' }}
+            >
+              Core Competencies & Expertise
+            </h2>
+          )}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 text-[11px] text-neutral-800">
             {validSkills.map((skill, idx) => (
               <div key={idx} className="flex items-center gap-1.5">
@@ -167,18 +179,21 @@ export default function ExecutiveMba({
 
       {/* Professional Experience */}
       {validExperience.length > 0 && (
-        <section className="mb-5">
-          <h2
-            className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-3"
-            style={{ fontFamily: 'Georgia, Cambria, serif' }}
-          >
-            Professional Experience
-          </h2>
+        <section data-section-type="experience" className="mb-5">
+          {!data.continuingSections?.includes('experience') && (
+            <h2
+              data-section-heading="true"
+              className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-3"
+              style={{ fontFamily: 'Georgia, Cambria, serif' }}
+            >
+              Professional Experience
+            </h2>
+          )}
           <div className="space-y-4">
             {validExperience.map((exp, idx) => {
               const bullets = (exp.bullets || []).filter((b) => b.trim().length > 0);
               return (
-                <div key={idx} className="space-y-1">
+                <div key={idx} data-entry-item="true" className="space-y-1">
                   <div className="flex flex-wrap items-baseline justify-between gap-1 text-xs">
                     <div>
                       <span className="font-bold text-neutral-900">{exp.company}</span>
@@ -208,16 +223,19 @@ export default function ExecutiveMba({
 
       {/* Notable Projects / Initiatives */}
       {validProjects.length > 0 && (
-        <section className="mb-5">
-          <h2
-            className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2.5"
-            style={{ fontFamily: 'Georgia, Cambria, serif' }}
-          >
-            Key Initiatives & Products
-          </h2>
+        <section data-section-type="projects" className="mb-5">
+          {!data.continuingSections?.includes('projects') && (
+            <h2
+              data-section-heading="true"
+              className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2.5"
+              style={{ fontFamily: 'Georgia, Cambria, serif' }}
+            >
+              Key Initiatives & Products
+            </h2>
+          )}
           <div className="space-y-3">
             {validProjects.map((proj, idx) => (
-              <div key={idx} className="text-xs space-y-0.5">
+              <div key={idx} data-entry-item="true" className="text-xs space-y-0.5">
                 <div className="flex justify-between items-baseline font-semibold text-neutral-900">
                   <span>{proj.name}</span>
                   {proj.link && (
@@ -240,49 +258,55 @@ export default function ExecutiveMba({
 
       {/* Education & Credentials */}
       {validEducation.length > 0 && (
-        <section className="mb-5">
-          <h2
-            className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2.5"
-            style={{ fontFamily: 'Georgia, Cambria, serif' }}
-          >
-            Education & Academic Honors
-          </h2>
+        <section data-section-type="education" className="mb-5">
+          {!data.continuingSections?.includes('education') && (
+            <h2
+              data-section-heading="true"
+              className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2.5"
+              style={{ fontFamily: 'Georgia, Cambria, serif' }}
+            >
+              Education & Academic Honors
+            </h2>
+          )}
           <div className="space-y-2">
             {validEducation.map((edu, idx) => (
-              <div key={idx} className="flex justify-between items-baseline text-xs">
-                <div>
-                  <span className="font-bold text-neutral-900">{edu.institution}</span>
-                  <span className="text-neutral-800">
-                    {' '}| {edu.degree}
-                    {edu.field && ` in ${edu.field}`}
-                  </span>
-                  {edu.grade && (
-                    <span className="text-neutral-600 font-medium ml-1">({edu.grade})</span>
+              <div key={idx} data-entry-item="true" className="text-xs">
+                <div className="flex justify-between items-baseline font-bold text-neutral-900">
+                  <span>{edu.institution}</span>
+                  {(edu.startDate || edu.endDate) && (
+                    <span className="font-normal text-[11px] text-neutral-600">
+                      {edu.startDate} {edu.startDate && edu.endDate ? '–' : ''} {edu.endDate}
+                    </span>
                   )}
                 </div>
-                {(edu.startDate || edu.endDate) && (
-                  <span className="text-[11px] text-neutral-600 font-medium">
-                    {edu.startDate} {edu.startDate && edu.endDate ? '–' : ''} {edu.endDate}
+                <div className="flex justify-between items-baseline text-neutral-700 italic">
+                  <span>
+                    {edu.degree}
+                    {edu.field && ` in ${edu.field}`}
                   </span>
-                )}
+                  {edu.grade && <span className="not-italic font-medium">{edu.grade}</span>}
+                </div>
               </div>
             ))}
           </div>
         </section>
       )}
 
-      {/* Certifications & Leadership */}
-      {(validCertifications.length > 0 || validVolunteer.length > 0) && (
-        <section className="mb-4">
-          <h2
-            className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2"
-            style={{ fontFamily: 'Georgia, Cambria, serif' }}
-          >
-            Certifications & Leadership Engagements
-          </h2>
+      {/* Certifications */}
+      {validCertifications.length > 0 && (
+        <section data-section-type="certifications" className="mb-4">
+          {!data.continuingSections?.includes('certifications') && (
+            <h2
+              data-section-heading="true"
+              className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2"
+              style={{ fontFamily: 'Georgia, Cambria, serif' }}
+            >
+              Certifications & Credentials
+            </h2>
+          )}
           <div className="space-y-1.5 text-xs text-neutral-800">
             {validCertifications.map((cert, idx) => (
-              <div key={`c-${idx}`} className="flex justify-between items-baseline">
+              <div key={`c-${idx}`} data-entry-item="true" className="flex justify-between items-baseline">
                 <span>
                   <strong>{cert.name}</strong>
                   {cert.issuer && ` — ${cert.issuer}`}
@@ -293,16 +317,40 @@ export default function ExecutiveMba({
                 {cert.year && <span className="text-[11px] text-neutral-600">{cert.year}</span>}
               </div>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* Leadership & Volunteer Experience */}
+      {validVolunteer.length > 0 && (
+        <section data-section-type="volunteer" className="mb-4">
+          {!data.continuingSections?.includes('volunteer') && (
+            <h2
+              data-section-heading="true"
+              className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2"
+              style={{ fontFamily: 'Georgia, Cambria, serif' }}
+            >
+              Leadership & Community Engagements
+            </h2>
+          )}
+          <div className="space-y-2 text-xs text-neutral-800">
             {validVolunteer.map((v, idx) => (
-              <div key={`v-${idx}`} className="flex justify-between items-baseline">
-                <span>
-                  <strong>{v.organization}</strong>
-                  {v.role && ` — ${v.role}`}
-                </span>
-                {(v.startDate || v.endDate) && (
-                  <span className="text-[11px] text-neutral-600">
-                    {v.startDate} {v.startDate && v.endDate ? '–' : ''} {v.endDate}
+              <div key={`v-${idx}`} data-entry-item="true" className="space-y-0.5">
+                <div className="flex justify-between items-baseline">
+                  <span>
+                    <strong>{v.organization}</strong>
+                    {v.role && ` — ${v.role}`}
                   </span>
+                  {(v.startDate || v.endDate) && (
+                    <span className="text-[11px] text-neutral-600">
+                      {v.startDate} {v.startDate && v.endDate ? '–' : ''} {v.endDate}
+                    </span>
+                  )}
+                </div>
+                {v.description && (
+                  <p className="text-[11.5px] text-neutral-700 leading-relaxed mt-0.5 italic">
+                    {v.description}
+                  </p>
                 )}
               </div>
             ))}
@@ -312,13 +360,16 @@ export default function ExecutiveMba({
 
       {/* Languages */}
       {validLanguages.length > 0 && (
-        <section className="mb-4">
-          <h2
-            className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2"
-            style={{ fontFamily: 'Georgia, Cambria, serif' }}
-          >
-            Languages
-          </h2>
+        <section data-section-type="languages" className="mb-4">
+          {!data.continuingSections?.includes('languages') && (
+            <h2
+              data-section-heading="true"
+              className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2"
+              style={{ fontFamily: 'Georgia, Cambria, serif' }}
+            >
+              Languages
+            </h2>
+          )}
           <div className="flex flex-wrap gap-4 text-xs text-neutral-800">
             {validLanguages.map((lang, idx) => (
               <span key={idx}>

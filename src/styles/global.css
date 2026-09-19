@@ -50,7 +50,7 @@ body {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 12mm 14mm 14mm 14mm !important;
+    margin: 0 !important;
   }
 
   *,
@@ -75,9 +75,10 @@ body {
     overflow: visible !important;
   }
 
-  /* Hide all UI chrome completely from print */
+  /* Hide all UI chrome, action bars, and measurement sandbox completely from print */
   #builder-header,
   #builder-editor-column,
+  #resume-measure-sandbox,
   .no-print,
   .screen-only,
   button,
@@ -89,7 +90,7 @@ body {
     display: none !important;
   }
 
-  /* Reset all ancestor wrappers of #resume-print-area to prevent ghost height & background leakage */
+  /* Reset all ancestor wrappers of the preview canvas */
   body > div,
   main,
   main > div,
@@ -114,38 +115,70 @@ body {
     overflow: visible !important;
   }
 
-  /* Resume Print Canvas: Natural document flow starting at (0,0) */
-  #resume-print-area {
+  /* Reset transform and sizing on the preview sheet container inside the canvas wrapper */
+  [data-preview-canvas-wrapper] > div {
     display: block !important;
-    position: relative !important;
-    left: 0 !important;
-    top: 0 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    margin: 0 !important;
+    position: static !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 auto !important;
     padding: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
     transform: none !important;
-    background: #ffffff !important;
-    overflow: visible !important;
   }
 
-  #resume-print-area section,
-  #resume-print-area article,
-  #resume-print-area .grid,
-  #resume-print-area [data-novoresume-grid] {
-    overflow: visible !important;
+  /* Discrete A4 Resume Page Sheets in Print */
+  .resume-page-sheet-wrapper {
+    display: block !important;
+    position: relative !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .resume-page-sheet-wrapper:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  .resume-page-sheet {
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+    margin: 0 !important;
+    padding: 12mm 14mm 14mm 14mm !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    overflow: hidden !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .resume-page-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
   }
 
   article,
-  .single-page-resume {
+  .single-page-resume,
+  .resume-page-sheet article,
+  .resume-page-sheet .single-page-resume {
     width: 100% !important;
     max-width: 100% !important;
     min-height: 0 !important;
@@ -155,46 +188,14 @@ body {
     box-shadow: none !important;
     border: none !important;
     margin: 0 !important;
-    padding: 0 !important; /* Page margins from @page provide the spacing */
+    padding: 0 !important;
     background: #ffffff !important;
     overflow: visible !important;
   }
 
-  /* Scoped page-break controls:
-     - Headings must stay with their following content (no orphan headers)
-     - Headers must not split in half
-     - Atomic list items / certificates avoid page breaks inside themselves
-     - Large multi-bullet sections can split cleanly across pages instead of creating huge empty voids */
-  #resume-print-area header {
-    break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
-  }
-
-  #resume-print-area h1,
-  #resume-print-area h2,
-  #resume-print-area h3 {
-    break-after: avoid-page !important;
-    page-break-after: avoid !important;
-  }
-
-  #resume-print-area .avoid-break,
-  #resume-print-area [data-avoid-break],
-  #resume-print-area li,
-  #resume-print-area section > div > div {
-    break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
-  }
-
-  /* Grid containers permit fragmentation */
-  #resume-print-area .grid,
-  #resume-print-area [style*="grid"] {
-    break-inside: auto !important;
-    page-break-inside: auto !important;
-  }
-
   /* Force skill chips to print with background and white text */
-  #resume-print-area [data-skill-chip],
-  #resume-print-area .skill-chip {
+  [data-skill-chip],
+  .skill-chip {
     background-color: #2e3d49 !important;
     color: #ffffff !important;
     border-color: #2e3d49 !important;
@@ -205,17 +206,26 @@ body {
 
 /* --------------------------------------------------------------------------
    Typography Scaling & Uniform Page Dimensions Engine
-   Applies identically to both hidden print measurement canvas and preview sheets
+   Applies identically to measurement sandbox, preview sheets, and print
    -------------------------------------------------------------------------- */
-#resume-print-area,
-[data-preview-sheet] {
+#resume-measure-sandbox,
+.resume-page-sheet,
+[data-resume-sheet],
+[data-preview-sheet],
+#resume-print-area {
   --fs: 1;
 }
 
-#resume-print-area article,
-#resume-print-area .single-page-resume,
+#resume-measure-sandbox article,
+#resume-measure-sandbox .single-page-resume,
+.resume-page-sheet article,
+.resume-page-sheet .single-page-resume,
+[data-resume-sheet] article,
+[data-resume-sheet] .single-page-resume,
 [data-preview-sheet] article,
-[data-preview-sheet] .single-page-resume {
+[data-preview-sheet] .single-page-resume,
+#resume-print-area article,
+#resume-print-area .single-page-resume {
   width: 688px !important;
   max-width: 688px !important;
   padding: 0 !important;
@@ -224,44 +234,65 @@ body {
   box-sizing: border-box !important;
 }
 
-#resume-print-area .text-xs,
-[data-preview-sheet] .text-xs {
+#resume-measure-sandbox .text-xs,
+.resume-page-sheet .text-xs,
+[data-resume-sheet] .text-xs,
+[data-preview-sheet] .text-xs,
+#resume-print-area .text-xs {
   font-size: calc(0.75rem * var(--fs, 1)) !important;
   line-height: calc(1rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-sm,
-[data-preview-sheet] .text-sm {
+#resume-measure-sandbox .text-sm,
+.resume-page-sheet .text-sm,
+[data-resume-sheet] .text-sm,
+[data-preview-sheet] .text-sm,
+#resume-print-area .text-sm {
   font-size: calc(0.875rem * var(--fs, 1)) !important;
   line-height: calc(1.25rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-base,
-[data-preview-sheet] .text-base {
+#resume-measure-sandbox .text-base,
+.resume-page-sheet .text-base,
+[data-resume-sheet] .text-base,
+[data-preview-sheet] .text-base,
+#resume-print-area .text-base {
   font-size: calc(1rem * var(--fs, 1)) !important;
   line-height: calc(1.5rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-lg,
-[data-preview-sheet] .text-lg {
+#resume-measure-sandbox .text-lg,
+.resume-page-sheet .text-lg,
+[data-resume-sheet] .text-lg,
+[data-preview-sheet] .text-lg,
+#resume-print-area .text-lg {
   font-size: calc(1.125rem * var(--fs, 1)) !important;
   line-height: calc(1.75rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-xl,
-[data-preview-sheet] .text-xl {
+#resume-measure-sandbox .text-xl,
+.resume-page-sheet .text-xl,
+[data-resume-sheet] .text-xl,
+[data-preview-sheet] .text-xl,
+#resume-print-area .text-xl {
   font-size: calc(1.25rem * var(--fs, 1)) !important;
   line-height: calc(1.75rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-2xl,
-[data-preview-sheet] .text-2xl {
+#resume-measure-sandbox .text-2xl,
+.resume-page-sheet .text-2xl,
+[data-resume-sheet] .text-2xl,
+[data-preview-sheet] .text-2xl,
+#resume-print-area .text-2xl {
   font-size: calc(1.5rem * var(--fs, 1)) !important;
   line-height: calc(2rem * var(--fs, 1)) !important;
 }
 
-#resume-print-area .text-3xl,
-[data-preview-sheet] .text-3xl {
+#resume-measure-sandbox .text-3xl,
+.resume-page-sheet .text-3xl,
+[data-resume-sheet] .text-3xl,
+[data-preview-sheet] .text-3xl,
+#resume-print-area .text-3xl {
   font-size: calc(1.875rem * var(--fs, 1)) !important;
   line-height: calc(2.25rem * var(--fs, 1)) !important;
 }

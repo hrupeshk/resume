@@ -119,6 +119,7 @@ export interface ResumeDocument extends BaseDocument {
   personalInfo: ResumePersonalInfo;
   summary: string;
   sections: ResumeSections;
+  continuingSections?: string[];
 }
 
 // ---------------------------------------------------------------------------

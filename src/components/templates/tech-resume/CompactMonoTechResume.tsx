@@ -3,12 +3,15 @@ import type { ResumeDocument } from '../../../lib/schema';
 
 interface TemplateProps {
   data: ResumeDocument;
+  pageNumber?: number;
+  totalPages?: number;
   spacingDensity?: 'compact' | 'balanced' | 'spacious';
   fontSizeScale?: number;
 }
 
 export default function CompactMonoTechResume({
   data,
+  pageNumber = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: TemplateProps) {
@@ -48,16 +51,19 @@ export default function CompactMonoTechResume({
 
   const densityConfig = {
     compact: {
-      padding: 'p-6 sm:p-8',
-      headerMargin: 'pb-2.5 mb-3',
+      padding: 'p-0',
+      sectionMargin: 'mb-2',
+      headerMargin: 'pb-2 mb-2.5',
     },
     balanced: {
-      padding: 'p-8 sm:p-12',
-      headerMargin: 'pb-4 mb-5',
+      padding: 'p-0',
+      sectionMargin: 'mb-2.5',
+      headerMargin: 'pb-2.5 mb-3',
     },
     spacious: {
-      padding: 'p-10 sm:p-14',
-      headerMargin: 'pb-5 mb-6',
+      padding: 'p-0',
+      sectionMargin: 'mb-4',
+      headerMargin: 'pb-4 mb-5',
     },
   };
   const config = densityConfig[spacingDensity] || densityConfig.balanced;
@@ -65,7 +71,7 @@ export default function CompactMonoTechResume({
 
   return (
     <article
-      className={`single-page-resume bg-white text-black w-full min-h-[297mm] ${config.padding} shadow-none font-sans selection:bg-neutral-200`}
+      className={`single-page-resume bg-white text-black w-full min-h-0 ${config.padding} shadow-none font-sans selection:bg-neutral-200`}
       style={
         {
           fontFamily: 'var(--font-sans, system-ui, sans-serif)',
@@ -75,52 +81,54 @@ export default function CompactMonoTechResume({
         } as React.CSSProperties
       }
     >
-      {/* Header */}
-      <header className={`border-b border-black ${config.headerMargin}`}>
-        {personalInfo.fullName && (
-          <h1 className="text-2xl font-bold tracking-tight uppercase text-black mb-1.5 font-mono">
-            {personalInfo.fullName}
-          </h1>
-        )}
+      {/* Header — Suppressed on Page 2+ */}
+      {pageNumber === 1 && (
+        <header className={`border-b border-black ${config.headerMargin}`}>
+          {personalInfo.fullName && (
+            <h1 className="text-2xl font-bold tracking-tight uppercase text-black mb-1.5 font-mono">
+              {personalInfo.fullName}
+            </h1>
+          )}
 
-        {hasContact && (
-          <div className="flex flex-wrap items-center gap-x-2 text-[11px] font-mono text-neutral-600">
-            {personalInfo.email && (
-              <a href={`mailto:${personalInfo.email}`} className="hover:text-black">
-                {personalInfo.email}
-              </a>
-            )}
-            {personalInfo.email && (personalInfo.phone || personalInfo.location) && <span>/</span>}
+          {hasContact && (
+            <div className="flex flex-wrap items-center gap-x-2 text-[11px] font-mono text-neutral-600">
+              {personalInfo.email && (
+                <a href={`mailto:${personalInfo.email}`} className="hover:text-black">
+                  {personalInfo.email}
+                </a>
+              )}
+              {personalInfo.email && (personalInfo.phone || personalInfo.location) && <span>/</span>}
 
-            {personalInfo.phone && <span>{personalInfo.phone}</span>}
-            {personalInfo.phone && personalInfo.location && <span>/</span>}
+              {personalInfo.phone && <span>{personalInfo.phone}</span>}
+              {personalInfo.phone && personalInfo.location && <span>/</span>}
 
-            {personalInfo.location && <span>{personalInfo.location}</span>}
+              {personalInfo.location && <span>{personalInfo.location}</span>}
 
-            {personalInfo.links &&
-              personalInfo.links
-                .filter((l) => l.url.trim())
-                .map((link, idx) => (
-                  <React.Fragment key={idx}>
-                    <span>/</span>
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-black underline decoration-neutral-400 hover:decoration-black"
-                    >
-                      {link.label || link.url.replace(/^https?:\/\//, '')}
-                    </a>
-                  </React.Fragment>
-                ))}
-          </div>
-        )}
-      </header>
+              {personalInfo.links &&
+                personalInfo.links
+                  .filter((l) => l.url.trim())
+                  .map((link, idx) => (
+                    <React.Fragment key={idx}>
+                      <span>/</span>
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-black underline decoration-neutral-400 hover:decoration-black"
+                      >
+                        {link.label || link.url.replace(/^https?:\/\//, '')}
+                      </a>
+                    </React.Fragment>
+                  ))}
+            </div>
+          )}
+        </header>
+      )}
 
       {/* Summary */}
       {summary && summary.trim().length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
+        <section data-section-type="summary" className={`${config.sectionMargin} last:mb-0`}>
+          <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
             [01] Summary
           </h2>
           <p className="text-xs leading-relaxed text-neutral-800">{summary}</p>
@@ -129,15 +137,17 @@ export default function CompactMonoTechResume({
 
       {/* Experience */}
       {validExperience.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2.5">
-            [02] Experience
-          </h2>
+        <section data-section-type="experience" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('experience') && (
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2.5">
+              [02] Experience
+            </h2>
+          )}
           <div className="space-y-3.5">
             {validExperience.map((exp, idx) => {
               const bullets = (exp.bullets || []).filter((b) => b.trim().length > 0);
               return (
-                <div key={idx} className="space-y-1">
+                <div key={idx} data-entry-item="true" className="space-y-1">
                   <div className="flex flex-wrap items-baseline justify-between gap-1 text-xs">
                     <div>
                       <strong className="font-semibold text-black">{exp.role}</strong>
@@ -169,13 +179,15 @@ export default function CompactMonoTechResume({
 
       {/* Projects */}
       {validProjects.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2.5">
-            [03] Projects
-          </h2>
+        <section data-section-type="projects" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('projects') && (
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2.5">
+              [03] Projects
+            </h2>
+          )}
           <div className="space-y-2.5">
             {validProjects.map((proj, idx) => (
-              <div key={idx} className="text-xs space-y-0.5">
+              <div key={idx} data-entry-item="true" className="text-xs space-y-0.5">
                 <div className="flex items-baseline justify-between">
                   <span className="font-semibold text-black">{proj.name}</span>
                   {proj.link && (
@@ -183,15 +195,13 @@ export default function CompactMonoTechResume({
                       href={proj.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-mono text-[10px] text-neutral-600 underline"
+                      className="text-neutral-500 font-mono text-[10.5px] hover:text-black"
                     >
-                      {proj.link.replace(/^https?:\/\//, '')}
+                      [view]
                     </a>
                   )}
                 </div>
-                {proj.description && (
-                  <p className="text-neutral-700 leading-relaxed text-xs">{proj.description}</p>
-                )}
+                <p className="text-neutral-700 text-xs leading-relaxed">{proj.description}</p>
               </div>
             ))}
           </div>
@@ -200,10 +210,12 @@ export default function CompactMonoTechResume({
 
       {/* Technical Skills */}
       {validSkills.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
-            [04] Technical Stack
-          </h2>
+        <section data-section-type="skills" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('skills') && (
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
+              [04] Technical Stack
+            </h2>
+          )}
           <div className="flex flex-wrap gap-1 font-mono text-[11px]">
             {validSkills.map((skill, idx) => (
               <span
@@ -219,13 +231,15 @@ export default function CompactMonoTechResume({
 
       {/* Education */}
       {validEducation.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
-            [05] Education
-          </h2>
+        <section data-section-type="education" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('education') && (
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
+              [05] Education
+            </h2>
+          )}
           <div className="space-y-1.5">
             {validEducation.map((edu, idx) => (
-              <div key={idx} className="flex flex-wrap items-baseline justify-between gap-1 text-xs">
+              <div key={idx} data-entry-item="true" className="flex flex-wrap items-baseline justify-between gap-1 text-xs">
                 <div>
                   <span className="font-semibold text-black">{edu.degree}</span>
                   {edu.degree && edu.field && ` in ${edu.field}`}
@@ -251,32 +265,43 @@ export default function CompactMonoTechResume({
 
       {/* Certifications */}
       {validCertifications.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
-            [06] Certifications
-          </h2>
-          <ul className="space-y-1 text-xs text-neutral-800">
+        <section data-section-type="certifications" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('certifications') && (
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
+              [06] Certifications
+            </h2>
+          )}
+          <div className="space-y-1.5 text-xs text-neutral-800">
             {validCertifications.map((cert, idx) => (
-              <li key={idx} className="flex justify-between items-baseline">
-                <span>
-                  <strong className="font-medium text-black">{cert.name}</strong>
-                  {cert.issuer && ` — ${cert.issuer}`}
-                </span>
-                {cert.year && (
-                  <span className="text-[11px] font-mono text-neutral-600">[{cert.year}]</span>
+              <div key={idx} data-entry-item="true">
+                <div className="flex justify-between items-baseline">
+                  <span>
+                    <strong className="font-medium text-black">{cert.name}</strong>
+                    {cert.issuer && ` — ${cert.issuer}`}
+                  </span>
+                  {cert.year && (
+                    <span className="text-[11px] font-mono text-neutral-600">[{cert.year}]</span>
+                  )}
+                </div>
+                {cert.description && (
+                  <p className="text-[11px] text-neutral-600 font-mono mt-0.5 leading-snug">
+                    {cert.description}
+                  </p>
                 )}
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
       )}
 
       {/* Languages */}
       {validLanguages.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
-            [07] Languages
-          </h2>
+        <section data-section-type="languages" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('languages') && (
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
+              [07] Languages
+            </h2>
+          )}
           <div className="flex flex-wrap gap-4 text-xs font-mono text-neutral-800">
             {validLanguages.map((lang, idx) => (
               <span key={idx}>
@@ -289,13 +314,15 @@ export default function CompactMonoTechResume({
 
       {/* Volunteer */}
       {validVolunteer.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
-            [08] Volunteer & Leadership
-          </h2>
+        <section data-section-type="volunteer" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('volunteer') && (
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
+              [08] Volunteer & Leadership
+            </h2>
+          )}
           <div className="space-y-2 text-xs">
             {validVolunteer.map((v, idx) => (
-              <div key={idx} className="space-y-0.5">
+              <div key={idx} data-entry-item="true" className="space-y-0.5">
                 <div className="flex justify-between items-baseline">
                   <span className="font-semibold text-black">{v.organization}</span>
                   {(v.startDate || v.endDate) && (

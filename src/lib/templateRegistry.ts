@@ -56,6 +56,7 @@ export const templates: Record<DocumentCategory, TemplateDefinition[]> = {
       badge: 'Modern',
       category: 'tech_resume',
       component: FlowDeveloper,
+      supportsColumnSplit: true,
       supportsSpacingDensity: true,
     },
     {
