@@ -5,14 +5,14 @@ import type {
 
 export const A4_WIDTH_PX = 794;
 export const A4_HEIGHT_PX = 1123;
-export const CONTENT_WIDTH_PX = 688;
-export const PAGE_TOP_MARGIN_PX = 45; // 12mm
-export const PAGE_SIDE_MARGIN_PX = 53; // 14mm
-export const PAGE_BOTTOM_MARGIN_PX = 53; // 14mm
-// Physical printable height = 1123 - 45 - 53 = 1025px.
-// Setting calibrated ceiling to 975px guarantees a safe 50px buffer above the bottom page edge,
+export const CONTENT_WIDTH_PX = 694;
+export const PAGE_TOP_MARGIN_PX = 38; // ~10mm
+export const PAGE_SIDE_MARGIN_PX = 50; // ~13mm
+export const PAGE_BOTTOM_MARGIN_PX = 32; // ~8.5mm - compact bottom margin to maximize fitted content on Page 1
+// Physical printable height = 1123 - 38 - 32 = 1053px.
+// Setting calibrated ceiling to 1015px guarantees a safe 38px buffer above the bottom page edge,
 // ensuring zero lines are ever sliced in half or hidden by container clipping.
-export const MAX_PAGE_CONTENT_HEIGHT = 975;
+export const MAX_PAGE_CONTENT_HEIGHT = 1015;
 
 export interface ItemMeasurement {
   index: number;
@@ -238,6 +238,14 @@ export function partitionResumeIntoPages(
   const pages: ResumeDocument[] = [createEmptyPageSlice(data, 0)];
   let currentPageIndex = 0;
   let currentPageRemaining = maxContentHeight - measurements.headerHeight;
+
+  // Account for standalone summary section on Page 1 if present
+  // (e.g. in CompactMono, MinimalBlue, ExecutiveMba where summary is rendered as a separate <section data-section-type="summary">)
+  const summarySec = measurements.sections.find((s) => s.type === 'summary');
+  if (summarySec && data.summary && data.summary.trim().length > 0) {
+    const sumSpacing = Math.max(summarySec.marginBottom, 12);
+    currentPageRemaining -= (summarySec.totalHeight + sumSpacing);
+  }
 
   const getOrCreatePage = (idx: number): ResumeDocument => {
     while (pages.length <= idx) {

@@ -52,15 +52,18 @@ export default function ExecutiveMba({
   const densityConfig = {
     compact: {
       padding: 'p-0',
-      headerMargin: 'pb-2.5 mb-3',
+      sectionMargin: 'mb-2.5',
+      headerMargin: 'pb-2 mb-2.5',
     },
     balanced: {
       padding: 'p-0',
-      headerMargin: 'pb-4 mb-5',
+      sectionMargin: 'mb-3.5',
+      headerMargin: 'pb-3 mb-3.5',
     },
     spacious: {
       padding: 'p-0',
-      headerMargin: 'pb-5 mb-6',
+      sectionMargin: 'mb-4',
+      headerMargin: 'pb-4 mb-4.5',
     },
   };
   const config = densityConfig[spacingDensity] || densityConfig.balanced;
@@ -140,7 +143,7 @@ export default function ExecutiveMba({
 
       {/* Executive Profile / Summary */}
       {summary && summary.trim().length > 0 && (
-        <section data-section-type="summary" className="mb-5">
+        <section data-section-type="summary" className={`${config.sectionMargin} last:mb-0`}>
           <h2
             data-section-heading="true"
             className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2"
@@ -156,7 +159,7 @@ export default function ExecutiveMba({
 
       {/* Core Competencies Matrix */}
       {validSkills.length > 0 && (
-        <section data-section-type="skills" className="mb-5">
+        <section data-section-type="skills" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('skills') && (
             <h2
               data-section-heading="true"
@@ -179,7 +182,7 @@ export default function ExecutiveMba({
 
       {/* Professional Experience */}
       {validExperience.length > 0 && (
-        <section data-section-type="experience" className="mb-5">
+        <section data-section-type="experience" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('experience') && (
             <h2
               data-section-heading="true"
@@ -223,7 +226,7 @@ export default function ExecutiveMba({
 
       {/* Notable Projects / Initiatives */}
       {validProjects.length > 0 && (
-        <section data-section-type="projects" className="mb-5">
+        <section data-section-type="projects" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('projects') && (
             <h2
               data-section-heading="true"
@@ -258,7 +261,7 @@ export default function ExecutiveMba({
 
       {/* Education & Credentials */}
       {validEducation.length > 0 && (
-        <section data-section-type="education" className="mb-5">
+        <section data-section-type="education" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('education') && (
             <h2
               data-section-heading="true"
@@ -294,7 +297,7 @@ export default function ExecutiveMba({
 
       {/* Certifications */}
       {validCertifications.length > 0 && (
-        <section data-section-type="certifications" className="mb-4">
+        <section data-section-type="certifications" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('certifications') && (
             <h2
               data-section-heading="true"
@@ -323,7 +326,7 @@ export default function ExecutiveMba({
 
       {/* Leadership & Volunteer Experience */}
       {validVolunteer.length > 0 && (
-        <section data-section-type="volunteer" className="mb-4">
+        <section data-section-type="volunteer" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('volunteer') && (
             <h2
               data-section-heading="true"
@@ -360,7 +363,7 @@ export default function ExecutiveMba({
 
       {/* Languages */}
       {validLanguages.length > 0 && (
-        <section data-section-type="languages" className="mb-4">
+        <section data-section-type="languages" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('languages') && (
             <h2
               data-section-heading="true"

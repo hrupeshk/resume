@@ -158,7 +158,7 @@ export default function NovoresumeModern({
   const renderExperience = () =>
     validExperience.length > 0 && (
       <section data-section-type="experience">
-        {renderSectionHeader('Work Experience')}
+        {!data.continuingSections?.includes('experience') && renderSectionHeader('Work Experience')}
         <div className={config.entryGap}>
           {validExperience.map((exp, idx) => {
             const bullets = (exp.bullets || []).filter((b) => b.trim().length > 0);
@@ -215,7 +215,7 @@ export default function NovoresumeModern({
   const renderProjects = () =>
     validProjects.length > 0 && (
       <section data-section-type="projects">
-        {renderSectionHeader('Personal Projects')}
+        {!data.continuingSections?.includes('projects') && renderSectionHeader('Personal Projects')}
         <div className={config.entryGap}>
           {validProjects.map((proj, idx) => {
             const lines = proj.description.split('\n');
@@ -278,7 +278,7 @@ export default function NovoresumeModern({
   const renderSkills = () =>
     validSkills.length > 0 && (
       <section data-section-type="skills">
-        {renderSectionHeader('Skills')}
+        {!data.continuingSections?.includes('skills') && renderSectionHeader('Skills')}
         <div className="flex flex-wrap gap-1.5">
           {validSkills.map((skill, idx) => (
             <span
@@ -305,7 +305,7 @@ export default function NovoresumeModern({
   const renderCertifications = () =>
     validCertifications.length > 0 && (
       <section data-section-type="certifications">
-        {renderSectionHeader('Certificates')}
+        {!data.continuingSections?.includes('certifications') && renderSectionHeader('Certificates')}
         <div className={config.entryGap}>
           {validCertifications.map((cert, idx) => (
             <div
@@ -341,7 +341,7 @@ export default function NovoresumeModern({
   const renderVolunteer = () =>
     validVolunteer.length > 0 && (
       <section data-section-type="volunteer">
-        {renderSectionHeader('Volunteer Experience')}
+        {!data.continuingSections?.includes('volunteer') && renderSectionHeader('Volunteer Experience')}
         <div className={config.entryGap}>
           {validVolunteer.map((v, idx) => (
             <div
@@ -390,7 +390,7 @@ export default function NovoresumeModern({
   const renderEducation = () =>
     validEducation.length > 0 && (
       <section data-section-type="education">
-        {renderSectionHeader('Education')}
+        {!data.continuingSections?.includes('education') && renderSectionHeader('Education')}
         <div className={config.entryGap}>
           {validEducation.map((edu, idx) => (
             <div
@@ -432,7 +432,7 @@ export default function NovoresumeModern({
   const renderLanguages = () =>
     validLanguages.length > 0 && (
       <section data-section-type="languages">
-        {renderSectionHeader('Languages')}
+        {!data.continuingSections?.includes('languages') && renderSectionHeader('Languages')}
         <div className="space-y-0.5">
           {validLanguages.map((lang, idx) => (
             <div

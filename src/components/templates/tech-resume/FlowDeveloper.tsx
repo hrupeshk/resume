@@ -67,9 +67,9 @@ export default function FlowDeveloper({
     },
     spacious: {
       padding: 'p-0',
-      sectionGap: 'space-y-4',
-      entryGap: 'space-y-2.5',
-      headerMargin: 'mb-5 pb-3',
+      sectionGap: 'space-y-3.5',
+      entryGap: 'space-y-2',
+      headerMargin: 'mb-3.5 pb-2.5',
     },
   };
   const config = densityConfig[spacingDensity] || densityConfig.balanced;
@@ -370,7 +370,7 @@ export default function FlowDeveloper({
 
           const renderLanguages = (inColumn = false) =>
             validLanguages.length > 0 && (
-              <section data-section-type="languages" className={inColumn ? 'avoid-break' : 'pt-2 border-t border-neutral-200 avoid-break'}>
+              <section data-section-type="languages" className="avoid-break pt-1">
                 {!data.continuingSections?.includes('languages') && (
                   <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 mb-1.5 flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
@@ -439,7 +439,7 @@ export default function FlowDeveloper({
           // 1. Only 1 secondary section exists: render full-width
           if (secondaryItems.length === 1) {
             return (
-              <div className="pt-2 border-t border-neutral-200">
+              <div className="pt-1">
                 {secondaryItems[0].render(false)}
               </div>
             );

@@ -53,7 +53,7 @@ export default function ResumePageSheet({
           overflow: 'hidden',
           position: 'relative',
         }}
-        className="resume-page-sheet bg-white rounded-xs border border-neutral-300/80 shadow-md text-neutral-900 print:!rounded-none print:!border-none print:!shadow-none print:!w-[210mm] print:!h-[297mm] print:!min-h-[297mm] print:!max-h-[297mm] print:!overflow-hidden print:!p-[12mm_14mm_14mm_14mm] print:!box-border print:!m-0"
+        className="resume-page-sheet bg-white rounded-xs border border-neutral-300/80 shadow-md text-neutral-900 print:!rounded-none print:!border-none print:!shadow-none print:!w-[210mm] print:!h-[297mm] print:!min-h-[297mm] print:!max-h-[297mm] print:!overflow-hidden print:!p-[10mm_13mm_8.5mm_13mm] print:!box-border print:!m-0"
       >
         {/* Printable Content Area with exact width */}
         <div
