@@ -52,8 +52,11 @@ export default function ResumePageSheet({
           paddingBottom: `${PAGE_BOTTOM_MARGIN_PX}px`,
           overflow: 'hidden',
           position: 'relative',
-        }}
-        className="resume-page-sheet bg-white rounded-xs border border-neutral-300/80 shadow-md text-neutral-900 print:!rounded-none print:!border-none print:!shadow-none print:!w-[210mm] print:!h-[297mm] print:!min-h-[297mm] print:!max-h-[297mm] print:!overflow-hidden print:!p-[7.5mm_12.5mm_6.5mm_12.5mm] print:!box-border print:!m-0"
+          '--page-top-margin': `${PAGE_TOP_MARGIN_PX}px`,
+          '--page-bottom-margin': `${PAGE_BOTTOM_MARGIN_PX}px`,
+          '--page-side-margin': `${PAGE_SIDE_MARGIN_PX}px`,
+        } as React.CSSProperties}
+        className="resume-page-sheet bg-white rounded-xs border border-neutral-300/80 shadow-md text-neutral-900 print:!rounded-none print:!border-none print:!shadow-none print:!w-[210mm] print:!h-[297mm] print:!min-h-[297mm] print:!max-h-[297mm] print:!overflow-hidden print:!box-border print:!m-0"
       >
         {/* Printable Content Area with exact width */}
         <div
@@ -62,7 +65,7 @@ export default function ResumePageSheet({
             maxWidth: `${CONTENT_WIDTH_PX}px`,
             boxSizing: 'border-box',
           }}
-          className="resume-page-content mx-auto h-full overflow-hidden print:!w-full print:!max-w-none"
+          className="resume-page-content mx-auto h-full overflow-hidden print:!w-full print:!max-w-none print:!h-full print:!max-h-full"
         >
           {children}
         </div>

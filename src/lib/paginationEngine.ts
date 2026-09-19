@@ -10,9 +10,9 @@ export const PAGE_TOP_MARGIN_PX = 28; // ~7.5mm
 export const PAGE_SIDE_MARGIN_PX = 48; // ~12.5mm
 export const PAGE_BOTTOM_MARGIN_PX = 24; // ~6.5mm - optimized bottom margin to maximize fitted content on Page 1
 // Physical printable height = 1123 - 28 - 24 = 1071px.
-// Setting calibrated ceiling to 1055px guarantees a safe 16px buffer above the bottom page edge (40px total clearance from paper edge),
-// ensuring maximum content fits on Page 1 while zero lines are sliced or hidden.
-export const MAX_PAGE_CONTENT_HEIGHT = 1055;
+// Setting calibrated ceiling to 1045px guarantees a safe 26px buffer above the bottom page edge (50px total clearance from paper edge),
+// ensuring maximum content fits on Page 1 while zero lines are ever sliced or hidden.
+export const MAX_PAGE_CONTENT_HEIGHT = 1045;
 
 export interface ItemMeasurement {
   index: number;
@@ -276,7 +276,7 @@ export function partitionResumeIntoPages(
         let secHeaderAdded = false;
         sec.items.forEach((item, idx) => {
           const needed = item.height + (secHeaderAdded ? 0 : sec.headerHeight);
-          if (needed > leftRemaining && leftRemaining < maxContentHeight) {
+          if (needed + 4 > leftRemaining && leftRemaining < maxContentHeight) {
             leftColIndex++;
             const newPage = getOrCreatePage(leftColIndex);
             leftRemaining = maxContentHeight;
@@ -293,7 +293,7 @@ export function partitionResumeIntoPages(
         });
         leftRemaining -= (sec.marginBottom > 0 ? sec.marginBottom : 6);
       } else {
-        if (sec.totalHeight > leftRemaining && leftRemaining < maxContentHeight) {
+        if (sec.totalHeight + 4 > leftRemaining && leftRemaining < maxContentHeight) {
           leftColIndex++;
           getOrCreatePage(leftColIndex);
           leftRemaining = maxContentHeight;
@@ -316,7 +316,7 @@ export function partitionResumeIntoPages(
       const isAtomic = ATOMIC_SECTIONS.has(sec.type);
 
       if (isAtomic) {
-        if (sec.totalHeight > rightRemaining && rightRemaining < maxContentHeight) {
+        if (sec.totalHeight + 4 > rightRemaining && rightRemaining < maxContentHeight) {
           rightColIndex++;
           getOrCreatePage(rightColIndex);
           rightRemaining = maxContentHeight;
@@ -328,7 +328,7 @@ export function partitionResumeIntoPages(
         let secHeaderAdded = false;
         sec.items.forEach((item, idx) => {
           const needed = item.height + (secHeaderAdded ? 0 : sec.headerHeight);
-          if (needed > rightRemaining && rightRemaining < maxContentHeight) {
+          if (needed + 4 > rightRemaining && rightRemaining < maxContentHeight) {
             rightColIndex++;
             const newPage = getOrCreatePage(rightColIndex);
             rightRemaining = maxContentHeight;
@@ -345,7 +345,7 @@ export function partitionResumeIntoPages(
         });
         rightRemaining -= (sec.marginBottom > 0 ? sec.marginBottom : 6);
       } else {
-        if (sec.totalHeight > rightRemaining && rightRemaining < maxContentHeight) {
+        if (sec.totalHeight + 4 > rightRemaining && rightRemaining < maxContentHeight) {
           rightColIndex++;
           getOrCreatePage(rightColIndex);
           rightRemaining = maxContentHeight;
