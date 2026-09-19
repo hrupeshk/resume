@@ -5,14 +5,14 @@ import type {
 
 export const A4_WIDTH_PX = 794;
 export const A4_HEIGHT_PX = 1123;
-export const CONTENT_WIDTH_PX = 694;
-export const PAGE_TOP_MARGIN_PX = 38; // ~10mm
-export const PAGE_SIDE_MARGIN_PX = 50; // ~13mm
-export const PAGE_BOTTOM_MARGIN_PX = 32; // ~8.5mm - compact bottom margin to maximize fitted content on Page 1
-// Physical printable height = 1123 - 38 - 32 = 1053px.
-// Setting calibrated ceiling to 1015px guarantees a safe 38px buffer above the bottom page edge,
-// ensuring zero lines are ever sliced in half or hidden by container clipping.
-export const MAX_PAGE_CONTENT_HEIGHT = 1015;
+export const CONTENT_WIDTH_PX = 698;
+export const PAGE_TOP_MARGIN_PX = 28; // ~7.5mm
+export const PAGE_SIDE_MARGIN_PX = 48; // ~12.5mm
+export const PAGE_BOTTOM_MARGIN_PX = 24; // ~6.5mm - optimized bottom margin to maximize fitted content on Page 1
+// Physical printable height = 1123 - 28 - 24 = 1071px.
+// Setting calibrated ceiling to 1055px guarantees a safe 16px buffer above the bottom page edge (40px total clearance from paper edge),
+// ensuring maximum content fits on Page 1 while zero lines are sliced or hidden.
+export const MAX_PAGE_CONTENT_HEIGHT = 1055;
 
 export interface ItemMeasurement {
   index: number;
@@ -243,8 +243,8 @@ export function partitionResumeIntoPages(
   // (e.g. in CompactMono, MinimalBlue, ExecutiveMba where summary is rendered as a separate <section data-section-type="summary">)
   const summarySec = measurements.sections.find((s) => s.type === 'summary');
   if (summarySec && data.summary && data.summary.trim().length > 0) {
-    const sumSpacing = Math.max(summarySec.marginBottom, 12);
-    currentPageRemaining -= (summarySec.totalHeight + sumSpacing);
+    // summarySec.totalHeight already contains measured marginTop and marginBottom
+    currentPageRemaining -= summarySec.totalHeight;
   }
 
   const getOrCreatePage = (idx: number): ResumeDocument => {
@@ -291,7 +291,7 @@ export function partitionResumeIntoPages(
           secHeaderAdded = true;
           leftRemaining -= needed;
         });
-        leftRemaining -= Math.max(sec.marginBottom, 14);
+        leftRemaining -= (sec.marginBottom > 0 ? sec.marginBottom : 6);
       } else {
         if (sec.totalHeight > leftRemaining && leftRemaining < maxContentHeight) {
           leftColIndex++;
@@ -300,7 +300,7 @@ export function partitionResumeIntoPages(
         }
         const target = getOrCreatePage(leftColIndex);
         (target.sections[sec.type as keyof ResumeSections] as any[]).push(...rawItems);
-        leftRemaining -= (sec.totalHeight + Math.max(sec.marginBottom, 14));
+        leftRemaining -= sec.totalHeight;
       }
     });
 
@@ -323,7 +323,7 @@ export function partitionResumeIntoPages(
         }
         const target = getOrCreatePage(rightColIndex);
         (target.sections[sec.type as keyof ResumeSections] as any[]).push(...rawItems);
-        rightRemaining -= (sec.totalHeight + Math.max(sec.marginBottom, 14));
+        rightRemaining -= sec.totalHeight;
       } else if (sec.items.length > 0 && rawItems.length === sec.items.length) {
         let secHeaderAdded = false;
         sec.items.forEach((item, idx) => {
@@ -343,7 +343,7 @@ export function partitionResumeIntoPages(
           secHeaderAdded = true;
           rightRemaining -= needed;
         });
-        rightRemaining -= Math.max(sec.marginBottom, 14);
+        rightRemaining -= (sec.marginBottom > 0 ? sec.marginBottom : 6);
       } else {
         if (sec.totalHeight > rightRemaining && rightRemaining < maxContentHeight) {
           rightColIndex++;
@@ -352,7 +352,7 @@ export function partitionResumeIntoPages(
         }
         const target = getOrCreatePage(rightColIndex);
         (target.sections[sec.type as keyof ResumeSections] as any[]).push(...rawItems);
-        rightRemaining -= (sec.totalHeight + Math.max(sec.marginBottom, 14));
+        rightRemaining -= sec.totalHeight;
       }
     });
 
@@ -379,11 +379,11 @@ export function partitionResumeIntoPages(
     if (!rawItems.length) return;
 
     const isAtomic = ATOMIC_SECTIONS.has(sec.type);
-    const secSpacing = Math.max(sec.marginBottom, 14);
+    const secSpacing = sec.marginBottom > 0 ? sec.marginBottom : 8;
 
     if (isAtomic) {
-      // If this atomic section does not fit with a 16px safety cushion, advance to next page
-      if (sec.totalHeight + 16 > currentPageRemaining && currentPageRemaining < maxContentHeight) {
+      // If this atomic section does not fit with a slim 4px cushion, advance to next page
+      if (sec.totalHeight + 4 > currentPageRemaining && currentPageRemaining < maxContentHeight) {
         currentPageIndex++;
         getOrCreatePage(currentPageIndex);
         currentPageRemaining = maxContentHeight;
@@ -391,7 +391,8 @@ export function partitionResumeIntoPages(
 
       const targetPage = getOrCreatePage(currentPageIndex);
       (targetPage.sections[sec.type as keyof ResumeSections] as any[]).push(...rawItems);
-      currentPageRemaining -= (sec.totalHeight + secSpacing);
+      // sec.totalHeight already contains measured marginTop and marginBottom
+      currentPageRemaining -= sec.totalHeight;
     } else {
       // Splittable sections (Experience, Projects, Certifications, Education, Volunteer)
       if (sec.items.length > 0 && rawItems.length === sec.items.length) {
@@ -406,8 +407,8 @@ export function partitionResumeIntoPages(
           const headerCost = (!hasStartedBefore && !isHeaderPlacedOnCurrentPage) ? sec.headerHeight : 0;
           const itemNeededHeight = item.height + headerCost;
 
-          // Safety buffer: require at least 16px cushion for header + entry, 10px for entry
-          const safetyBuffer = (!hasStartedBefore && !isHeaderPlacedOnCurrentPage) ? 16 : 10;
+          // Safety buffer: require 6px cushion for header + entry, 2px for continuation entry
+          const safetyBuffer = (!hasStartedBefore && !isHeaderPlacedOnCurrentPage) ? 6 : 2;
 
           // If this entry does not fit on the current page, advance to the next page
           if (
@@ -439,10 +440,10 @@ export function partitionResumeIntoPages(
           currentPageRemaining -= itemNeededHeight;
         });
 
-        // Strictly deduct section bottom margin so following section begins at true visual offset
+        // Deduct section bottom margin so following section begins at true visual offset
         currentPageRemaining -= secSpacing;
       } else {
-        if (sec.totalHeight + 16 > currentPageRemaining && currentPageRemaining < maxContentHeight) {
+        if (sec.totalHeight + 4 > currentPageRemaining && currentPageRemaining < maxContentHeight) {
           currentPageIndex++;
           getOrCreatePage(currentPageIndex);
           currentPageRemaining = maxContentHeight;
@@ -450,7 +451,7 @@ export function partitionResumeIntoPages(
 
         const targetPage = getOrCreatePage(currentPageIndex);
         (targetPage.sections[sec.type as keyof ResumeSections] as any[]).push(...rawItems);
-        currentPageRemaining -= (sec.totalHeight + secSpacing);
+        currentPageRemaining -= sec.totalHeight;
       }
     }
   });
@@ -459,14 +460,12 @@ export function partitionResumeIntoPages(
   if (flowSecondarySections.length > 0) {
     const col0Sections = flowSecondarySections.filter((s) => s.flowColIndex === 0);
     const col1Sections = flowSecondarySections.filter((s) => s.flowColIndex === 1);
-    const col0Gaps = Math.max(0, col0Sections.length - 1) * 16;
-    const col1Gaps = Math.max(0, col1Sections.length - 1) * 16;
-    const col0Height = col0Sections.reduce((sum, s) => sum + s.totalHeight, 0) + col0Gaps;
-    const col1Height = col1Sections.reduce((sum, s) => sum + s.totalHeight, 0) + col1Gaps;
-    const secondaryGridVisualHeight = Math.max(col0Height, col1Height) + 8;
+    const col0Height = col0Sections.reduce((sum, s) => sum + s.totalHeight, 0);
+    const col1Height = col1Sections.reduce((sum, s) => sum + s.totalHeight, 0);
+    const secondaryGridVisualHeight = Math.max(col0Height, col1Height);
 
     // A. If the entire secondary 2-column block fits on current page, keep all together
-    if (secondaryGridVisualHeight + 16 <= currentPageRemaining) {
+    if (secondaryGridVisualHeight + 4 <= currentPageRemaining) {
       flowSecondarySections.forEach((sec) => {
         if (sec.type === 'unknown' || sec.type === 'summary') return;
         const rawItems = (data.sections[sec.type as keyof ResumeSections] || []) as any[];
@@ -486,8 +485,8 @@ export function partitionResumeIntoPages(
         for (let j = i + 1; j < flowSecondarySections.length; j++) {
           const sA = flowSecondarySections[i];
           const sB = flowSecondarySections[j];
-          const pairH = Math.max(sA.totalHeight, sB.totalHeight) + 8;
-          if (pairH + 16 <= currentPageRemaining && pairH > bestPairHeight) {
+          const pairH = Math.max(sA.totalHeight, sB.totalHeight);
+          if (pairH + 4 <= currentPageRemaining && pairH > bestPairHeight) {
             bestPair = [sA, sB];
             bestPairHeight = pairH;
           }
@@ -524,7 +523,7 @@ export function partitionResumeIntoPages(
         let bestSingleHeight = 0;
 
         for (const sec of flowSecondarySections) {
-          if (sec.totalHeight + 16 <= currentPageRemaining && sec.totalHeight > bestSingleHeight) {
+          if (sec.totalHeight + 4 <= currentPageRemaining && sec.totalHeight > bestSingleHeight) {
             bestSingle = sec;
             bestSingleHeight = sec.totalHeight;
           }

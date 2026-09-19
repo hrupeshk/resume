@@ -463,8 +463,8 @@ export default function FlowDeveloper({
 
             return (
               <div data-flow-grid="true" style={gridStyle}>
-                <div data-flow-col="0" className="space-y-4">{leftItem.render(true)}</div>
-                <div data-flow-col="1" className="space-y-4">{rightItem.render(true)}</div>
+                <div data-flow-col="0" className={config.sectionGap}>{leftItem.render(true)}</div>
+                <div data-flow-col="1" className={config.sectionGap}>{rightItem.render(true)}</div>
               </div>
             );
           }
@@ -486,12 +486,12 @@ export default function FlowDeveloper({
 
             return (
               <div data-flow-grid="true" style={gridStyle}>
-                <div data-flow-col="0" className="space-y-4">
+                <div data-flow-col="0" className={config.sectionGap}>
                   {colLeft.map((item) => (
                     <React.Fragment key={item.id}>{item.render(true)}</React.Fragment>
                   ))}
                 </div>
-                <div data-flow-col="1" className="space-y-4">
+                <div data-flow-col="1" className={config.sectionGap}>
                   {colRight.map((item) => (
                     <React.Fragment key={item.id}>{item.render(true)}</React.Fragment>
                   ))}
@@ -535,12 +535,12 @@ export default function FlowDeveloper({
 
           return (
             <div data-flow-grid="true" style={gridStyle}>
-              <div data-flow-col="0" className="space-y-4">
+              <div data-flow-col="0" className={config.sectionGap}>
                 {leftCols.map((it) => (
                   <React.Fragment key={it.id}>{it.render(true)}</React.Fragment>
                 ))}
               </div>
-              <div data-flow-col="1" className="space-y-4">
+              <div data-flow-col="1" className={config.sectionGap}>
                 {rightCols.map((it) => (
                   <React.Fragment key={it.id}>{it.render(true)}</React.Fragment>
                 ))}
