@@ -136,8 +136,8 @@ export default function PreviewPane({
 
   const visualCanvasHeight =
     pageCount === 1
-      ? A4_HEIGHT_PX
-      : pageCount * A4_HEIGHT_PX + (pageCount - 1) * PAGE_GAP + pageCount * 30;
+      ? A4_HEIGHT_PX + 24
+      : pageCount * A4_HEIGHT_PX + (pageCount - 1) * PAGE_GAP + pageCount * 30 + 24;
 
   return (
     <div
@@ -393,7 +393,7 @@ export default function PreviewPane({
         ref={containerRef}
         onScroll={handleScroll}
         data-preview-container="true"
-        className="flex-1 overflow-auto p-4 sm:p-6 bg-neutral-200/70 flex justify-center items-start min-h-[500px] [scrollbar-gutter:stable] print:bg-white print:p-0 print:overflow-visible print:!min-h-0 print:!h-auto relative"
+        className="flex-1 overflow-auto p-4 sm:p-6 bg-neutral-200/70 flex justify-center items-start min-h-0 [scrollbar-gutter:stable] print:bg-white print:p-0 print:overflow-visible print:!min-h-0 print:!h-auto relative"
       >
         {/* Floating Active Page Indicator while scrolling / sliding */}
         {pageCount > 1 && (
@@ -415,7 +415,7 @@ export default function PreviewPane({
             width: `${Math.round(A4_WIDTH_PX * activeScale)}px`,
             height: `${Math.round(visualCanvasHeight * activeScale)}px`,
           }}
-          className="relative flex-shrink-0 transition-[height] duration-150 flex flex-col items-center print:!w-full print:!h-auto print:!min-h-0 print:static"
+          className="relative flex-shrink-0 transition-[height] duration-150 flex flex-col items-center mb-12 sm:mb-16 print:!mb-0 print:!w-full print:!h-auto print:!min-h-0 print:static"
         >
           {/* Discrete Visual A4 Sheet Cards for Screen Preview and Chromium Print */}
           <div
