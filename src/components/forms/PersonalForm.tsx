@@ -45,6 +45,19 @@ export default function PersonalForm({
     });
   };
 
+  const handleMoveLink = (index: number, direction: 'up' | 'down') => {
+    const links = [...(personalInfo.links || [])];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= links.length) return;
+    const temp = links[index];
+    links[index] = links[targetIndex];
+    links[targetIndex] = temp;
+    onChangePersonalInfo({
+      ...personalInfo,
+      links,
+    });
+  };
+
   return (
     <div className="space-y-6 text-xs sm:text-sm">
       <div className="border-b border-hairline pb-3">
@@ -209,15 +222,37 @@ export default function PersonalForm({
               placeholder="https://..."
               className="flex-1 px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
             />
-            <button
-              type="button"
-              onClick={() => handleRemoveLink(idx)}
-              className="px-2 py-1 text-xs text-mute hover:text-error transition-colors"
-              title="Remove link"
-              aria-label="Remove link"
-            >
-              ✕
-            </button>
+            <div className="flex items-center gap-0.5">
+              <button
+                type="button"
+                disabled={idx === 0}
+                onClick={() => handleMoveLink(idx, 'up')}
+                className="px-1 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-20 disabled:cursor-not-allowed hover:bg-canvas rounded-xs transition-colors cursor-pointer"
+                title="Move link up"
+                aria-label="Move link up"
+              >
+                ▲
+              </button>
+              <button
+                type="button"
+                disabled={idx === (personalInfo.links || []).length - 1}
+                onClick={() => handleMoveLink(idx, 'down')}
+                className="px-1 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-20 disabled:cursor-not-allowed hover:bg-canvas rounded-xs transition-colors cursor-pointer"
+                title="Move link down"
+                aria-label="Move link down"
+              >
+                ▼
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRemoveLink(idx)}
+                className="px-1.5 py-0.5 text-xs text-mute hover:text-error transition-colors cursor-pointer"
+                title="Remove link"
+                aria-label="Remove link"
+              >
+                ✕
+              </button>
+            </div>
           </div>
         ))}
       </div>

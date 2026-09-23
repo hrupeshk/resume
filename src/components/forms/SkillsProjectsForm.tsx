@@ -49,6 +49,16 @@ export default function SkillsProjectsForm({
     onChangeSkills(skills.filter((_, i) => i !== index));
   };
 
+  const handleMoveSkill = (index: number, direction: 'left' | 'right') => {
+    const targetIndex = direction === 'left' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= skills.length) return;
+    const updated = [...skills];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    onChangeSkills(updated);
+  };
+
   // Projects handlers
   const handleAddProject = () => {
     onChangeProjects([
@@ -67,6 +77,16 @@ export default function SkillsProjectsForm({
     onChangeProjects(projects.filter((_, i) => i !== index));
   };
 
+  const handleMoveProject = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= projects.length) return;
+    const updated = [...projects];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    onChangeProjects(updated);
+  };
+
   // Certifications handlers
   const handleAddCert = () => {
     onChangeCertifications([
@@ -83,6 +103,16 @@ export default function SkillsProjectsForm({
 
   const handleRemoveCert = (index: number) => {
     onChangeCertifications(certifications.filter((_, i) => i !== index));
+  };
+
+  const handleMoveCert = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= certifications.length) return;
+    const updated = [...certifications];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    onChangeCertifications(updated);
   };
 
   // Languages handlers
@@ -109,6 +139,17 @@ export default function SkillsProjectsForm({
     }
   };
 
+  const handleMoveLanguage = (index: number, direction: 'up' | 'down') => {
+    if (!onChangeLanguages) return;
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= languages.length) return;
+    const updated = [...languages];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    onChangeLanguages(updated);
+  };
+
   // Volunteer handlers
   const handleAddVolunteer = () => {
     if (onChangeVolunteer) {
@@ -131,6 +172,17 @@ export default function SkillsProjectsForm({
     if (onChangeVolunteer) {
       onChangeVolunteer(volunteer.filter((_, i) => i !== index));
     }
+  };
+
+  const handleMoveVolunteer = (index: number, direction: 'up' | 'down') => {
+    if (!onChangeVolunteer) return;
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= volunteer.length) return;
+    const updated = [...volunteer];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    onChangeVolunteer(updated);
   };
 
   return (
@@ -166,14 +218,35 @@ export default function SkillsProjectsForm({
           {skills.map((skill, idx) => (
             <span
               key={idx}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-canvas-elevated border border-hairline text-ink text-xs font-mono"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-canvas-elevated border border-hairline text-ink text-xs font-mono"
             >
+              <button
+                type="button"
+                disabled={idx === 0}
+                onClick={() => handleMoveSkill(idx, 'left')}
+                className="text-mute hover:text-ink disabled:opacity-20 cursor-pointer text-[10px]"
+                title="Move skill left"
+                aria-label="Move skill left"
+              >
+                ◀
+              </button>
               <span>{skill}</span>
               <button
                 type="button"
+                disabled={idx === skills.length - 1}
+                onClick={() => handleMoveSkill(idx, 'right')}
+                className="text-mute hover:text-ink disabled:opacity-20 cursor-pointer text-[10px]"
+                title="Move skill right"
+                aria-label="Move skill right"
+              >
+                ▶
+              </button>
+              <button
+                type="button"
                 onClick={() => handleRemoveSkill(idx)}
-                className="text-mute hover:text-error transition-colors"
+                className="text-mute hover:text-error transition-colors ml-0.5 cursor-pointer"
                 title="Remove skill"
+                aria-label="Remove skill"
               >
                 ✕
               </button>
@@ -212,13 +285,38 @@ export default function SkillsProjectsForm({
                 className="p-4 rounded-sm border border-hairline bg-canvas space-y-3"
               >
                 <div className="flex items-center justify-between border-b border-hairline pb-2">
-                  <span className="text-xs font-mono font-medium text-mute uppercase">
-                    Project #{idx + 1}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-medium text-mute uppercase">
+                      Project #{idx + 1}
+                    </span>
+                    <div className="inline-flex items-center border border-hairline rounded-sm bg-canvas-elevated shadow-2xs overflow-hidden">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => handleMoveProject(idx, 'up')}
+                        className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                        title="Move project up"
+                        aria-label="Move project up"
+                      >
+                        ▲
+                      </button>
+                      <div className="h-3 w-px bg-hairline" />
+                      <button
+                        type="button"
+                        disabled={idx === projects.length - 1}
+                        onClick={() => handleMoveProject(idx, 'down')}
+                        className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                        title="Move project down"
+                        aria-label="Move project down"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                  </div>
                   <button
                     type="button"
                     onClick={() => handleRemoveProject(idx)}
-                    className="text-xs text-mute hover:text-error transition-colors"
+                    className="text-xs text-mute hover:text-error transition-colors cursor-pointer"
                   >
                     Delete Project
                   </button>
@@ -327,12 +425,33 @@ export default function SkillsProjectsForm({
                       className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
                     />
                   </div>
-                  <div className="sm:col-span-1 text-right">
+                  <div className="sm:col-span-1 flex items-center justify-end gap-1">
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      onClick={() => handleMoveCert(idx, 'up')}
+                      className="p-1 text-[10px] text-mute hover:text-ink disabled:opacity-20 cursor-pointer"
+                      title="Move certification up"
+                      aria-label="Move certification up"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      disabled={idx === certifications.length - 1}
+                      onClick={() => handleMoveCert(idx, 'down')}
+                      className="p-1 text-[10px] text-mute hover:text-ink disabled:opacity-20 cursor-pointer"
+                      title="Move certification down"
+                      aria-label="Move certification down"
+                    >
+                      ▼
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleRemoveCert(idx)}
-                      className="px-2 py-1 text-xs text-mute hover:text-error"
+                      className="p-1 text-xs text-mute hover:text-error cursor-pointer"
                       title="Delete"
+                      aria-label="Delete certification"
                     >
                       ✕
                     </button>
@@ -402,14 +521,37 @@ export default function SkillsProjectsForm({
                   <option value="Conversational">Conversational</option>
                   <option value="Elementary">Elementary</option>
                 </select>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveLanguage(idx)}
-                  className="px-2 py-1 text-xs text-mute hover:text-error"
-                  title="Delete"
-                >
-                  ✕
-                </button>
+                <div className="flex items-center gap-0.5">
+                  <button
+                    type="button"
+                    disabled={idx === 0}
+                    onClick={() => handleMoveLanguage(idx, 'up')}
+                    className="p-1 text-[10px] text-mute hover:text-ink disabled:opacity-20 cursor-pointer"
+                    title="Move language up"
+                    aria-label="Move language up"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    disabled={idx === languages.length - 1}
+                    onClick={() => handleMoveLanguage(idx, 'down')}
+                    className="p-1 text-[10px] text-mute hover:text-ink disabled:opacity-20 cursor-pointer"
+                    title="Move language down"
+                    aria-label="Move language down"
+                  >
+                    ▼
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveLanguage(idx)}
+                    className="p-1 text-xs text-mute hover:text-error cursor-pointer"
+                    title="Delete"
+                    aria-label="Delete language"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -448,13 +590,38 @@ export default function SkillsProjectsForm({
                 className="p-4 rounded-sm border border-hairline bg-canvas space-y-3"
               >
                 <div className="flex items-center justify-between border-b border-hairline pb-2">
-                  <span className="text-xs font-mono font-medium text-mute uppercase">
-                    Volunteer Entry #{idx + 1}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-medium text-mute uppercase">
+                      Volunteer Entry #{idx + 1}
+                    </span>
+                    <div className="inline-flex items-center border border-hairline rounded-sm bg-canvas-elevated shadow-2xs overflow-hidden">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => handleMoveVolunteer(idx, 'up')}
+                        className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                        title="Move volunteer entry up"
+                        aria-label="Move volunteer entry up"
+                      >
+                        ▲
+                      </button>
+                      <div className="h-3 w-px bg-hairline" />
+                      <button
+                        type="button"
+                        disabled={idx === volunteer.length - 1}
+                        onClick={() => handleMoveVolunteer(idx, 'down')}
+                        className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                        title="Move volunteer entry down"
+                        aria-label="Move volunteer entry down"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                  </div>
                   <button
                     type="button"
                     onClick={() => handleRemoveVolunteer(idx)}
-                    className="text-xs text-mute hover:text-error transition-colors"
+                    className="text-xs text-mute hover:text-error transition-colors cursor-pointer"
                   >
                     Delete Entry
                   </button>

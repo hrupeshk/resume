@@ -55,6 +55,28 @@ export default function ExperienceForm({
     onChangeExperience(updated);
   };
 
+  const handleMoveEntry = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= experience.length) return;
+    const updated = [...experience];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    onChangeExperience(updated);
+  };
+
+  const handleMoveBullet = (expIndex: number, bulletIndex: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? bulletIndex - 1 : bulletIndex + 1;
+    const bullets = [...(experience[expIndex].bullets || [])];
+    if (targetIndex < 0 || targetIndex >= bullets.length) return;
+    const temp = bullets[bulletIndex];
+    bullets[bulletIndex] = bullets[targetIndex];
+    bullets[targetIndex] = temp;
+    const updated = [...experience];
+    updated[expIndex] = { ...updated[expIndex], bullets };
+    onChangeExperience(updated);
+  };
+
   return (
     <div className="space-y-6 text-xs sm:text-sm">
       <div className="flex items-center justify-between border-b border-hairline pb-3">
@@ -92,13 +114,38 @@ export default function ExperienceForm({
               className="p-4 rounded-sm border border-hairline bg-canvas space-y-3 relative group"
             >
               <div className="flex items-center justify-between border-b border-hairline pb-2">
-                <span className="text-xs font-mono font-medium text-mute uppercase">
-                  Role #{idx + 1}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono font-medium text-mute uppercase">
+                    Role #{idx + 1}
+                  </span>
+                  <div className="inline-flex items-center border border-hairline rounded-sm bg-canvas-elevated shadow-2xs overflow-hidden">
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      onClick={() => handleMoveEntry(idx, 'up')}
+                      className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                      title="Move role up"
+                      aria-label="Move role up"
+                    >
+                      ▲
+                    </button>
+                    <div className="h-3 w-px bg-hairline" />
+                    <button
+                      type="button"
+                      disabled={idx === experience.length - 1}
+                      onClick={() => handleMoveEntry(idx, 'down')}
+                      className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                      title="Move role down"
+                      aria-label="Move role down"
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
                 <button
                   type="button"
                   onClick={() => handleRemoveEntry(idx)}
-                  className="text-xs text-mute hover:text-error transition-colors"
+                  className="text-xs text-mute hover:text-error transition-colors cursor-pointer"
                 >
                   Delete Role
                 </button>
@@ -175,7 +222,7 @@ export default function ExperienceForm({
 
                 <div className="space-y-2">
                   {(item.bullets || []).map((bullet, bIdx) => (
-                    <div key={bIdx} className="flex items-start gap-2">
+                    <div key={bIdx} className="flex items-start gap-1.5">
                       <span className="mt-2 text-mute text-xs">•</span>
                       <textarea
                         rows={2}
@@ -184,11 +231,34 @@ export default function ExperienceForm({
                         placeholder="Action verb + context + measurable result (e.g. Increased page load speed by 30% by...)"
                         className="flex-1 px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink leading-relaxed"
                       />
+                      <div className="flex flex-col gap-0.5 pt-0.5">
+                        <button
+                          type="button"
+                          disabled={bIdx === 0}
+                          onClick={() => handleMoveBullet(idx, bIdx, 'up')}
+                          className="px-1 py-0.5 text-[9px] text-mute hover:text-ink disabled:opacity-20 disabled:cursor-not-allowed hover:bg-canvas rounded-xs transition-colors cursor-pointer"
+                          title="Move bullet up"
+                          aria-label="Move bullet up"
+                        >
+                          ▲
+                        </button>
+                        <button
+                          type="button"
+                          disabled={bIdx === (item.bullets || []).length - 1}
+                          onClick={() => handleMoveBullet(idx, bIdx, 'down')}
+                          className="px-1 py-0.5 text-[9px] text-mute hover:text-ink disabled:opacity-20 disabled:cursor-not-allowed hover:bg-canvas rounded-xs transition-colors cursor-pointer"
+                          title="Move bullet down"
+                          aria-label="Move bullet down"
+                        >
+                          ▼
+                        </button>
+                      </div>
                       <button
                         type="button"
                         onClick={() => handleRemoveBullet(idx, bIdx)}
-                        className="mt-1.5 px-2 py-0.5 text-xs text-mute hover:text-error transition-colors"
+                        className="mt-1 px-1.5 py-0.5 text-xs text-mute hover:text-error transition-colors cursor-pointer"
                         title="Delete bullet"
+                        aria-label="Delete bullet"
                       >
                         ✕
                       </button>
