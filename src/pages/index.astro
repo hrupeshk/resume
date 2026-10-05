@@ -5,9 +5,9 @@ import Layout from '../layouts/Layout.astro';
 <Layout title="Free Resume & Indian Marriage Biodata Builder — 100% Free, No Login">
   <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
     {/* Hero Headline */}
-    <div class="text-center max-w-3xl mx-auto mb-16">
+    <div class="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-hairline bg-canvas-elevated text-xs font-mono text-mute mb-6 shadow-2xs">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
         <span>100% Free Forever</span>
         <span>•</span>
         <span>No Login Required</span>
@@ -16,137 +16,216 @@ import Layout from '../layouts/Layout.astro';
       </div>
 
       <h1 class="text-3xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-ink mb-6 text-balance">
-        Build Professional Resumes & Indian Biodata with Ease
+        Create Professional Resumes & Indian Biodata with Ease
       </h1>
       <p class="text-base sm:text-lg text-body leading-relaxed max-w-2xl mx-auto text-pretty">
-        High-fidelity ATS resumes for software engineers, corporate leadership, private-sector careers, and traditional Indian matrimonial biodata. Download instant selectable-text PDFs without account lock-in.
+        Craft high-impact ATS resumes for tech engineers, corporate leaders, and Indian private sector roles — or create beautiful traditional matrimonial biodata in minutes. Download instant print-ready PDFs without signing up.
       </p>
     </div>
 
-    {/* 4 Category Cards Grid */}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-      {/* 1. Tech Resume */}
-      <div class="p-6 sm:p-8 rounded-md border border-hairline bg-canvas-elevated shadow-xs hover:border-neutral-400 transition-all flex flex-col justify-between group">
+    {/* Option C: 2 Primary Pillars Grid */}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+      {/* Pillar 1: Professional Career Resumes */}
+      <div class="p-6 sm:p-8 rounded-xl border-2 border-hairline bg-canvas-elevated shadow-sm hover:border-ink/40 transition-all flex flex-col justify-between group relative overflow-hidden">
+        <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none"></div>
+
         <div>
-          <div class="flex items-center justify-between mb-4">
-            <span className="text-2xl" aria-hidden="true">💻</span>
-            <span class="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
-              ATS Gold Standard
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl" aria-hidden="true">📄</span>
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-primary">Pillar 01</span>
+            </div>
+            <span class="text-[11px] font-mono font-semibold uppercase px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+              ATS-Optimized
             </span>
           </div>
-          <h2 class="text-xl font-semibold text-ink tracking-tight mb-2 group-hover:text-black">
-            Tech & Engineering Resume
+
+          <h2 class="text-2xl font-bold text-ink tracking-tight mb-3 group-hover:text-black">
+            Professional Job Resumes & CVs
           </h2>
-          <p class="text-xs sm:text-sm text-body leading-relaxed mb-6">
-            Engineered for Software Developers, Frontend, Backend, Full-Stack, DevOps, and Data Engineers. Includes Jake’s FAANG Classic, Novorésumé 2-column with skill chips, and zero-table ATS compliance.
+          <p class="text-sm text-body leading-relaxed mb-6">
+            Industry-tailored CV formats engineered for recruiter review. Whether applying to Silicon Valley startups, corporate multinationals, or Indian private enterprises, get certified formats that pass screening.
           </p>
-          <div class="flex flex-wrap gap-1.5 mb-6 text-[11px] font-mono text-mute">
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">FAANG Classic</span>
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">Jake's Resume</span>
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">Flow Developer</span>
+
+          {/* Quick-Start Role Tags with Direct Builder Links */}
+          <div class="space-y-2.5 mb-8">
+            <div class="text-[11px] font-mono uppercase tracking-wider text-mute font-semibold">
+              Select Your Career Domain:
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <a
+                href="/build/private_job_resume"
+                class="p-2.5 rounded-md border border-hairline bg-canvas hover:bg-neutral-100 hover:border-ink/30 transition-all text-left flex flex-col justify-between group/tag"
+              >
+                <div class="text-xs font-semibold text-ink group-hover/tag:text-primary mb-1">
+                  🏢 Private Job CV
+                </div>
+                <div class="text-[10px] text-mute leading-tight">
+                  With Photo, Father's Name & Declaration
+                </div>
+              </a>
+
+              <a
+                href="/build/tech_resume"
+                class="p-2.5 rounded-md border border-hairline bg-canvas hover:bg-neutral-100 hover:border-ink/30 transition-all text-left flex flex-col justify-between group/tag"
+              >
+                <div class="text-xs font-semibold text-ink group-hover/tag:text-primary mb-1">
+                  💻 Tech & IT Resume
+                </div>
+                <div class="text-[10px] text-mute leading-tight">
+                  Jake's FAANG & 2-Col Developer
+                </div>
+              </a>
+
+              <a
+                href="/build/non_tech_resume"
+                class="p-2.5 rounded-md border border-hairline bg-canvas hover:bg-neutral-100 hover:border-ink/30 transition-all text-left flex flex-col justify-between group/tag"
+              >
+                <div class="text-xs font-semibold text-ink group-hover/tag:text-primary mb-1">
+                  👔 Corporate & MBA
+                </div>
+                <div class="text-[10px] text-mute leading-tight">
+                  Executive Harvard & Competencies
+                </div>
+              </a>
+            </div>
           </div>
         </div>
 
-        <a
-          href="/build/tech_resume"
-          class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm bg-primary text-on-primary text-xs sm:text-sm font-semibold hover:opacity-90 transition-opacity shadow-xs"
-        >
-          <span>Build Tech Resume</span>
-          <span aria-hidden="true">→</span>
-        </a>
-      </div>
-
-      {/* 2. Corporate & Non-Tech Resume */}
-      <div class="p-6 sm:p-8 rounded-md border border-hairline bg-canvas-elevated shadow-xs hover:border-neutral-400 transition-all flex flex-col justify-between group">
-        <div>
-          <div class="flex items-center justify-between mb-4">
-            <span className="text-2xl" aria-hidden="true">👔</span>
-            <span class="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200">
-              Executive & MBA
-            </span>
+        <div class="pt-4 border-t border-hairline flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="text-xs text-mute flex items-center gap-2">
+            <span>✓ ATS Parsable</span>
+            <span>•</span>
+            <span>✓ Multi-Page PDF</span>
+            <span>•</span>
+            <span>✓ Auto-Save</span>
           </div>
-          <h2 class="text-xl font-semibold text-ink tracking-tight mb-2 group-hover:text-black">
-            Corporate & Non-Tech Resume
-          </h2>
-          <p class="text-xs sm:text-sm text-body leading-relaxed mb-6">
-            Tailored for Product Managers, Operations Leads, Management Consultants, HR, and Marketing Executives. Dignified Harvard/Stanford layout with core competencies matrix and leadership impact bullets.
-          </p>
-          <div class="flex flex-wrap gap-1.5 mb-6 text-[11px] font-mono text-mute">
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">Executive Leadership</span>
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">Core Competencies</span>
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">References</span>
-          </div>
+          <a
+            href="/build/tech_resume"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm bg-primary text-on-primary text-xs sm:text-sm font-semibold hover:opacity-90 transition-opacity shadow-xs"
+          >
+            <span>Start Building Resume</span>
+            <span aria-hidden="true">→</span>
+          </a>
         </div>
-
-        <a
-          href="/build/non_tech_resume"
-          class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm bg-primary text-on-primary text-xs sm:text-sm font-semibold hover:opacity-90 transition-opacity shadow-xs"
-        >
-          <span>Build Corporate Resume</span>
-          <span aria-hidden="true">→</span>
-        </a>
       </div>
 
-      {/* 3. Private Job Resume */}
-      <div class="p-6 sm:p-8 rounded-md border border-hairline bg-canvas-elevated shadow-xs hover:border-neutral-400 transition-all flex flex-col justify-between group">
+      {/* Pillar 2: Indian Marriage Biodata */}
+      <div class="p-6 sm:p-8 rounded-xl border-2 border-hairline bg-canvas-elevated shadow-sm hover:border-ink/40 transition-all flex flex-col justify-between group relative overflow-hidden">
+        <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl pointer-events-none"></div>
+
         <div>
-          <div class="flex items-center justify-between mb-4">
-            <span className="text-2xl" aria-hidden="true">🏢</span>
-            <span class="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded bg-amber-50 text-amber-900 border border-amber-200">
-              High Search Volume
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl" aria-hidden="true">🪔</span>
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-rose-800">Pillar 02</span>
+            </div>
+            <span class="text-[11px] font-mono font-semibold uppercase px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-900 border border-rose-200">
+              Cultural & Matrimonial
             </span>
           </div>
-          <h2 class="text-xl font-semibold text-ink tracking-tight mb-2 group-hover:text-black">
-            Private Sector Job Resume
-          </h2>
-          <p class="text-xs sm:text-sm text-body leading-relaxed mb-6">
-            Designed for freshers and experienced professionals in private enterprises — banking, accounts, sales, BPO, logistics, and documentation. Clean formats with verified references and formal declaration.
-          </p>
-          <div class="flex flex-wrap gap-1.5 mb-6 text-[11px] font-mono text-mute">
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">Private Sector Standard</span>
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">Freshers & Exp</span>
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">Job Ready</span>
-          </div>
-        </div>
 
-        <a
-          href="/build/private_job_resume"
-          class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm bg-primary text-on-primary text-xs sm:text-sm font-semibold hover:opacity-90 transition-opacity shadow-xs"
-        >
-          <span>Build Private Job Resume</span>
-          <span aria-hidden="true">→</span>
-        </a>
-      </div>
-
-      {/* 4. Indian Marriage Biodata */}
-      <div class="p-6 sm:p-8 rounded-md border border-hairline bg-canvas-elevated shadow-xs hover:border-neutral-400 transition-all flex flex-col justify-between group">
-        <div>
-          <div class="flex items-center justify-between mb-4">
-            <span className="text-2xl" aria-hidden="true">🪔</span>
-            <span class="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded bg-rose-50 text-rose-900 border border-rose-200">
-              Matrimonial
-            </span>
-          </div>
-          <h2 class="text-xl font-semibold text-ink tracking-tight mb-2 group-hover:text-black">
+          <h2 class="text-2xl font-bold text-ink tracking-tight mb-3 group-hover:text-black">
             Indian Marriage Biodata
           </h2>
-          <p class="text-xs sm:text-sm text-body leading-relaxed mb-6">
-            Traditional and elegant matrimonial biodata profiles. Includes family background (parents, siblings, native place), horoscope details (Rashi, Nakshatra, Manglik), and formal photo placement.
+          <p class="text-sm text-body leading-relaxed mb-6">
+            Dignified matrimonial biodata profiles created specifically for Indian families and marriage alliances. Elegant aesthetics honoring cultural traditions with modern typographic poise.
           </p>
-          <div class="flex flex-wrap gap-1.5 mb-6 text-[11px] font-mono text-mute">
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">Traditional Maroon</span>
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">Kundali / Horoscope</span>
-            <span class="px-2 py-0.5 rounded bg-canvas border border-hairline">Family Details</span>
+
+          {/* Cultural Highlights */}
+          <div class="space-y-2.5 mb-8">
+            <div class="text-[11px] font-mono uppercase tracking-wider text-mute font-semibold">
+              Included Matrimonial Sections:
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div class="p-2.5 rounded-md border border-hairline bg-canvas text-left">
+                <div class="text-xs font-semibold text-ink mb-1">
+                  🕉️ Sacred Invocations
+                </div>
+                <div class="text-[10px] text-mute leading-tight">
+                  Ganesh, Radha Krishna, Swastik
+                </div>
+              </div>
+
+              <div class="p-2.5 rounded-md border border-hairline bg-canvas text-left">
+                <div class="text-xs font-semibold text-ink mb-1">
+                  ⭐ Horoscope & Kundali
+                </div>
+                <div class="text-[10px] text-mute leading-tight">
+                  Rashi, Nakshatra, Gotra & Manglik
+                </div>
+              </div>
+
+              <div class="p-2.5 rounded-md border border-hairline bg-canvas text-left">
+                <div class="text-xs font-semibold text-ink mb-1">
+                  👨‍👩‍👧 Family Particulars
+                </div>
+                <div class="text-[10px] text-mute leading-tight">
+                  Parents, Siblings & Native Place
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <a
-          href="/build/marriage_biodata"
-          class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm border border-hairline bg-canvas hover:bg-neutral-100 text-ink text-xs sm:text-sm font-semibold transition-colors shadow-2xs"
-        >
-          <span>Build Marriage Biodata</span>
-          <span aria-hidden="true">→</span>
-        </a>
+        <div class="pt-4 border-t border-hairline flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="text-xs text-mute flex items-center gap-2">
+            <span>✓ Traditional Maroon</span>
+            <span>•</span>
+            <span>✓ Photo Frame</span>
+            <span>•</span>
+            <span>✓ High-Res Print PDF</span>
+          </div>
+          <a
+            href="/build/marriage_biodata"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-hairline bg-canvas hover:bg-neutral-100 text-ink text-xs sm:text-sm font-semibold transition-colors shadow-2xs"
+          >
+            <span>Start Building Biodata</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Feature Comparison / Highlights Section */}
+    <div class="rounded-xl border border-hairline bg-canvas p-6 sm:p-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <h3 class="text-lg font-semibold text-ink mb-2">
+          Everything You Need to Succeed
+        </h3>
+        <p class="text-xs sm:text-sm text-body">
+          Built for real job seekers and families with no artificial paywalls or hidden subscriptions.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="space-y-1.5">
+          <div class="text-base">⚡ Instant Split-Screen Preview</div>
+          <p class="text-xs text-mute leading-relaxed">
+            See your changes render in real-time as you type, with accurate page break indicators.
+          </p>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="text-base">🔒 100% Private in Browser</div>
+          <p class="text-xs text-mute leading-relaxed">
+            Your data is saved locally in your browser storage. Zero tracking and no server uploads.
+          </p>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="text-base">📥 Clean Selectable PDF</div>
+          <p class="text-xs text-mute leading-relaxed">
+            Export vector PDFs with selectable text, clickable hyperlinks, and true A4 dimensions.
+          </p>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="text-base">🎨 Instant Template Switching</div>
+          <p class="text-xs text-mute leading-relaxed">
+            Switch between modern and classic templates instantly with zero data loss guarantee.
+          </p>
+        </div>
       </div>
     </div>
   </main>

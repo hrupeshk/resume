@@ -49,6 +49,14 @@ export interface ResumePersonalInfo {
   location: string;
   photoUrl?: string;
   links: SocialLink[];
+  // Indian Private Sector & Fresher particulars:
+  fatherName?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  maritalStatus?: string;
+  nationality?: string;
+  languagesKnown?: string;
+  permanentAddress?: string;
 }
 
 export interface EducationEntry {
@@ -103,6 +111,13 @@ export interface VolunteerEntry {
   description?: string;
 }
 
+export interface DeclarationSection {
+  enabled: boolean;
+  text?: string;
+  place?: string;
+  date?: string;
+}
+
 export interface ResumeSections {
   education: EducationEntry[];
   experience: ExperienceEntry[];
@@ -112,6 +127,7 @@ export interface ResumeSections {
   references?: ReferenceEntry[];
   languages?: LanguageEntry[];
   volunteer?: VolunteerEntry[];
+  declaration?: DeclarationSection;
 }
 
 export interface ResumeDocument extends BaseDocument {

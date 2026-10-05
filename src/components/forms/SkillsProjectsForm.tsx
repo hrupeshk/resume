@@ -1,4 +1,13 @@
-import type { ProjectEntry, CertificationEntry, LanguageEntry, VolunteerEntry, ReferenceEntry } from '../../lib/schema';
+import React, { useState } from 'react';
+import type {
+  ProjectEntry,
+  CertificationEntry,
+  LanguageEntry,
+  VolunteerEntry,
+  ReferenceEntry,
+  DeclarationSection,
+  DocumentCategory,
+} from '../../lib/schema';
 
 interface SkillsProjectsFormProps {
   skills: string[];
@@ -7,12 +16,15 @@ interface SkillsProjectsFormProps {
   languages?: LanguageEntry[];
   volunteer?: VolunteerEntry[];
   references?: ReferenceEntry[];
+  declaration?: DeclarationSection;
+  category?: DocumentCategory;
   onChangeSkills: (skills: string[]) => void;
   onChangeProjects: (projects: ProjectEntry[]) => void;
   onChangeCertifications: (certifications: CertificationEntry[]) => void;
   onChangeLanguages?: (languages: LanguageEntry[]) => void;
   onChangeVolunteer?: (volunteer: VolunteerEntry[]) => void;
   onChangeReferences?: (references: ReferenceEntry[]) => void;
+  onChangeDeclaration?: (declaration: DeclarationSection) => void;
 }
 
 export default function SkillsProjectsForm({
@@ -22,14 +34,42 @@ export default function SkillsProjectsForm({
   languages = [],
   volunteer = [],
   references = [],
+  declaration,
+  category,
   onChangeSkills,
   onChangeProjects,
   onChangeCertifications,
   onChangeLanguages,
   onChangeVolunteer,
   onChangeReferences,
+  onChangeDeclaration,
 }: SkillsProjectsFormProps) {
   const [skillInput, setSkillInput] = useState('');
+
+  // Declaration state & handlers
+  const currentDeclaration: DeclarationSection = declaration || {
+    enabled: category === 'private_job_resume',
+    text: 'I hereby declare that all the information provided above is true, complete, and correct to the best of my knowledge and belief.',
+    place: '',
+    date: '',
+  };
+
+  const handleToggleDeclaration = (enabled: boolean) => {
+    if (!onChangeDeclaration) return;
+    onChangeDeclaration({
+      ...currentDeclaration,
+      enabled,
+      text: currentDeclaration.text || 'I hereby declare that all the information provided above is true, complete, and correct to the best of my knowledge and belief.',
+    });
+  };
+
+  const handleUpdateDeclarationField = (field: keyof DeclarationSection, value: any) => {
+    if (!onChangeDeclaration) return;
+    onChangeDeclaration({
+      ...currentDeclaration,
+      [field]: value,
+    });
+  };
 
   // Skills handlers
   const handleAddSkill = () => {
@@ -887,6 +927,84 @@ export default function SkillsProjectsForm({
                 </div>
               </div>
             ))}
+          </div>
+        )}
+      </section>
+
+      {/* 7. Closing Declaration & Signature Block */}
+      <section className="space-y-4 pt-4 border-t border-hairline">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-semibold text-ink flex items-center gap-2">
+              <span>Closing Declaration & Signature</span>
+              {category === 'private_job_resume' && (
+                <span className="px-1.5 py-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded">
+                  Recommended for Private Jobs
+                </span>
+              )}
+            </h3>
+            <p className="text-xs text-mute mt-0.5">
+              Formal closing affirmation with date, place, and candidate signature block.
+            </p>
+          </div>
+          {onChangeDeclaration && (
+            <label className="flex items-center gap-2 text-xs font-medium text-body cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={currentDeclaration.enabled}
+                onChange={(e) => handleToggleDeclaration(e.target.checked)}
+                className="w-4 h-4 rounded border-hairline text-primary focus:ring-primary focus:ring-offset-0 cursor-pointer"
+              />
+              <span>Include Declaration</span>
+            </label>
+          )}
+        </div>
+
+        {currentDeclaration.enabled && onChangeDeclaration && (
+          <div className="p-4 rounded-sm border border-hairline bg-canvas space-y-3">
+            <div>
+              <label className="block text-[11px] font-medium text-body mb-1">
+                Declaration Statement
+              </label>
+              <textarea
+                rows={2}
+                value={currentDeclaration.text || ''}
+                onChange={(e) => handleUpdateDeclarationField('text', e.target.value)}
+                placeholder="I hereby declare that all the information provided above is true, complete, and correct to the best of my knowledge and belief."
+                className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink resize-y"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-medium text-body mb-1">
+                  Place (City / Town)
+                </label>
+                <input
+                  type="text"
+                  value={currentDeclaration.place || ''}
+                  onChange={(e) => handleUpdateDeclarationField('place', e.target.value)}
+                  placeholder="e.g. Patna, Bihar or New Delhi"
+                  className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-medium text-body mb-1">
+                  Date
+                </label>
+                <input
+                  type="text"
+                  value={currentDeclaration.date || ''}
+                  onChange={(e) => handleUpdateDeclarationField('date', e.target.value)}
+                  placeholder="e.g. DD/MM/YYYY or Current Date"
+                  className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                />
+              </div>
+            </div>
+            <p className="text-[11px] text-mute italic">
+              Note: The candidate's name will automatically appear on the signature block alongside the place and date.
+            </p>
           </div>
         )}
       </section>

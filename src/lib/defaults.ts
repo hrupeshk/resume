@@ -5,7 +5,12 @@ import type { DocumentCategory, ResumeCategory, ResumeDocument, BiodataDocument,
  */
 export function createEmptyResume(category: ResumeCategory = 'tech_resume'): ResumeDocument {
   const now = new Date().toISOString();
-  const defaultTemplateId = category === 'non_tech_resume' ? 'executive-mba-01' : 'modern-split-01';
+  const defaultTemplateId =
+    category === 'non_tech_resume'
+      ? 'executive-mba-01'
+      : category === 'private_job_resume'
+      ? 'indian-classic-private-01'
+      : 'modern-split-01';
 
   const defaultLinks =
     category === 'tech_resume'
@@ -36,6 +41,13 @@ export function createEmptyResume(category: ResumeCategory = 'tech_resume'): Res
       phone: '',
       location: '',
       photoUrl: '',
+      fatherName: '',
+      dateOfBirth: '',
+      gender: '',
+      maritalStatus: '',
+      nationality: 'Indian',
+      languagesKnown: '',
+      permanentAddress: '',
       links: defaultLinks,
     },
     summary: '',
@@ -48,6 +60,15 @@ export function createEmptyResume(category: ResumeCategory = 'tech_resume'): Res
       references: [],
       languages: [],
       volunteer: [],
+      declaration:
+        category === 'private_job_resume'
+          ? {
+              enabled: true,
+              text: 'I hereby declare that all the information mentioned above is true and correct to the best of my knowledge and belief.',
+              place: '',
+              date: '',
+            }
+          : undefined,
     },
   };
 }
@@ -298,96 +319,112 @@ export const sampleNonTechResume: ResumeDocument = {
 };
 
 /**
- * Sample Private Job Resume data tailored for private company jobs,
- * freshers, banking, sales, BPO, accounts, logistics, and documentation.
+ * Sample Private Job Resume data tailored for Indian private company jobs,
+ * hospitality, retail, office assistants, freshers, and operations.
  */
 export const samplePrivateJobResume: ResumeDocument = {
   id: 'sample-private-job-001',
   category: 'private_job_resume',
-  templateId: 'modern-split-01',
+  templateId: 'indian-classic-private-01',
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: new Date().toISOString(),
   personalInfo: {
-    fullName: 'Amit Verma',
-    title: 'Executive Documentation & Commercial Operations',
-    email: 'amit.verma@example.com',
-    phone: '+91 91234 56789',
-    location: 'Mumbai, India',
+    fullName: 'Ramesh Kumar',
+    title: 'Hospitality & Food Service Executive',
+    email: 'ramesh.kumar99@example.com',
+    phone: '+91 98765 43210',
+    location: 'Patna, Bihar',
     photoUrl: '',
+    fatherName: 'Shri Ram Prasad',
+    dateOfBirth: '12 July 1999',
+    gender: 'Male',
+    maritalStatus: 'Unmarried',
+    nationality: 'Indian',
+    languagesKnown: 'Hindi, Bhojpuri, English (Basic)',
+    permanentAddress: 'Vill - Rampur, Post - Lalganj, Dist - Vaishali, Bihar - 844121',
     links: [
-      { label: 'LinkedIn', url: 'https://linkedin.com/in/amit-verma-ops' },
+      { label: 'LinkedIn', url: '' },
     ],
   },
   summary:
-    'Results-driven Private Sector Logistics & Documentation Executive with extensive hands-on expertise in export-import compliance, SAP ERP documentation, customs liaison, and commercial invoice verification. Proven track record of zero-penalty compliance across 200+ container shipments.',
+    'Dedicated, polite, and hardworking hospitality service professional with 3+ years of experience in food and beverage service, customer care, banquet coordination, and cash billing. Punctual, disciplined, and committed to excellent teamwork.',
   sections: {
     experience: [
       {
-        company: 'Reliance Logistics & Ports Ltd.',
-        role: 'Senior Executive (Commercial Operations)',
-        startDate: '03/2023',
+        company: 'Hotel Maurya, Patna',
+        role: 'Captain / Head Service Staff',
+        startDate: '05/2022',
         endDate: 'Present',
         bullets: [
-          'Supervised end-to-end export documentation, Bill of Lading (BL) validation, and shipping bill filings for private vessel cargo operations.',
-          'Reconciled vendor statements and freight invoices with zero billing disputes, saving an estimated ₹12L through audit accuracy.',
-          'Coordinated with CHA agents, shipping lines, and bank trade finance desks for timely Letter of Credit (LC) execution.',
+          'Managed dining area operations for 40+ daily tables, ensuring prompt food serving and guest satisfaction.',
+          'Operated POS cash counter, prepared accurate guest bills, and balanced end-of-day register accounts.',
+          'Trained and guided junior banquet service staff on hygiene standards and professional etiquette.',
         ],
       },
       {
-        company: 'Mahindra Logistics Ltd.',
-        role: 'Junior Operations Executive',
-        startDate: '08/2021',
-        endDate: '02/2023',
+        company: 'Grand Utsav Restaurant & Banquets',
+        role: 'F&B Service Associate',
+        startDate: '01/2021',
+        endDate: '04/2022',
         bullets: [
-          'Drafted daily dispatches, inward-outward inventory logs, and customer delivery orders using SAP MM and Excel ERP modules.',
-          'Managed client communication and resolved shipping inquiries with a 98% first-call resolution rate.',
-          'Maintained compliance records for GST e-way bills and commercial invoices without audit discrepancies.',
+          'Assisted head chef and banquet manager during weddings and private functions of up to 400 attendees.',
+          'Maintained complete inventory of cutlery, glassware, and serving equipment with zero breakages.',
+          'Greeted guests warmly and took precise food orders, boosting repeat customer ratings.',
         ],
       },
     ],
     education: [
       {
-        institution: 'University of Mumbai',
-        degree: 'Bachelor of Commerce (B.Com)',
-        field: 'Accounting & Commercial Law',
-        startDate: '2018',
+        institution: 'State Institute of Hotel Management (SIHM)',
+        degree: 'Diploma in Food & Beverage Service',
+        field: 'Hospitality Management',
+        startDate: '2020',
         endDate: '2021',
-        grade: 'First Class (72%)',
+        grade: 'First Division (74%)',
+      },
+      {
+        institution: 'Bihar School Examination Board (BSEB)',
+        degree: 'Intermediate (12th Pass)',
+        field: 'Arts',
+        startDate: '2017',
+        endDate: '2019',
+        grade: 'First Division',
+      },
+      {
+        institution: 'BSEB',
+        degree: 'Matriculation (10th Pass)',
+        field: 'General',
+        startDate: '2015',
+        endDate: '2017',
+        grade: 'First Division (68%)',
       },
     ],
     skills: [
-      'Export/Import Documentation',
-      'SAP ERP (MM/SD)',
-      'Advanced Excel (VLOOKUP, Pivot, Formulas)',
-      'Tally ERP 9 / Tally Prime',
-      'Trade Finance & Letters of Credit (LC)',
-      'Vendor & Client Coordination',
-      'Commercial Invoicing & GST E-way Bills',
-      'Discrepancy Resolution & Audit Prep',
-    ],
-    certifications: [
-      {
-        name: 'Diploma in International Trade & Logistics',
-        issuer: 'Welingkar Institute of Management',
-        year: '2022',
-        description: 'Practical training in multimodal transport, customs regulations, and international shipping documentation.',
-      },
+      'Food & Beverage Service',
+      'Guest Relationship & Courtesy',
+      'POS Billing & Cash Management',
+      'Table Setup & Banquet Etiquette',
+      'Hygiene & Sanitation Standards',
+      'Teamwork & High Physical Stamina',
+      'Punctual & Disciplined',
+      'Basic Computer & Mobile POS',
     ],
     references: [
       {
-        name: 'Ramesh Nair',
-        company: 'Reliance Logistics & Ports Ltd.',
-        role: 'Senior General Manager (Operations)',
-        email: 'ramesh.nair@reliancelogistics.com',
-        phone: '+91 98200 12345',
-        relationship: 'Direct Reporting Manager',
+        name: 'Suresh Chandra',
+        company: 'Hotel Maurya, Patna',
+        role: 'Food & Beverage Manager',
+        email: 'suresh.chandra@hotelmaurya.com',
+        phone: '+91 94310 12345',
+        relationship: 'Direct Supervisor',
       },
     ],
-    languages: [
-      { language: 'English', proficiency: 'Full Professional' },
-      { language: 'Hindi', proficiency: 'Native or Bilingual' },
-      { language: 'Marathi', proficiency: 'Conversational' },
-    ],
+    declaration: {
+      enabled: true,
+      text: 'I hereby declare that all the information mentioned above is true and correct to the best of my knowledge and belief.',
+      place: 'Patna',
+      date: '15/08/2025',
+    },
   },
 };
 

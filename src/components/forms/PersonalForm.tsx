@@ -1,9 +1,10 @@
 import React from 'react';
-import type { ResumePersonalInfo } from '../../lib/schema';
+import type { ResumePersonalInfo, DocumentCategory } from '../../lib/schema';
 
 interface PersonalFormProps {
   personalInfo: ResumePersonalInfo;
   summary: string;
+  category?: DocumentCategory;
   onChangePersonalInfo: (updated: ResumePersonalInfo) => void;
   onChangeSummary: (summary: string) => void;
 }
@@ -11,6 +12,7 @@ interface PersonalFormProps {
 export default function PersonalForm({
   personalInfo,
   summary,
+  category,
   onChangePersonalInfo,
   onChangeSummary,
 }: PersonalFormProps) {
@@ -187,6 +189,101 @@ export default function PersonalForm({
                 </button>
               )}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Indian Private Sector Personal Particulars */}
+      <div className="space-y-4 pt-3 border-t border-hairline">
+        <div className="border-b border-hairline pb-2">
+          <h4 className="text-xs font-semibold text-ink uppercase tracking-wider">
+            Personal Particulars <span className="text-mute font-normal lowercase">(standard for Indian private jobs, hotel management, retail, & freshers)</span>
+          </h4>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="fatherName" className="block text-xs font-medium text-body mb-1">
+              Father&apos;s Name <span className="text-mute">(e.g. Shri Ram Prasad)</span>
+            </label>
+            <input
+              id="fatherName"
+              type="text"
+              value={personalInfo.fatherName || ''}
+              onChange={(e) => handleChangeField('fatherName', e.target.value)}
+              placeholder="Shri Ram Prasad"
+              className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="dateOfBirth" className="block text-xs font-medium text-body mb-1">
+              Date of Birth <span className="text-mute">(e.g. 12 July 1999)</span>
+            </label>
+            <input
+              id="dateOfBirth"
+              type="text"
+              value={personalInfo.dateOfBirth || ''}
+              onChange={(e) => handleChangeField('dateOfBirth', e.target.value)}
+              placeholder="12 July 1999"
+              className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="gender" className="block text-xs font-medium text-body mb-1">
+              Gender
+            </label>
+            <input
+              id="gender"
+              type="text"
+              value={personalInfo.gender || ''}
+              onChange={(e) => handleChangeField('gender', e.target.value)}
+              placeholder="Male / Female / Other"
+              className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="maritalStatus" className="block text-xs font-medium text-body mb-1">
+              Marital Status
+            </label>
+            <input
+              id="maritalStatus"
+              type="text"
+              value={personalInfo.maritalStatus || ''}
+              onChange={(e) => handleChangeField('maritalStatus', e.target.value)}
+              placeholder="Unmarried / Married"
+              className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+            />
+          </div>
+
+          <div className="sm:col-span-2">
+            <label htmlFor="languagesKnown" className="block text-xs font-medium text-body mb-1">
+              Languages Known <span className="text-mute">(e.g. Hindi, English, Regional languages)</span>
+            </label>
+            <input
+              id="languagesKnown"
+              type="text"
+              value={personalInfo.languagesKnown || ''}
+              onChange={(e) => handleChangeField('languagesKnown', e.target.value)}
+              placeholder="Hindi, Bhojpuri, English (Basic)"
+              className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+            />
+          </div>
+
+          <div className="sm:col-span-2">
+            <label htmlFor="permanentAddress" className="block text-xs font-medium text-body mb-1">
+              Permanent Address <span className="text-mute">(Home town or official native address)</span>
+            </label>
+            <input
+              id="permanentAddress"
+              type="text"
+              value={personalInfo.permanentAddress || ''}
+              onChange={(e) => handleChangeField('permanentAddress', e.target.value)}
+              placeholder="Vill - Rampur, Post - Lalganj, Dist - Vaishali, Bihar - 844121"
+              className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+            />
           </div>
         </div>
       </div>

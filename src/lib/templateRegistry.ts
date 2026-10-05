@@ -8,6 +8,9 @@ import MinimalBlueTechResume from '../components/templates/tech-resume/MinimalBl
 import CompactMonoTechResume from '../components/templates/tech-resume/CompactMonoTechResume';
 import TraditionalMaroonBiodata from '../components/templates/marriage-biodata/TraditionalMaroonBiodata';
 import IvoryGoldRoyalBiodata from '../components/templates/marriage-biodata/IvoryGoldRoyalBiodata';
+import IndianClassicPrivateJob from '../components/templates/private-job/IndianClassicPrivateJob';
+import HotelHospitalityPrivateJob from '../components/templates/private-job/HotelHospitalityPrivateJob';
+import CommercialOperationsPrivateJob from '../components/templates/private-job/CommercialOperationsPrivateJob';
 
 export interface TemplateDefinition {
   id: string;
@@ -117,39 +120,36 @@ export const templates: Record<DocumentCategory, TemplateDefinition[]> = {
   ],
   private_job_resume: [
     {
+      id: 'indian-classic-private-01',
+      name: 'Classic Indian Private Job CV',
+      description: 'Standard Indian private sector format with optional passport photo, personal particulars, education table, and formal declaration.',
+      badge: 'Most Popular',
+      category: 'private_job_resume',
+      component: IndianClassicPrivateJob,
+    },
+    {
+      id: 'hotel-hospitality-private-02',
+      name: 'Hotel & Hospitality Service CV',
+      description: 'Contemporary 2-column format with dark sidebar, photo frame, personal details, and customer service experience.',
+      badge: 'Service Sector',
+      category: 'private_job_resume',
+      component: HotelHospitalityPrivateJob,
+    },
+    {
+      id: 'commercial-operations-private-03',
+      name: 'Commercial & Operations Standard',
+      description: 'High-contrast single-column layout for logistics, office assistants, billing, and retail operations with declaration block.',
+      badge: 'Operations',
+      category: 'private_job_resume',
+      component: CommercialOperationsPrivateJob,
+    },
+    {
       id: 'modern-split-01',
-      name: 'Private Sector Standard',
-      description: 'Versatile 2-column layout with clear skills section, references, and professional experience.',
-      badge: 'Popular',
+      name: 'Modern Corporate Split',
+      description: 'Versatile 2-column layout with clean skill chips, sidebar, and professional summary.',
       category: 'private_job_resume',
       component: NovoresumeModern,
       supportsColumnSplit: true,
-      supportsSpacingDensity: true,
-    },
-    {
-      id: 'faang-classic-01',
-      name: 'Classic Corporate Single-Column',
-      description: 'Single-column standard ideal for banking, accounts, operations, and private enterprise applications.',
-      badge: 'High ATS',
-      category: 'private_job_resume',
-      component: FaangClassic,
-      supportsColumnSplit: false,
-      supportsSpacingDensity: true,
-    },
-    {
-      id: 'executive-mba-01',
-      name: 'Formal Executive',
-      description: 'Dignified, formal corporate layout with competencies and professional reference display.',
-      category: 'private_job_resume',
-      component: ExecutiveMba,
-      supportsSpacingDensity: true,
-    },
-    {
-      id: 'minimal-blue-01',
-      name: 'Clean Blue Standard',
-      description: 'Modern, well-spaced format suitable for freshers and experienced private job seekers.',
-      category: 'private_job_resume',
-      component: MinimalBlueTechResume,
       supportsSpacingDensity: true,
     },
   ],

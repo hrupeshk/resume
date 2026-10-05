@@ -8,6 +8,7 @@ import type {
   ExperienceEntry,
   ProjectEntry,
   CertificationEntry,
+  DeclarationSection,
   BiodataDocument,
   BiodataPersonalInfo,
   BiodataEducationEntry,
@@ -309,6 +310,16 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
       return {
         ...r,
         sections: { ...r.sections, references },
+      };
+    });
+  };
+
+  const handleUpdateDeclaration = (declaration: DeclarationSection) => {
+    setDoc((prev) => {
+      const r = prev as ResumeDocument;
+      return {
+        ...r,
+        sections: { ...r.sections, declaration },
       };
     });
   };
@@ -739,6 +750,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                       <PersonalForm
                         personalInfo={doc.personalInfo}
                         summary={doc.summary}
+                        category={doc.category}
                         onChangePersonalInfo={handleUpdatePersonalInfo}
                         onChangeSummary={handleUpdateSummary}
                       />
@@ -766,12 +778,15 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                         languages={doc.sections.languages || []}
                         volunteer={doc.sections.volunteer || []}
                         references={doc.sections.references || []}
+                        declaration={doc.sections.declaration}
+                        category={doc.category}
                         onChangeSkills={handleUpdateSkills}
                         onChangeProjects={handleUpdateProjects}
                         onChangeCertifications={handleUpdateCertifications}
                         onChangeLanguages={handleUpdateLanguages}
                         onChangeVolunteer={handleUpdateVolunteer}
                         onChangeReferences={handleUpdateReferences}
+                        onChangeDeclaration={handleUpdateDeclaration}
                       />
                     )}
                   </>
