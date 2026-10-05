@@ -79,7 +79,7 @@ export default function PersonalForm({
             value={personalInfo.fullName || ''}
             onChange={(e) => handleChangeField('fullName', e.target.value)}
             placeholder="Jane Doe"
-            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus:border-ink transition-colors"
+            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
           />
         </div>
 
@@ -93,7 +93,7 @@ export default function PersonalForm({
             value={personalInfo.title || ''}
             onChange={(e) => handleChangeField('title', e.target.value)}
             placeholder="Web Developer / Full-Stack Engineer"
-            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus:border-ink transition-colors"
+            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
           />
         </div>
 
@@ -107,7 +107,7 @@ export default function PersonalForm({
             value={personalInfo.email || ''}
             onChange={(e) => handleChangeField('email', e.target.value)}
             placeholder="jane.doe@example.com"
-            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus:border-ink transition-colors"
+            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
           />
         </div>
 
@@ -121,7 +121,7 @@ export default function PersonalForm({
             value={personalInfo.phone || ''}
             onChange={(e) => handleChangeField('phone', e.target.value)}
             placeholder="+1 (555) 000-0000"
-            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus:border-ink transition-colors"
+            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
           />
         </div>
 
@@ -135,7 +135,7 @@ export default function PersonalForm({
             value={personalInfo.location || ''}
             onChange={(e) => handleChangeField('location', e.target.value)}
             placeholder="Darbhanga, India or Remote"
-            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus:border-ink transition-colors"
+            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
           />
         </div>
 
@@ -213,14 +213,14 @@ export default function PersonalForm({
               value={link.label}
               onChange={(e) => handleLinkChange(idx, 'label', e.target.value)}
               placeholder="Label (e.g. GitHub)"
-              className="w-1/3 px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+              className="w-1/3 px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
             />
             <input
               type="url"
               value={link.url}
               onChange={(e) => handleLinkChange(idx, 'url', e.target.value)}
-              placeholder="https://..."
-              className="flex-1 px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+              placeholder="https://…"
+              className="flex-1 px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
             />
             <div className="flex items-center gap-0.5">
               <button
@@ -267,8 +267,8 @@ export default function PersonalForm({
           rows={4}
           value={summary || ''}
           onChange={(e) => onChangeSummary(e.target.value)}
-          placeholder="Experienced engineer passionate about building reliable web systems..."
-          className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus:border-ink transition-colors leading-relaxed text-xs sm:text-sm"
+          placeholder="Experienced engineer passionate about building reliable web systems…"
+          className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors leading-relaxed text-xs sm:text-sm"
         />
       </div>
     </div>

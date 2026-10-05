@@ -161,7 +161,7 @@ export default function ExperienceForm({
                     value={item.role}
                     onChange={(e) => handleUpdateEntry(idx, 'role', e.target.value)}
                     placeholder="e.g. Senior Frontend Engineer"
-                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                   />
                 </div>
 
@@ -174,7 +174,7 @@ export default function ExperienceForm({
                     value={item.company}
                     onChange={(e) => handleUpdateEntry(idx, 'company', e.target.value)}
                     placeholder="e.g. Acme Corp"
-                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                   />
                 </div>
 
@@ -187,7 +187,7 @@ export default function ExperienceForm({
                     value={item.startDate}
                     onChange={(e) => handleUpdateEntry(idx, 'startDate', e.target.value)}
                     placeholder="e.g. Jan 2022"
-                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                   />
                 </div>
 
@@ -200,7 +200,7 @@ export default function ExperienceForm({
                     value={item.endDate}
                     onChange={(e) => handleUpdateEntry(idx, 'endDate', e.target.value)}
                     placeholder="e.g. Present or Dec 2023"
-                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                   />
                 </div>
               </div>
@@ -228,8 +228,8 @@ export default function ExperienceForm({
                         rows={2}
                         value={bullet}
                         onChange={(e) => handleBulletChange(idx, bIdx, e.target.value)}
-                        placeholder="Action verb + context + measurable result (e.g. Increased page load speed by 30% by...)"
-                        className="flex-1 px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink leading-relaxed"
+                        placeholder="Action verb + context + measurable result (e.g. Increased page load speed by 30% by…)"
+                        className="flex-1 px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink leading-relaxed"
                       />
                       <div className="flex flex-col gap-0.5 pt-0.5">
                         <button

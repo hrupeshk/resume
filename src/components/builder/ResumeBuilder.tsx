@@ -49,6 +49,8 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastShortcutTimeRef = useRef<number>(0);
+  const [undoBackup, setUndoBackup] = useState<ResumeDocument | null>(null);
+  const undoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Universal keyboard shortcut Alt+P (Left Alt or Right Alt / AltGr), Mac Option+P, or Ctrl+\
   // capture: true prevents Edge and Chrome from consuming Alt+P before our app receives it
@@ -192,11 +194,41 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
     setDoc((prev) => ({ ...prev, templateId: nextId }));
   };
 
-  // Reset / Sample handlers
+  // Reset / Sample handlers with Undo Safeguard
   const handleClearAll = () => {
-    if (window.confirm('Clear all fields and start with a blank document?')) {
+    // Check if the document has any meaningful content before prompting
+    const hasContent = Boolean(
+      doc.personalInfo.fullName.trim() ||
+      doc.personalInfo.email.trim() ||
+      doc.personalInfo.phone.trim() ||
+      doc.summary.trim() ||
+      (doc.sections.experience && doc.sections.experience.length > 0) ||
+      (doc.sections.education && doc.sections.education.length > 0) ||
+      (doc.sections.skills && doc.sections.skills.length > 0) ||
+      (doc.sections.projects && doc.sections.projects.length > 0)
+    );
+
+    if (!hasContent) return;
+
+    if (window.confirm('Clear all fields and start with a blank document? (You can Undo if needed)')) {
+      // Snapshot current document to memory before wiping
+      setUndoBackup({ ...doc });
       clearSavedDocument(category);
       setDoc(createEmptyTechResume());
+
+      if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
+      undoTimeoutRef.current = setTimeout(() => {
+        setUndoBackup(null);
+      }, 10000);
+    }
+  };
+
+  const handleUndoClear = () => {
+    if (undoBackup) {
+      setDoc(undoBackup);
+      saveDocument(undoBackup);
+      setUndoBackup(null);
+      if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
     }
   };
 
@@ -216,7 +248,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
 
     try {
       setIsImporting(true);
-      setImportStatus('Extracting content from PDF...');
+      setImportStatus('Extracting content from PDF…');
       const result = await parseResumePdf(file);
 
       // Deep merge parsed document into current document
@@ -288,9 +320,42 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col print:bg-white print:min-h-0 print:block">
+      {/* Toast Notification for Undo Safeguard */}
+      {undoBackup && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-neutral-950 text-white px-4 py-2.5 rounded-md shadow-2xl border border-neutral-700 text-xs flex items-center gap-3 animate-bounce"
+        >
+          <span className="text-neutral-200">Resume cleared.</span>
+          <button
+            type="button"
+            onClick={handleUndoClear}
+            className="px-2.5 py-1 bg-white text-black font-semibold rounded-xs text-xs hover:bg-neutral-200 transition-colors cursor-pointer shadow-xs"
+          >
+            Undo (Restore)
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setUndoBackup(null);
+              if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
+            }}
+            className="text-neutral-400 hover:text-white text-xs cursor-pointer ml-1 p-0.5"
+            aria-label="Dismiss undo notification"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Toast Notification for PDF Import */}
       {importStatus && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-neutral-900 text-white px-4 py-2 rounded-md shadow-lg border border-neutral-700 text-xs flex items-center gap-2 animate-bounce">
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-neutral-900 text-white px-4 py-2 rounded-md shadow-lg border border-neutral-700 text-xs flex items-center gap-2 animate-bounce"
+        >
           {isImporting ? (
             <svg className="w-4 h-4 animate-spin text-teal-400" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -387,16 +452,20 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
             <svg className="w-3.5 h-3.5 text-[#008c9e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
-            <span>{isImporting ? 'Importing...' : 'Import PDF'}</span>
+            <span>{isImporting ? 'Importing…' : 'Import PDF'}</span>
           </button>
 
-          <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-mono text-mute">
+          <span
+            role="status"
+            aria-live="polite"
+            className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-mono text-mute"
+          >
             <span
               className={`w-1.5 h-1.5 rounded-full ${
                 saveStatus === 'saved' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'
               }`}
             />
-            {saveStatus === 'saved' ? 'Autosaved' : 'Saving...'}
+            {saveStatus === 'saved' ? 'Autosaved' : 'Saving…'}
           </span>
 
           <div className="h-4 w-px bg-hairline hidden sm:block" />

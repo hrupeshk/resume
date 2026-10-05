@@ -203,7 +203,7 @@ export default function SkillsProjectsForm({
             onChange={(e) => setSkillInput(e.target.value)}
             onKeyDown={handleKeyDownSkill}
             placeholder="Type a skill (e.g. React, Python, Django, Docker) and press Enter"
-            className="flex-1 px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+            className="flex-1 px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
           />
           <button
             type="button"
@@ -332,7 +332,7 @@ export default function SkillsProjectsForm({
                       value={proj.name}
                       onChange={(e) => handleUpdateProject(idx, 'name', e.target.value)}
                       placeholder="e.g. Cars Club – Vehicle Resale Platform"
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                     />
                   </div>
 
@@ -344,21 +344,21 @@ export default function SkillsProjectsForm({
                       type="url"
                       value={proj.link || ''}
                       onChange={(e) => handleUpdateProject(idx, 'link', e.target.value)}
-                      placeholder="https://github.com/..."
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                      placeholder="https://github.com/…"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
                     <label className="block text-[11px] font-medium text-body mb-1">
-                      Tech Stack & Description (e.g. Tech: React, Tailwind, Django...)
+                      Tech Stack & Description (e.g. Tech: React, Tailwind, Django…)
                     </label>
                     <textarea
                       rows={3}
                       value={proj.description}
                       onChange={(e) => handleUpdateProject(idx, 'description', e.target.value)}
-                      placeholder="Tech: ReactJS, Tailwind CSS, Django, MongoDB, REST API&#10;Developed a full-stack vehicle resale web app enabling dynamic filtering..."
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink leading-relaxed"
+                      placeholder="Tech: ReactJS, Tailwind CSS, Django, MongoDB, REST API&#10;Developed a full-stack vehicle resale web app enabling dynamic filtering…"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink leading-relaxed"
                     />
                   </div>
                 </div>
@@ -404,7 +404,7 @@ export default function SkillsProjectsForm({
                       value={cert.name}
                       onChange={(e) => handleUpdateCert(idx, 'name', e.target.value)}
                       placeholder="Certificate Title (e.g. Google IT Support)"
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                     />
                   </div>
                   <div className="sm:col-span-4">
@@ -413,7 +413,7 @@ export default function SkillsProjectsForm({
                       value={cert.issuer}
                       onChange={(e) => handleUpdateCert(idx, 'issuer', e.target.value)}
                       placeholder="Issuer (e.g. Coursera, NPTEL)"
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                     />
                   </div>
                   <div className="sm:col-span-2">
@@ -422,7 +422,7 @@ export default function SkillsProjectsForm({
                       value={cert.year}
                       onChange={(e) => handleUpdateCert(idx, 'year', e.target.value)}
                       placeholder="Year (e.g. 2024)"
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                     />
                   </div>
                   <div className="sm:col-span-1 flex items-center justify-end gap-1">
@@ -463,7 +463,7 @@ export default function SkillsProjectsForm({
                     value={cert.description || ''}
                     onChange={(e) => handleUpdateCert(idx, 'description', e.target.value)}
                     placeholder="Brief description or competencies gained (optional)"
-                    className="w-full px-3 py-1 rounded-sm border border-hairline bg-canvas-elevated text-ink text-[11px] focus:outline-none focus:border-ink"
+                    className="w-full px-3 py-1 rounded-sm border border-hairline bg-canvas-elevated text-ink text-[11px] focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                   />
                 </div>
               </div>
@@ -508,12 +508,12 @@ export default function SkillsProjectsForm({
                   value={lang.language}
                   onChange={(e) => handleUpdateLanguage(idx, 'language', e.target.value)}
                   placeholder="Language (e.g. English, Hindi)"
-                  className="w-1/2 px-2.5 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                  className="w-1/2 px-2.5 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                 />
                 <select
                   value={lang.proficiency}
                   onChange={(e) => handleUpdateLanguage(idx, 'proficiency', e.target.value)}
-                  className="w-1/2 px-2 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink cursor-pointer"
+                  className="w-1/2 px-2 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink cursor-pointer"
                 >
                   <option value="Native or Bilingual">Native or Bilingual</option>
                   <option value="Full Professional">Full Professional</option>
@@ -637,7 +637,7 @@ export default function SkillsProjectsForm({
                       value={v.organization}
                       onChange={(e) => handleUpdateVolunteer(idx, 'organization', e.target.value)}
                       placeholder="e.g. National Service Scheme (NSS)"
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                     />
                   </div>
 
@@ -650,7 +650,7 @@ export default function SkillsProjectsForm({
                       value={v.role || ''}
                       onChange={(e) => handleUpdateVolunteer(idx, 'role', e.target.value)}
                       placeholder="e.g. Leadership & Volunteer Experience"
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                     />
                   </div>
 
@@ -663,7 +663,7 @@ export default function SkillsProjectsForm({
                       value={v.startDate || ''}
                       onChange={(e) => handleUpdateVolunteer(idx, 'startDate', e.target.value)}
                       placeholder="e.g. 02/2022"
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                     />
                   </div>
 
@@ -676,7 +676,7 @@ export default function SkillsProjectsForm({
                       value={v.endDate || ''}
                       onChange={(e) => handleUpdateVolunteer(idx, 'endDate', e.target.value)}
                       placeholder="e.g. 12/2023"
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                     />
                   </div>
 
@@ -688,8 +688,8 @@ export default function SkillsProjectsForm({
                       rows={2}
                       value={v.description || ''}
                       onChange={(e) => handleUpdateVolunteer(idx, 'description', e.target.value)}
-                      placeholder="Actively served in the NSS, demonstrating leadership and organizing events..."
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink leading-relaxed"
+                      placeholder="Actively served in the NSS, demonstrating leadership and organizing events…"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink leading-relaxed"
                     />
                   </div>
                 </div>

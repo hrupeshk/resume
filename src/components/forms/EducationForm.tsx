@@ -128,7 +128,7 @@ export default function EducationForm({
                     value={item.institution}
                     onChange={(e) => handleUpdateEntry(idx, 'institution', e.target.value)}
                     placeholder="e.g. UC Berkeley"
-                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                   />
                 </div>
 
@@ -141,7 +141,7 @@ export default function EducationForm({
                     value={item.degree}
                     onChange={(e) => handleUpdateEntry(idx, 'degree', e.target.value)}
                     placeholder="e.g. B.S."
-                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                   />
                 </div>
 
@@ -154,7 +154,7 @@ export default function EducationForm({
                     value={item.field || ''}
                     onChange={(e) => handleUpdateEntry(idx, 'field', e.target.value)}
                     placeholder="e.g. Computer Science"
-                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                   />
                 </div>
 
@@ -167,7 +167,7 @@ export default function EducationForm({
                     value={item.startDate}
                     onChange={(e) => handleUpdateEntry(idx, 'startDate', e.target.value)}
                     placeholder="e.g. 2017"
-                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                   />
                 </div>
 
@@ -180,7 +180,7 @@ export default function EducationForm({
                     value={item.endDate}
                     onChange={(e) => handleUpdateEntry(idx, 'endDate', e.target.value)}
                     placeholder="e.g. 2021"
-                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                   />
                 </div>
 
@@ -193,7 +193,7 @@ export default function EducationForm({
                     value={item.grade || ''}
                     onChange={(e) => handleUpdateEntry(idx, 'grade', e.target.value)}
                     placeholder="e.g. 3.85 GPA or First Class"
-                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+                    className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                   />
                 </div>
               </div>
