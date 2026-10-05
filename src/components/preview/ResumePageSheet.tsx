@@ -13,6 +13,7 @@ interface ResumePageSheetProps {
   totalPages: number;
   scale: number;
   children: React.ReactNode;
+  noPadding?: boolean;
 }
 
 export default function ResumePageSheet({
@@ -20,6 +21,7 @@ export default function ResumePageSheet({
   totalPages,
   scale,
   children,
+  noPadding = false,
 }: ResumePageSheetProps) {
   const isLastPage = pageNumber === totalPages;
 
@@ -46,23 +48,23 @@ export default function ResumePageSheet({
           width: `${A4_WIDTH_PX}px`,
           height: `${A4_HEIGHT_PX}px`,
           boxSizing: 'border-box',
-          paddingTop: `${PAGE_TOP_MARGIN_PX}px`,
-          paddingLeft: `${PAGE_SIDE_MARGIN_PX}px`,
-          paddingRight: `${PAGE_SIDE_MARGIN_PX}px`,
-          paddingBottom: `${PAGE_BOTTOM_MARGIN_PX}px`,
+          paddingTop: noPadding ? '0px' : `${PAGE_TOP_MARGIN_PX}px`,
+          paddingLeft: noPadding ? '0px' : `${PAGE_SIDE_MARGIN_PX}px`,
+          paddingRight: noPadding ? '0px' : `${PAGE_SIDE_MARGIN_PX}px`,
+          paddingBottom: noPadding ? '0px' : `${PAGE_BOTTOM_MARGIN_PX}px`,
           overflow: 'hidden',
           position: 'relative',
-          '--page-top-margin': `${PAGE_TOP_MARGIN_PX}px`,
-          '--page-bottom-margin': `${PAGE_BOTTOM_MARGIN_PX}px`,
-          '--page-side-margin': `${PAGE_SIDE_MARGIN_PX}px`,
+          '--page-top-margin': noPadding ? '0px' : `${PAGE_TOP_MARGIN_PX}px`,
+          '--page-bottom-margin': noPadding ? '0px' : `${PAGE_BOTTOM_MARGIN_PX}px`,
+          '--page-side-margin': noPadding ? '0px' : `${PAGE_SIDE_MARGIN_PX}px`,
         } as React.CSSProperties}
         className="resume-page-sheet bg-white rounded-xs border border-neutral-300/80 shadow-md text-neutral-900 print:!rounded-none print:!border-none print:!shadow-none print:!w-[210mm] print:!h-[297mm] print:!min-h-[297mm] print:!max-h-[297mm] print:!overflow-hidden print:!box-border print:!m-0"
       >
         {/* Printable Content Area with exact width */}
         <div
           style={{
-            width: `${CONTENT_WIDTH_PX}px`,
-            maxWidth: `${CONTENT_WIDTH_PX}px`,
+            width: noPadding ? '100%' : `${CONTENT_WIDTH_PX}px`,
+            maxWidth: noPadding ? '100%' : `${CONTENT_WIDTH_PX}px`,
             boxSizing: 'border-box',
           }}
           className="resume-page-content mx-auto h-full overflow-visible print:!w-full print:!max-w-none print:!h-full print:!max-h-full print:!overflow-visible"

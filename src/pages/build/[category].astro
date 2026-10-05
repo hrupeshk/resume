@@ -10,8 +10,32 @@ export function getStaticPaths() {
 }
 
 const { category } = Astro.params as { category: DocumentCategory };
+
+const metadata: Record<DocumentCategory, { title: string; description: string }> = {
+  tech_resume: {
+    title: 'Free Tech Resume Builder (Software Engineer, Full-Stack, DevOps) | ATS Compliant',
+    description: 'Create professional tech resumes with FAANG Classic (Jake’s) and Novorésumé 2-column layouts. 100% free, no login required, instant ATS-ready PDF download.',
+  },
+  non_tech_resume: {
+    title: 'Free Corporate & Non-Tech Resume Builder (MBA, Management, HR, Operations)',
+    description: 'Build executive leadership resumes with core competencies matrices and professional references. Free forever, no watermark, instant PDF export.',
+  },
+  private_job_resume: {
+    title: 'Free Private Job Resume Builder (Freshers & Experienced) | Banking, Sales, BPO',
+    description: 'Create ready-to-submit private sector resumes for banking, logistics, accounting, and sales roles with verified references. 100% free with no login.',
+  },
+  marriage_biodata: {
+    title: 'Free Indian Marriage Biodata Maker with Photo & Kundali | Traditional Maroon & Gold Formats',
+    description: 'Design beautiful, traditional Indian marriage biodata profiles with horoscope, family background, and photo upload. Free download, zero login.',
+  },
+};
+
+const pageMeta = metadata[category] || {
+  title: 'Free Resume & Biodata Builder — 100% Free, No Login',
+  description: 'Build professional resumes and Indian marriage biodata for free. No login required, unlimited downloads.',
+};
 ---
 
-<Layout title={`Builder — ${category} | Resume & Biodata`}>
+<Layout title={pageMeta.title} description={pageMeta.description}>
   <ResumeBuilder client:load category={category} />
 </Layout>

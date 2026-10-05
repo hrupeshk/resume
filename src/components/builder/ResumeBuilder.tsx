@@ -1,15 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type {
   DocumentCategory,
+  DocumentData,
   ResumeDocument,
   ResumePersonalInfo,
   EducationEntry,
   ExperienceEntry,
   ProjectEntry,
   CertificationEntry,
+  BiodataDocument,
+  BiodataPersonalInfo,
+  BiodataEducationEntry,
+  BiodataOccupation,
+  BiodataFamily,
+  BiodataHoroscope,
+  BiodataContact,
 } from '../../lib/schema';
+import { isBiodataDocument, isResumeDocument } from '../../lib/schema';
 import { loadSavedDocument, saveDocument, clearSavedDocument } from '../../lib/storage';
-import { getInitialDocument, createEmptyResume, getSampleDocument } from '../../lib/defaults';
+import { getInitialDocument, createEmptyResume, createEmptyBiodata, getSampleDocument } from '../../lib/defaults';
 import { getNextTemplateId } from '../../lib/templateRegistry';
 import { exportToPdf } from '../../lib/pdf';
 import { parseResumePdf } from '../../lib/pdfParser';
@@ -19,6 +28,10 @@ import PersonalForm from '../forms/PersonalForm';
 import EducationForm from '../forms/EducationForm';
 import ExperienceForm from '../forms/ExperienceForm';
 import SkillsProjectsForm from '../forms/SkillsProjectsForm';
+import BiodataPersonalForm from '../forms/biodata/BiodataPersonalForm';
+import BiodataEducationOccupationForm from '../forms/biodata/BiodataEducationOccupationForm';
+import BiodataFamilyForm from '../forms/biodata/BiodataFamilyForm';
+import BiodataHoroscopePreferencesForm from '../forms/biodata/BiodataHoroscopePreferencesForm';
 import PreviewPane from '../preview/PreviewPane';
 
 interface ResumeBuilderProps {
@@ -33,23 +46,33 @@ const categoryLabels: Record<string, string> = {
 };
 
 export default function ResumeBuilder({ category }: ResumeBuilderProps) {
-  const builderSteps: StepItem[] = [
-    { id: 'personal', title: 'Personal Info', description: 'Contact & Summary' },
-    { id: 'experience', title: 'Experience', description: 'Roles & Impact' },
-    { id: 'education', title: 'Education', description: 'Degrees & Schools' },
-    {
-      id: 'skills_projects',
-      title: category === 'tech_resume' ? 'Skills & Projects' : 'Skills & References',
-      description: category === 'tech_resume' ? 'Stack & Work' : 'Skills & Credentials',
-    },
-  ];
+  const isBio = category === 'marriage_biodata';
+
+  const builderSteps: StepItem[] = isBio
+    ? [
+        { id: 'bio_personal', title: 'Personal Info', description: 'Birth & Identity' },
+        { id: 'bio_education', title: 'Education & Career', description: 'Degrees & Profession' },
+        { id: 'bio_family', title: 'Family Details', description: 'Parents & Siblings' },
+        { id: 'bio_horoscope', title: 'Horoscope & Contact', description: 'Kundali & Residence' },
+      ]
+    : [
+        { id: 'personal', title: 'Personal Info', description: 'Contact & Summary' },
+        { id: 'experience', title: 'Experience', description: 'Roles & Impact' },
+        { id: 'education', title: 'Education', description: 'Degrees & Schools' },
+        {
+          id: 'skills_projects',
+          title: category === 'tech_resume' ? 'Skills & Projects' : 'Skills & References',
+          description: category === 'tech_resume' ? 'Stack & Work' : 'Skills & Credentials',
+        },
+      ];
+
   // Initialize state from localStorage if available, or fall back to default
-  const [doc, setDoc] = useState<ResumeDocument>(() => {
+  const [doc, setDoc] = useState<DocumentData>(() => {
     const saved = loadSavedDocument(category);
     if (saved && saved.category === category) {
-      return saved as ResumeDocument;
+      return saved;
     }
-    return getInitialDocument(category) as ResumeDocument;
+    return getInitialDocument(category);
   });
 
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
@@ -59,7 +82,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastShortcutTimeRef = useRef<number>(0);
-  const [undoBackup, setUndoBackup] = useState<ResumeDocument | null>(null);
+  const [undoBackup, setUndoBackup] = useState<DocumentData | null>(null);
   const undoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Universal keyboard shortcut Alt+P (Left Alt or Right Alt / AltGr), Mac Option+P, or Ctrl+\
@@ -136,69 +159,158 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
     return () => window.removeEventListener('resume:update-photo', handlePhotoEvent);
   }, []);
 
-  // Section update handlers
+  // Section update handlers for Biodata
+  const handleUpdateBiodataPersonal = (personalInfo: BiodataPersonalInfo) => {
+    setDoc((prev) => ({ ...(prev as BiodataDocument), personalInfo }));
+  };
+
+  const handleUpdateBiodataEducation = (education: BiodataEducationEntry[]) => {
+    setDoc((prev) => {
+      const b = prev as BiodataDocument;
+      return {
+        ...b,
+        sections: { ...b.sections, education },
+      };
+    });
+  };
+
+  const handleUpdateBiodataOccupation = (occupation: BiodataOccupation) => {
+    setDoc((prev) => {
+      const b = prev as BiodataDocument;
+      return {
+        ...b,
+        sections: { ...b.sections, occupation },
+      };
+    });
+  };
+
+  const handleUpdateBiodataFamily = (family: BiodataFamily) => {
+    setDoc((prev) => {
+      const b = prev as BiodataDocument;
+      return {
+        ...b,
+        sections: { ...b.sections, family },
+      };
+    });
+  };
+
+  const handleUpdateBiodataHoroscope = (horoscope: BiodataHoroscope) => {
+    setDoc((prev) => {
+      const b = prev as BiodataDocument;
+      return {
+        ...b,
+        sections: { ...b.sections, horoscope },
+      };
+    });
+  };
+
+  const handleUpdateBiodataContact = (contact: BiodataContact) => {
+    setDoc((prev) => {
+      const b = prev as BiodataDocument;
+      return {
+        ...b,
+        sections: { ...b.sections, contact },
+      };
+    });
+  };
+
+  const handleUpdatePartnerPreferences = (partnerPreferences: string) => {
+    setDoc((prev) => {
+      const b = prev as BiodataDocument;
+      return {
+        ...b,
+        sections: { ...b.sections, partnerPreferences },
+      };
+    });
+  };
+
+  // Section update handlers for Resume
   const handleUpdatePersonalInfo = (personalInfo: ResumePersonalInfo) => {
-    setDoc((prev) => ({ ...prev, personalInfo }));
+    setDoc((prev) => ({ ...(prev as ResumeDocument), personalInfo }));
   };
 
   const handleUpdateSummary = (summary: string) => {
-    setDoc((prev) => ({ ...prev, summary }));
+    setDoc((prev) => ({ ...(prev as ResumeDocument), summary }));
   };
 
   const handleUpdateEducation = (education: EducationEntry[]) => {
-    setDoc((prev) => ({
-      ...prev,
-      sections: { ...prev.sections, education },
-    }));
+    setDoc((prev) => {
+      const r = prev as ResumeDocument;
+      return {
+        ...r,
+        sections: { ...r.sections, education },
+      };
+    });
   };
 
   const handleUpdateExperience = (experience: ExperienceEntry[]) => {
-    setDoc((prev) => ({
-      ...prev,
-      sections: { ...prev.sections, experience },
-    }));
+    setDoc((prev) => {
+      const r = prev as ResumeDocument;
+      return {
+        ...r,
+        sections: { ...r.sections, experience },
+      };
+    });
   };
 
   const handleUpdateSkills = (skills: string[]) => {
-    setDoc((prev) => ({
-      ...prev,
-      sections: { ...prev.sections, skills },
-    }));
+    setDoc((prev) => {
+      const r = prev as ResumeDocument;
+      return {
+        ...r,
+        sections: { ...r.sections, skills },
+      };
+    });
   };
 
   const handleUpdateProjects = (projects: ProjectEntry[]) => {
-    setDoc((prev) => ({
-      ...prev,
-      sections: { ...prev.sections, projects },
-    }));
+    setDoc((prev) => {
+      const r = prev as ResumeDocument;
+      return {
+        ...r,
+        sections: { ...r.sections, projects },
+      };
+    });
   };
 
   const handleUpdateCertifications = (certifications: CertificationEntry[]) => {
-    setDoc((prev) => ({
-      ...prev,
-      sections: { ...prev.sections, certifications },
-    }));
+    setDoc((prev) => {
+      const r = prev as ResumeDocument;
+      return {
+        ...r,
+        sections: { ...r.sections, certifications },
+      };
+    });
   };
 
   const handleUpdateLanguages = (languages: any[]) => {
-    setDoc((prev) => ({
-      ...prev,
-      sections: { ...prev.sections, languages },
-    }));
+    setDoc((prev) => {
+      const r = prev as ResumeDocument;
+      return {
+        ...r,
+        sections: { ...r.sections, languages },
+      };
+    });
   };
 
   const handleUpdateVolunteer = (volunteer: any[]) => {
-    setDoc((prev) => ({
-      ...prev,
-      sections: { ...prev.sections, volunteer },
-    }));
+    setDoc((prev) => {
+      const r = prev as ResumeDocument;
+      return {
+        ...r,
+        sections: { ...r.sections, volunteer },
+      };
+    });
   };
 
   const handleUpdateReferences = (references: any[]) => {
-    setDoc((prev) => ({
-      ...prev,
-      sections: { ...prev.sections, references },
-    }));
+    setDoc((prev) => {
+      const r = prev as ResumeDocument;
+      return {
+        ...r,
+        sections: { ...r.sections, references },
+      };
+    });
   };
 
   // Template handlers (zero data loss guarantee)
@@ -213,7 +325,32 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
 
   // Reset / Sample handlers with Undo Safeguard
   const handleClearAll = () => {
-    // Check if the document has any meaningful content before prompting
+    if (isBiodataDocument(doc)) {
+      const hasBioContent = Boolean(
+        doc.personalInfo.fullName.trim() ||
+        doc.personalInfo.dateOfBirth.trim() ||
+        doc.sections.education.length > 0 ||
+        doc.sections.occupation?.designation?.trim() ||
+        doc.sections.family?.fatherName?.trim() ||
+        doc.sections.horoscope?.gothra?.trim()
+      );
+
+      if (!hasBioContent) return;
+
+      if (window.confirm('Clear all fields and start with a blank biodata? (You can Undo if needed)')) {
+        setUndoBackup({ ...doc });
+        clearSavedDocument(category);
+        setDoc(createEmptyBiodata());
+
+        if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
+        undoTimeoutRef.current = setTimeout(() => {
+          setUndoBackup(null);
+        }, 10000);
+      }
+      return;
+    }
+
+    // Check if resume document has any meaningful content before prompting
     const hasContent = Boolean(
       doc.personalInfo.fullName.trim() ||
       doc.personalInfo.email.trim() ||
@@ -329,10 +466,13 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
 
   // PDF Export
   const handleExportPdf = () => {
-    const nameSlug = (doc.personalInfo.fullName || 'Resume')
+    const isBio = doc.category === 'marriage_biodata';
+    const fallback = isBio ? 'Biodata' : 'Resume';
+    const suffix = isBio ? 'Marriage_Biodata' : 'Resume';
+    const nameSlug = (doc.personalInfo.fullName || fallback)
       .trim()
       .replace(/\s+/g, '_');
-    exportToPdf(`${nameSlug}_Resume.pdf`);
+    exportToPdf(`${nameSlug}_${suffix}.pdf`);
   };
 
   return (
@@ -344,7 +484,9 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
           aria-live="polite"
           className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-neutral-950 text-white px-4 py-2.5 rounded-md shadow-2xl border border-neutral-700 text-xs flex items-center gap-3 animate-bounce"
         >
-          <span className="text-neutral-200">Resume cleared.</span>
+          <span className="text-neutral-200">
+            {category === 'marriage_biodata' ? 'Biodata' : 'Resume'} cleared.
+          </span>
           <button
             type="button"
             onClick={handleUndoClear}
@@ -451,26 +593,30 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Import Resume Button */}
-          <input
-            type="file"
-            ref={fileInputRef}
-            accept="application/pdf,.pdf"
-            onChange={handlePdfUpload}
-            className="hidden"
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isImporting}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-[#008c9e] bg-teal-50/70 text-[#008c9e] hover:bg-teal-100 text-xs font-semibold transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
-            title="Upload any existing resume PDF to automatically populate all form fields"
-          >
-            <svg className="w-3.5 h-3.5 text-[#008c9e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
-            <span>{isImporting ? 'Importing…' : 'Import PDF'}</span>
-          </button>
+          {/* Import Resume Button (resumes only) */}
+          {category !== 'marriage_biodata' && (
+            <>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="application/pdf,.pdf"
+                onChange={handlePdfUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isImporting}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-[#008c9e] bg-teal-50/70 text-[#008c9e] hover:bg-teal-100 text-xs font-semibold transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
+                title="Upload any existing resume PDF to automatically populate all form fields"
+              >
+                <svg className="w-3.5 h-3.5 text-[#008c9e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <span>{isImporting ? 'Importing…' : 'Import PDF'}</span>
+              </button>
+            </>
+          )}
 
           <span
             role="status"
@@ -531,44 +677,104 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
 
               {/* Active Step Form View */}
               <div className="min-h-[380px]">
-                {currentStepIndex === 0 && (
-                  <PersonalForm
-                    personalInfo={doc.personalInfo}
-                    summary={doc.summary}
-                    onChangePersonalInfo={handleUpdatePersonalInfo}
-                    onChangeSummary={handleUpdateSummary}
-                  />
-                )}
+                {isBiodataDocument(doc) ? (
+                  <>
+                    {currentStepIndex === 0 && (
+                      <BiodataPersonalForm
+                        personalInfo={doc.personalInfo}
+                        onChangePersonalInfo={handleUpdateBiodataPersonal}
+                      />
+                    )}
 
-                {currentStepIndex === 1 && (
-                  <ExperienceForm
-                    experience={doc.sections.experience}
-                    onChangeExperience={handleUpdateExperience}
-                  />
-                )}
+                    {currentStepIndex === 1 && (
+                      <BiodataEducationOccupationForm
+                        education={doc.sections.education || []}
+                        occupation={
+                          doc.sections.occupation || { designation: '', company: '', income: '' }
+                        }
+                        onChangeEducation={handleUpdateBiodataEducation}
+                        onChangeOccupation={handleUpdateBiodataOccupation}
+                      />
+                    )}
 
-                {currentStepIndex === 2 && (
-                  <EducationForm
-                    education={doc.sections.education}
-                    onChangeEducation={handleUpdateEducation}
-                  />
-                )}
+                    {currentStepIndex === 2 && (
+                      <BiodataFamilyForm
+                        family={
+                          doc.sections.family || {
+                            fatherName: '',
+                            fatherOccupation: '',
+                            motherName: '',
+                            motherOccupation: '',
+                            siblings: [],
+                            nativePlace: '',
+                          }
+                        }
+                        onChangeFamily={handleUpdateBiodataFamily}
+                      />
+                    )}
 
-                {currentStepIndex === 3 && (
-                  <SkillsProjectsForm
-                    skills={doc.sections.skills}
-                    projects={doc.sections.projects || []}
-                    certifications={doc.sections.certifications || []}
-                    languages={doc.sections.languages || []}
-                    volunteer={doc.sections.volunteer || []}
-                    references={doc.sections.references || []}
-                    onChangeSkills={handleUpdateSkills}
-                    onChangeProjects={handleUpdateProjects}
-                    onChangeCertifications={handleUpdateCertifications}
-                    onChangeLanguages={handleUpdateLanguages}
-                    onChangeVolunteer={handleUpdateVolunteer}
-                    onChangeReferences={handleUpdateReferences}
-                  />
+                    {currentStepIndex === 3 && (
+                      <BiodataHoroscopePreferencesForm
+                        horoscope={
+                          doc.sections.horoscope || {
+                            gothra: '',
+                            nakshatra: '',
+                            rashi: '',
+                            manglik: '',
+                          }
+                        }
+                        contact={
+                          doc.sections.contact || { address: '', referencePhone: '' }
+                        }
+                        partnerPreferences={doc.sections.partnerPreferences || ''}
+                        onChangeHoroscope={handleUpdateBiodataHoroscope}
+                        onChangeContact={handleUpdateBiodataContact}
+                        onChangePartnerPreferences={handleUpdatePartnerPreferences}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {currentStepIndex === 0 && (
+                      <PersonalForm
+                        personalInfo={doc.personalInfo}
+                        summary={doc.summary}
+                        onChangePersonalInfo={handleUpdatePersonalInfo}
+                        onChangeSummary={handleUpdateSummary}
+                      />
+                    )}
+
+                    {currentStepIndex === 1 && (
+                      <ExperienceForm
+                        experience={doc.sections.experience}
+                        onChangeExperience={handleUpdateExperience}
+                      />
+                    )}
+
+                    {currentStepIndex === 2 && (
+                      <EducationForm
+                        education={doc.sections.education}
+                        onChangeEducation={handleUpdateEducation}
+                      />
+                    )}
+
+                    {currentStepIndex === 3 && (
+                      <SkillsProjectsForm
+                        skills={doc.sections.skills}
+                        projects={doc.sections.projects || []}
+                        certifications={doc.sections.certifications || []}
+                        languages={doc.sections.languages || []}
+                        volunteer={doc.sections.volunteer || []}
+                        references={doc.sections.references || []}
+                        onChangeSkills={handleUpdateSkills}
+                        onChangeProjects={handleUpdateProjects}
+                        onChangeCertifications={handleUpdateCertifications}
+                        onChangeLanguages={handleUpdateLanguages}
+                        onChangeVolunteer={handleUpdateVolunteer}
+                        onChangeReferences={handleUpdateReferences}
+                      />
+                    )}
+                  </>
                 )}
               </div>
 
@@ -603,7 +809,9 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                     onClick={handleExportPdf}
                     className="px-4 py-2 rounded-sm bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors shadow-xs cursor-pointer"
                   >
-                    Download Resume PDF ✓
+                    {doc.category === 'marriage_biodata'
+                      ? 'Download Biodata PDF ✓'
+                      : 'Download Resume PDF ✓'}
                   </button>
                 )}
               </div>

@@ -1,4 +1,4 @@
-import type { DocumentCategory, ResumeCategory, ResumeDocument, DocumentData } from './schema';
+import type { DocumentCategory, ResumeCategory, ResumeDocument, BiodataDocument, DocumentData } from './schema';
 
 /**
  * Creates a clean, empty resume document for a specific category.
@@ -392,9 +392,132 @@ export const samplePrivateJobResume: ResumeDocument = {
 };
 
 /**
+ * Sample Indian Marriage Biodata document with traditional details:
+ * Horoscope, Family, Education, Occupation, and Partner Preferences.
+ */
+export const sampleMarriageBiodata: BiodataDocument = {
+  id: 'sample-biodata-001',
+  category: 'marriage_biodata',
+  templateId: 'traditional-maroon-01',
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: new Date().toISOString(),
+  personalInfo: {
+    fullName: 'Aditya Sharma',
+    dateOfBirth: '14 August 1996',
+    timeOfBirth: '07:45 AM',
+    placeOfBirth: 'Jaipur, Rajasthan',
+    height: "5' 11\" (180 cm)",
+    complexion: 'Fair',
+    diet: 'Vegetarian',
+    photoUrl: '',
+    phone: '+91 98765 43210',
+    email: 'aditya.sharma96@example.com',
+  },
+  sections: {
+    education: [
+      {
+        degree: 'B.Tech in Computer Science & Engineering',
+        institution: 'NIT Jaipur (MNIT), 2018',
+      },
+      {
+        degree: 'Senior Secondary (CBSE - 94%)',
+        institution: 'St. Xavier’s Senior Secondary School, Jaipur',
+      },
+    ],
+    occupation: {
+      designation: 'Senior Software Engineer',
+      company: 'Microsoft India, Hyderabad',
+      income: '₹32 LPA',
+    },
+    family: {
+      fatherName: 'Dr. Ramesh Chandra Sharma',
+      fatherOccupation: 'Professor & Head of Department (Physics), Rajasthan University',
+      motherName: 'Mrs. Sunita Sharma',
+      motherOccupation: 'Homemaker',
+      siblings: [
+        {
+          name: 'Pooja Sharma',
+          relation: 'Elder Sister (Married)',
+          occupation: 'Architect, settled in Bengaluru',
+        },
+      ],
+      nativePlace: 'Jaipur, Rajasthan (Ancestral: Alwar)',
+    },
+    horoscope: {
+      gothra: 'Kaushik',
+      nakshatra: 'Pushya',
+      rashi: 'Karka (Cancer)',
+      manglik: 'Non-Manglik',
+    },
+    contact: {
+      address: 'B-42, Shyam Nagar, Ajmer Road, Jaipur - 302019',
+      referencePhone: '+91 94140 12345 (Father)',
+    },
+    partnerPreferences:
+      'Looking for an educated, family-oriented, and understanding partner with good cultural values. Professionally qualified (B.Tech, MBA, CA, Doctor, or equivalent). Respectful towards family traditions while holding a progressive mindset.',
+  },
+};
+
+/**
+ * Creates a clean, empty marriage biodata document.
+ */
+export function createEmptyBiodata(): BiodataDocument {
+  const now = new Date().toISOString();
+  return {
+    id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'biodata-' + Date.now(),
+    category: 'marriage_biodata',
+    templateId: 'traditional-maroon-01',
+    createdAt: now,
+    updatedAt: now,
+    personalInfo: {
+      fullName: '',
+      dateOfBirth: '',
+      timeOfBirth: '',
+      placeOfBirth: '',
+      height: '',
+      complexion: '',
+      diet: '',
+      photoUrl: '',
+      phone: '',
+      email: '',
+    },
+    sections: {
+      education: [],
+      occupation: {
+        designation: '',
+        company: '',
+        income: '',
+      },
+      family: {
+        fatherName: '',
+        fatherOccupation: '',
+        motherName: '',
+        motherOccupation: '',
+        siblings: [],
+        nativePlace: '',
+      },
+      horoscope: {
+        gothra: '',
+        nakshatra: '',
+        rashi: '',
+        manglik: '',
+      },
+      contact: {
+        address: '',
+        referencePhone: '',
+      },
+      partnerPreferences: '',
+    },
+  };
+}
+
+/**
  * Retrieves the sample document for a given document category.
  */
-export function getSampleDocument(category: DocumentCategory): ResumeDocument {
+export function getSampleDocument(category: DocumentCategory): DocumentData {
+  if (category === 'marriage_biodata') {
+    return sampleMarriageBiodata;
+  }
   if (category === 'non_tech_resume') {
     return sampleNonTechResume;
   }
@@ -408,6 +531,9 @@ export function getSampleDocument(category: DocumentCategory): ResumeDocument {
  * Creates an initial document for any supported category.
  */
 export function getInitialDocument(category: DocumentCategory): DocumentData {
+  if (category === 'marriage_biodata') {
+    return sampleMarriageBiodata;
+  }
   if (category === 'tech_resume') {
     return sampleTechResume;
   }

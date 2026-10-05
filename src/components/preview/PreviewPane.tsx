@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { ResumeDocument } from '../../lib/schema';
+import type { ResumeDocument, DocumentData } from '../../lib/schema';
+import { isBiodataDocument } from '../../lib/schema';
 import { getTemplateById, getTemplatesForCategory } from '../../lib/templateRegistry';
 import ResumePageSheet from './ResumePageSheet';
 import {
@@ -12,7 +13,7 @@ import {
 } from '../../lib/paginationEngine';
 
 interface PreviewPaneProps {
-  data: ResumeDocument;
+  data: DocumentData;
   onCycleTemplate: () => void;
   onSelectTemplate: (templateId: string) => void;
   onPrint: () => void;
@@ -40,7 +41,9 @@ export default function PreviewPane({
   const currentTemplate = getTemplateById(data.category, data.templateId);
   const TemplateComponent = currentTemplate ? currentTemplate.component : null;
 
-  const [pageSlices, setPageSlices] = useState<ResumeDocument[]>([data]);
+  const [pageSlices, setPageSlices] = useState<ResumeDocument[]>(
+    isBiodataDocument(data) ? [] : [data as ResumeDocument]
+  );
   const [pageCount, setPageCount] = useState<number>(1);
   const [activePage, setActivePage] = useState<number>(1);
   const [isScrolling, setIsScrolling] = useState<boolean>(false);
@@ -110,13 +113,18 @@ export default function PreviewPane({
 
   // Intelligently calculate discrete pages using DOM sandbox measurement
   useEffect(() => {
+    if (isBiodataDocument(data)) {
+      setPageCount(1);
+      return;
+    }
+
     const el = measureRef.current;
     if (!el) return;
 
     const recalculatePagination = () => {
       if (!measureRef.current) return;
       const measurements = measureRenderedTemplate(measureRef.current);
-      const slices = partitionResumeIntoPages(data, measurements, MAX_PAGE_CONTENT_HEIGHT);
+      const slices = partitionResumeIntoPages(data as ResumeDocument, measurements, MAX_PAGE_CONTENT_HEIGHT);
       setPageSlices(slices);
       setPageCount(slices.length);
     };
@@ -426,68 +434,88 @@ export default function PreviewPane({
               willChange: 'transform',
             }}
           >
-            {pageSlices.map((slice, i) => {
-              const pageNum = i + 1;
-              return (
-                <ResumePageSheet
-                  key={pageNum}
-                  pageNumber={pageNum}
-                  totalPages={pageSlices.length}
-                  scale={activeScale}
-                >
-                  <div
-                    style={{
-                      '--fs': fontSizeScale / 100,
-                    } as React.CSSProperties}
-                  >
-                    {TemplateComponent ? (
-                      // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale
-                      <TemplateComponent
-                        data={slice}
-                        pageNumber={pageNum}
-                        totalPages={pageSlices.length}
-                        autoBalance={autoBalance}
-                        spacingDensity={spacingDensity}
-                        columnSplit={columnSplit}
-                        fontSizeScale={fontSizeScale}
-                      />
-                    ) : (
-                      <div className="p-8 text-center text-mute bg-white rounded border border-hairline">
-                        No template found for ID: {data.templateId}
-                      </div>
-                    )}
+            {isBiodataDocument(data) ? (
+              <ResumePageSheet
+                key={1}
+                pageNumber={1}
+                totalPages={1}
+                scale={activeScale}
+                noPadding={true}
+              >
+                {TemplateComponent ? (
+                  <TemplateComponent data={data} />
+                ) : (
+                  <div className="p-8 text-center text-mute bg-white rounded border border-hairline">
+                    No template found for ID: {data.templateId}
                   </div>
-                </ResumePageSheet>
-              );
-            })}
+                )}
+              </ResumePageSheet>
+            ) : (
+              pageSlices.map((slice, i) => {
+                const pageNum = i + 1;
+                return (
+                  <ResumePageSheet
+                    key={pageNum}
+                    pageNumber={pageNum}
+                    totalPages={pageSlices.length}
+                    scale={activeScale}
+                  >
+                    <div
+                      style={{
+                        '--fs': fontSizeScale / 100,
+                      } as React.CSSProperties}
+                    >
+                      {TemplateComponent ? (
+                        // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale
+                        <TemplateComponent
+                          data={slice}
+                          pageNumber={pageNum}
+                          totalPages={pageSlices.length}
+                          autoBalance={autoBalance}
+                          spacingDensity={spacingDensity}
+                          columnSplit={columnSplit}
+                          fontSizeScale={fontSizeScale}
+                        />
+                      ) : (
+                        <div className="p-8 text-center text-mute bg-white rounded border border-hairline">
+                          No template found for ID: {data.templateId}
+                        </div>
+                      )}
+                    </div>
+                  </ResumePageSheet>
+                );
+              })
+            )}
           </div>
 
-          {/* Offscreen Measurement Sandbox (Strictly hidden from screen and print) */}
-          <div
-            id="resume-measure-sandbox"
-            ref={measureRef}
-            style={{
-              position: 'fixed',
-              left: '-99999px',
-              top: 0,
-              width: `${CONTENT_WIDTH_PX}px`,
-              opacity: 0,
-              pointerEvents: 'none',
-              '--fs': fontSizeScale / 100,
-            } as React.CSSProperties}
-            className="no-print pointer-events-none"
-          >
-            {TemplateComponent ? (
-              // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale
-              <TemplateComponent
-                data={data}
-                autoBalance={autoBalance}
-                spacingDensity={spacingDensity}
-                columnSplit={columnSplit}
-                fontSizeScale={fontSizeScale}
-              />
-            ) : null}
-          </div>
+          {/* Offscreen Measurement Sandbox (Strictly hidden from screen and print, resumes only) */}
+          {!isBiodataDocument(data) && (
+            <div
+              id="resume-measure-sandbox"
+              ref={measureRef}
+              style={{
+                position: 'fixed',
+                left: '-99999px',
+                top: 0,
+                width: `${CONTENT_WIDTH_PX}px`,
+                opacity: 0,
+                pointerEvents: 'none',
+                '--fs': fontSizeScale / 100,
+              } as React.CSSProperties}
+              className="no-print pointer-events-none"
+            >
+              {TemplateComponent ? (
+                // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale
+                <TemplateComponent
+                  data={data}
+                  autoBalance={autoBalance}
+                  spacingDensity={spacingDensity}
+                  columnSplit={columnSplit}
+                  fontSizeScale={fontSizeScale}
+                />
+              ) : null}
+            </div>
+          )}
         </div>
       </div>
     </div>

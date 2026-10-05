@@ -6,6 +6,8 @@ import ExecutiveMba from '../components/templates/tech-resume/ExecutiveMba';
 import FlowDeveloper from '../components/templates/tech-resume/FlowDeveloper';
 import MinimalBlueTechResume from '../components/templates/tech-resume/MinimalBlueTechResume';
 import CompactMonoTechResume from '../components/templates/tech-resume/CompactMonoTechResume';
+import TraditionalMaroonBiodata from '../components/templates/marriage-biodata/TraditionalMaroonBiodata';
+import IvoryGoldRoyalBiodata from '../components/templates/marriage-biodata/IvoryGoldRoyalBiodata';
 
 export interface TemplateDefinition {
   id: string;
@@ -152,7 +154,22 @@ export const templates: Record<DocumentCategory, TemplateDefinition[]> = {
     },
   ],
   marriage_biodata: [
-    // Will be populated in Phase 2
+    {
+      id: 'traditional-maroon-01',
+      name: 'Royal Maroon & Gold',
+      description: 'Traditional Vedic layout with ornate double borders, sacred Devanagari invocation, and corner filigrees.',
+      badge: 'Traditional',
+      category: 'marriage_biodata',
+      component: TraditionalMaroonBiodata,
+    },
+    {
+      id: 'ivory-gold-royal-02',
+      name: 'Ivory & Champagne Gold',
+      description: 'Sophisticated modern-traditional layout with twin-column structure, Astro highlights, and royal gold trim.',
+      badge: 'Popular',
+      category: 'marriage_biodata',
+      component: IvoryGoldRoyalBiodata,
+    },
   ],
 };
 
