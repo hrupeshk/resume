@@ -1,14 +1,32 @@
-import type { DocumentCategory, ResumeDocument, DocumentData } from './schema';
+import type { DocumentCategory, ResumeCategory, ResumeDocument, DocumentData } from './schema';
 
 /**
- * Creates a clean, empty tech resume document.
+ * Creates a clean, empty resume document for a specific category.
  */
-export function createEmptyTechResume(): ResumeDocument {
+export function createEmptyResume(category: ResumeCategory = 'tech_resume'): ResumeDocument {
   const now = new Date().toISOString();
+  const defaultTemplateId = category === 'non_tech_resume' ? 'executive-mba-01' : 'modern-split-01';
+
+  const defaultLinks =
+    category === 'tech_resume'
+      ? [
+          { label: 'LinkedIn', url: '' },
+          { label: 'GitHub', url: '' },
+        ]
+      : category === 'non_tech_resume'
+      ? [
+          { label: 'LinkedIn', url: '' },
+          { label: 'Portfolio', url: '' },
+        ]
+      : [
+          { label: 'LinkedIn', url: '' },
+          { label: 'Website', url: '' },
+        ];
+
   return {
     id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'doc-' + Date.now(),
-    category: 'tech_resume',
-    templateId: 'modern-split-01',
+    category,
+    templateId: defaultTemplateId,
     createdAt: now,
     updatedAt: now,
     personalInfo: {
@@ -18,10 +36,7 @@ export function createEmptyTechResume(): ResumeDocument {
       phone: '',
       location: '',
       photoUrl: '',
-      links: [
-        { label: 'LinkedIn', url: '' },
-        { label: 'GitHub', url: '' },
-      ],
+      links: defaultLinks,
     },
     summary: '',
     sections: {
@@ -30,10 +45,18 @@ export function createEmptyTechResume(): ResumeDocument {
       skills: [],
       projects: [],
       certifications: [],
+      references: [],
       languages: [],
       volunteer: [],
     },
   };
+}
+
+/**
+ * Backwards-compatible alias for creating an empty tech resume.
+ */
+export function createEmptyTechResume(): ResumeDocument {
+  return createEmptyResume('tech_resume');
 }
 
 /**
@@ -165,11 +188,234 @@ export const sampleTechResume: ResumeDocument = {
 };
 
 /**
+ * Sample Corporate & Non-Tech Resume data tailored for Management,
+ * HR, Operations, Strategy, and MBA candidates.
+ */
+export const sampleNonTechResume: ResumeDocument = {
+  id: 'sample-non-tech-001',
+  category: 'non_tech_resume',
+  templateId: 'executive-mba-01',
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: new Date().toISOString(),
+  personalInfo: {
+    fullName: 'Priya Sharma',
+    title: 'Senior Operations & Project Lead',
+    email: 'priya.sharma@example.com',
+    phone: '+91 98765 43210',
+    location: 'Bengaluru, India',
+    photoUrl: '',
+    links: [
+      { label: 'LinkedIn', url: 'https://linkedin.com/in/priya-sharma-ops' },
+      { label: 'Portfolio', url: 'https://priyasharma.me' },
+    ],
+  },
+  summary:
+    'Strategic Operations & Project Lead with 6+ years of cross-functional experience optimizing corporate workflows, managing multi-million rupee budgets, and driving operational excellence across supply chain and digital transformation initiatives.',
+  sections: {
+    experience: [
+      {
+        company: 'Apex Global Enterprises',
+        role: 'Senior Project & Operations Manager',
+        startDate: '06/2022',
+        endDate: 'Present',
+        bullets: [
+          'Led agile cross-functional delivery teams across 14 enterprise projects, improving on-time milestone delivery from 76% to 94%.',
+          'Negotiated key vendor contracts reducing operational procurement overhead by ₹42L annually while maintaining 99.8% SLA adherence.',
+          'Standardized operational reporting cadence using automated KPI dashboards for C-suite executive stakeholder reviews.',
+        ],
+      },
+      {
+        company: 'Tata Business Services',
+        role: 'Operations Analyst & Team Lead',
+        startDate: '07/2019',
+        endDate: '05/2022',
+        bullets: [
+          'Analyzed workflow bottlenecks across 6 regional fulfillment hubs, designing process interventions that reduced cycle times by 22%.',
+          'Mentored and coached a team of 18 junior operations executives, achieving zero attrition over 24 consecutive months.',
+          'Coordinated cross-departmental regulatory compliance audits ensuring 100% adherence to standard operating procedures.',
+        ],
+      },
+    ],
+    education: [
+      {
+        institution: 'Symbiosis Institute of Business Management (SIBM)',
+        degree: 'MBA in Operations & Strategy',
+        field: 'Operations Management',
+        startDate: '2017',
+        endDate: '2019',
+        grade: 'CGPA 8.7 / 10',
+      },
+      {
+        institution: 'University of Delhi',
+        degree: 'B.Com (Honours)',
+        field: 'Commerce & Economics',
+        startDate: '2014',
+        endDate: '2017',
+        grade: 'First Division',
+      },
+    ],
+    skills: [
+      'Operations Management',
+      'Process Optimization',
+      'Risk Mitigation',
+      'Stakeholder Management',
+      'Budgeting & P&L',
+      'Agile / Scrum',
+      'Vendor Negotiation',
+      'Advanced Excel (VLOOKUP, Pivot)',
+      'Tableau & BI Dashboards',
+      'ERP Systems (SAP)',
+      'Cross-Functional Leadership',
+    ],
+    certifications: [
+      {
+        name: 'Project Management Professional (PMP)',
+        issuer: 'Project Management Institute (PMI)',
+        year: '2023',
+        description: 'Global standard certification for project leadership, risk planning, and agile delivery.',
+      },
+      {
+        name: 'Lean Six Sigma Green Belt',
+        issuer: 'KPMG',
+        year: '2021',
+        description: 'Specialized in DMAIC methodology, root-cause analysis, and statistical quality control.',
+      },
+    ],
+    references: [
+      {
+        name: 'Ananya Deshmukh',
+        company: 'Apex Global Enterprises',
+        role: 'VP of Operations',
+        email: 'ananya.deshmukh@apexglobal.com',
+        relationship: 'Former Direct Reporting Director',
+      },
+    ],
+    languages: [
+      { language: 'English', proficiency: 'Full Professional' },
+      { language: 'Hindi', proficiency: 'Native or Bilingual' },
+    ],
+  },
+};
+
+/**
+ * Sample Private Job Resume data tailored for private company jobs,
+ * freshers, banking, sales, BPO, accounts, logistics, and documentation.
+ */
+export const samplePrivateJobResume: ResumeDocument = {
+  id: 'sample-private-job-001',
+  category: 'private_job_resume',
+  templateId: 'modern-split-01',
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: new Date().toISOString(),
+  personalInfo: {
+    fullName: 'Amit Verma',
+    title: 'Executive Documentation & Commercial Operations',
+    email: 'amit.verma@example.com',
+    phone: '+91 91234 56789',
+    location: 'Mumbai, India',
+    photoUrl: '',
+    links: [
+      { label: 'LinkedIn', url: 'https://linkedin.com/in/amit-verma-ops' },
+    ],
+  },
+  summary:
+    'Results-driven Private Sector Logistics & Documentation Executive with extensive hands-on expertise in export-import compliance, SAP ERP documentation, customs liaison, and commercial invoice verification. Proven track record of zero-penalty compliance across 200+ container shipments.',
+  sections: {
+    experience: [
+      {
+        company: 'Reliance Logistics & Ports Ltd.',
+        role: 'Senior Executive (Commercial Operations)',
+        startDate: '03/2023',
+        endDate: 'Present',
+        bullets: [
+          'Supervised end-to-end export documentation, Bill of Lading (BL) validation, and shipping bill filings for private vessel cargo operations.',
+          'Reconciled vendor statements and freight invoices with zero billing disputes, saving an estimated ₹12L through audit accuracy.',
+          'Coordinated with CHA agents, shipping lines, and bank trade finance desks for timely Letter of Credit (LC) execution.',
+        ],
+      },
+      {
+        company: 'Mahindra Logistics Ltd.',
+        role: 'Junior Operations Executive',
+        startDate: '08/2021',
+        endDate: '02/2023',
+        bullets: [
+          'Drafted daily dispatches, inward-outward inventory logs, and customer delivery orders using SAP MM and Excel ERP modules.',
+          'Managed client communication and resolved shipping inquiries with a 98% first-call resolution rate.',
+          'Maintained compliance records for GST e-way bills and commercial invoices without audit discrepancies.',
+        ],
+      },
+    ],
+    education: [
+      {
+        institution: 'University of Mumbai',
+        degree: 'Bachelor of Commerce (B.Com)',
+        field: 'Accounting & Commercial Law',
+        startDate: '2018',
+        endDate: '2021',
+        grade: 'First Class (72%)',
+      },
+    ],
+    skills: [
+      'Export/Import Documentation',
+      'SAP ERP (MM/SD)',
+      'Advanced Excel (VLOOKUP, Pivot, Formulas)',
+      'Tally ERP 9 / Tally Prime',
+      'Trade Finance & Letters of Credit (LC)',
+      'Vendor & Client Coordination',
+      'Commercial Invoicing & GST E-way Bills',
+      'Discrepancy Resolution & Audit Prep',
+    ],
+    certifications: [
+      {
+        name: 'Diploma in International Trade & Logistics',
+        issuer: 'Welingkar Institute of Management',
+        year: '2022',
+        description: 'Practical training in multimodal transport, customs regulations, and international shipping documentation.',
+      },
+    ],
+    references: [
+      {
+        name: 'Ramesh Nair',
+        company: 'Reliance Logistics & Ports Ltd.',
+        role: 'Senior General Manager (Operations)',
+        email: 'ramesh.nair@reliancelogistics.com',
+        phone: '+91 98200 12345',
+        relationship: 'Direct Reporting Manager',
+      },
+    ],
+    languages: [
+      { language: 'English', proficiency: 'Full Professional' },
+      { language: 'Hindi', proficiency: 'Native or Bilingual' },
+      { language: 'Marathi', proficiency: 'Conversational' },
+    ],
+  },
+};
+
+/**
+ * Retrieves the sample document for a given document category.
+ */
+export function getSampleDocument(category: DocumentCategory): ResumeDocument {
+  if (category === 'non_tech_resume') {
+    return sampleNonTechResume;
+  }
+  if (category === 'private_job_resume') {
+    return samplePrivateJobResume;
+  }
+  return sampleTechResume;
+}
+
+/**
  * Creates an initial document for any supported category.
  */
 export function getInitialDocument(category: DocumentCategory): DocumentData {
   if (category === 'tech_resume') {
     return sampleTechResume;
   }
-  return createEmptyTechResume();
+  if (category === 'non_tech_resume') {
+    return sampleNonTechResume;
+  }
+  if (category === 'private_job_resume') {
+    return samplePrivateJobResume;
+  }
+  return createEmptyResume(category as ResumeCategory);
 }

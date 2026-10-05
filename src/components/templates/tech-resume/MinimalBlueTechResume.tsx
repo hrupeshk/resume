@@ -49,6 +49,10 @@ export default function MinimalBlueTechResume({
     (l) => l.language.trim().length > 0
   );
 
+  const validReferences = (sections.references || []).filter(
+    (r) => r.name.trim().length > 0
+  );
+
   const densityConfig = {
     compact: {
       padding: 'p-0',
@@ -335,6 +339,36 @@ export default function MinimalBlueTechResume({
               <span key={idx}>
                 <strong>{l.language}</strong> ({l.proficiency})
               </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Professional References */}
+      {validReferences.length > 0 && (
+        <section data-section-type="references" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('references') && (
+            <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-blue-700 mb-2">
+              Professional References
+            </h2>
+          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-neutral-800">
+            {validReferences.map((ref, idx) => (
+              <div key={idx} data-entry-item="true" className="space-y-0.5">
+                <div className="font-bold text-neutral-900">{ref.name}</div>
+                {(ref.role || ref.company) && (
+                  <div className="text-neutral-700 italic">
+                    {ref.role} {ref.role && ref.company ? '— ' : ''}{ref.company}
+                  </div>
+                )}
+                {ref.relationship && (
+                  <div className="text-[10.5px] text-neutral-500">Relation: {ref.relationship}</div>
+                )}
+                <div className="text-[11px] text-neutral-600 flex flex-wrap gap-x-2">
+                  {ref.email && <span>{ref.email}</span>}
+                  {ref.phone && <span>{ref.phone}</span>}
+                </div>
+              </div>
             ))}
           </div>
         </section>

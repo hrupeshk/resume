@@ -46,6 +46,10 @@ export default function FlowDeveloper({
     (v) => v.organization.trim().length > 0
   );
 
+  const validReferences = (sections.references || []).filter(
+    (r) => r.name.trim().length > 0
+  );
+
   const hasContact =
     Boolean(personalInfo.email) ||
     Boolean(personalInfo.phone) ||
@@ -388,8 +392,39 @@ export default function FlowDeveloper({
               </section>
             );
 
+          const renderReferences = (inColumn = false) =>
+            validReferences.length > 0 && (
+              <section data-section-type="references" className="avoid-break pt-1">
+                {!data.continuingSections?.includes('references') && (
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 mb-2 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 ml-0.5 shrink-0" />
+                    References
+                  </h2>
+                )}
+                <div className="space-y-2 text-xs">
+                  {validReferences.map((ref, idx) => (
+                    <div key={idx} data-entry-item="true" className="space-y-0.5">
+                      <div className="font-bold text-neutral-900">{ref.name}</div>
+                      {(ref.role || ref.company) && (
+                        <div className="text-neutral-700 italic text-[11.5px]">
+                          {ref.role} {ref.role && ref.company ? '— ' : ''}{ref.company}
+                        </div>
+                      )}
+                      {ref.relationship && (
+                        <div className="text-[10.5px] text-neutral-500">Relation: {ref.relationship}</div>
+                      )}
+                      <div className="text-[11px] text-neutral-600 flex flex-wrap gap-x-2">
+                        {ref.email && <span>{ref.email}</span>}
+                        {ref.phone && <span>{ref.phone}</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+
           interface SecondaryItem {
-            id: 'education' | 'certifications' | 'volunteer' | 'languages';
+            id: 'education' | 'certifications' | 'volunteer' | 'languages' | 'references';
             weight: number;
             render: (inCol?: boolean) => React.ReactNode;
           }
@@ -431,6 +466,14 @@ export default function FlowDeveloper({
               id: 'languages',
               weight: 35,
               render: (inCol) => renderLanguages(inCol),
+            });
+          }
+
+          if (validReferences.length > 0) {
+            secondaryItems.push({
+              id: 'references',
+              weight: 30 + validReferences.length * 35,
+              render: (inCol) => renderReferences(inCol),
             });
           }
 

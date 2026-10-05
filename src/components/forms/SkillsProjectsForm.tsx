@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import type { ProjectEntry, CertificationEntry, LanguageEntry, VolunteerEntry } from '../../lib/schema';
+import type { ProjectEntry, CertificationEntry, LanguageEntry, VolunteerEntry, ReferenceEntry } from '../../lib/schema';
 
 interface SkillsProjectsFormProps {
   skills: string[];
@@ -7,11 +6,13 @@ interface SkillsProjectsFormProps {
   certifications: CertificationEntry[];
   languages?: LanguageEntry[];
   volunteer?: VolunteerEntry[];
+  references?: ReferenceEntry[];
   onChangeSkills: (skills: string[]) => void;
   onChangeProjects: (projects: ProjectEntry[]) => void;
   onChangeCertifications: (certifications: CertificationEntry[]) => void;
   onChangeLanguages?: (languages: LanguageEntry[]) => void;
   onChangeVolunteer?: (volunteer: VolunteerEntry[]) => void;
+  onChangeReferences?: (references: ReferenceEntry[]) => void;
 }
 
 export default function SkillsProjectsForm({
@@ -20,11 +21,13 @@ export default function SkillsProjectsForm({
   certifications,
   languages = [],
   volunteer = [],
+  references = [],
   onChangeSkills,
   onChangeProjects,
   onChangeCertifications,
   onChangeLanguages,
   onChangeVolunteer,
+  onChangeReferences,
 }: SkillsProjectsFormProps) {
   const [skillInput, setSkillInput] = useState('');
 
@@ -183,6 +186,41 @@ export default function SkillsProjectsForm({
     updated[index] = updated[targetIndex];
     updated[targetIndex] = temp;
     onChangeVolunteer(updated);
+  };
+
+  // References handlers
+  const handleAddReference = () => {
+    if (onChangeReferences) {
+      onChangeReferences([
+        ...references,
+        { name: '', company: '', role: '', email: '', phone: '', relationship: '' },
+      ]);
+    }
+  };
+
+  const handleUpdateReference = (index: number, field: keyof ReferenceEntry, value: string) => {
+    if (onChangeReferences) {
+      const updated = [...references];
+      updated[index] = { ...updated[index], [field]: value };
+      onChangeReferences(updated);
+    }
+  };
+
+  const handleRemoveReference = (index: number) => {
+    if (onChangeReferences) {
+      onChangeReferences(references.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleMoveReference = (index: number, direction: 'up' | 'down') => {
+    if (!onChangeReferences) return;
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= references.length) return;
+    const updated = [...references];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    onChangeReferences(updated);
   };
 
   return (
@@ -690,6 +728,160 @@ export default function SkillsProjectsForm({
                       onChange={(e) => handleUpdateVolunteer(idx, 'description', e.target.value)}
                       placeholder="Actively served in the NSS, demonstrating leadership and organizing events…"
                       className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink leading-relaxed"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* 6. Professional References Section */}
+      <section className="space-y-4 pt-4 border-t border-hairline">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-ink">Professional References</h3>
+            <p className="text-xs text-mute mt-0.5">
+              Supervisors, managers, or colleagues who can vouch for your professional work.
+            </p>
+          </div>
+          {onChangeReferences && (
+            <button
+              type="button"
+              onClick={handleAddReference}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-primary text-on-primary text-xs font-medium hover:opacity-90 transition-opacity"
+            >
+              + Add Reference
+            </button>
+          )}
+        </div>
+
+        {references.length === 0 ? (
+          <p className="text-xs text-mute italic py-2">
+            No references added. (This section will be omitted from the resume if left empty).
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {references.map((ref, idx) => (
+              <div
+                key={idx}
+                className="p-4 rounded-sm border border-hairline bg-canvas space-y-3"
+              >
+                <div className="flex items-center justify-between border-b border-hairline pb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-medium text-mute uppercase">
+                      Reference #{idx + 1}
+                    </span>
+                    <div className="inline-flex items-center border border-hairline rounded-sm bg-canvas-elevated shadow-2xs overflow-hidden">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => handleMoveReference(idx, 'up')}
+                        className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                        title="Move reference up"
+                        aria-label="Move reference up"
+                      >
+                        ▲
+                      </button>
+                      <div className="h-3 w-px bg-hairline" />
+                      <button
+                        type="button"
+                        disabled={idx === references.length - 1}
+                        onClick={() => handleMoveReference(idx, 'down')}
+                        className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                        title="Move reference down"
+                        aria-label="Move reference down"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveReference(idx)}
+                    className="text-xs text-mute hover:text-error transition-colors cursor-pointer"
+                  >
+                    Delete
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-medium text-body mb-1">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={ref.name}
+                      onChange={(e) => handleUpdateReference(idx, 'name', e.target.value)}
+                      placeholder="e.g. Ramesh Nair"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-body mb-1">
+                      Company / Organization
+                    </label>
+                    <input
+                      type="text"
+                      value={ref.company || ''}
+                      onChange={(e) => handleUpdateReference(idx, 'company', e.target.value)}
+                      placeholder="e.g. Reliance Logistics Ltd."
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-body mb-1">
+                      Designation / Role
+                    </label>
+                    <input
+                      type="text"
+                      value={ref.role || ''}
+                      onChange={(e) => handleUpdateReference(idx, 'role', e.target.value)}
+                      placeholder="e.g. Senior General Manager"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-body mb-1">
+                      Relationship
+                    </label>
+                    <input
+                      type="text"
+                      value={ref.relationship || ''}
+                      onChange={(e) => handleUpdateReference(idx, 'relationship', e.target.value)}
+                      placeholder="e.g. Reporting Manager, Project Guide"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-body mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={ref.email || ''}
+                      onChange={(e) => handleUpdateReference(idx, 'email', e.target.value)}
+                      placeholder="e.g. ramesh.nair@company.com"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-body mb-1">
+                      Phone Number (Optional)
+                    </label>
+                    <input
+                      type="tel"
+                      value={ref.phone || ''}
+                      onChange={(e) => handleUpdateReference(idx, 'phone', e.target.value)}
+                      placeholder="e.g. +91 98200 12345"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                     />
                   </div>
                 </div>

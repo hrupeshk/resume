@@ -47,6 +47,10 @@ export default function NovoresumeModern({
     (v) => v.organization.trim().length > 0
   );
 
+  const validReferences = (sections.references || []).filter(
+    (r) => r.name.trim().length > 0
+  );
+
   const hasContact =
     Boolean(personalInfo.email) ||
     Boolean(personalInfo.phone) ||
@@ -454,6 +458,43 @@ export default function NovoresumeModern({
       </section>
     );
 
+  const renderReferences = () =>
+    validReferences.length > 0 && (
+      <section data-section-type="references">
+        {!data.continuingSections?.includes('references') && renderSectionHeader('References')}
+        <div className={config.entryGap}>
+          {validReferences.map((ref, idx) => (
+            <div
+              key={idx}
+              data-entry-item="true"
+              className="space-y-0.5"
+              data-avoid-break="true"
+              style={{ fontSize: fs(10) }}
+            >
+              <div className="font-bold text-[#1e293b] leading-tight" style={{ fontSize: fs(10) }}>
+                {ref.name}
+              </div>
+              {(ref.role || ref.company) && (
+                <div className="text-[#334155] font-medium leading-tight" style={{ fontSize: fs(9.5) }}>
+                  {ref.role} {ref.role && ref.company ? '— ' : ''}{ref.company}
+                </div>
+              )}
+              {ref.relationship && (
+                <div className="text-[#64748b] italic leading-tight" style={{ fontSize: fs(9) }}>
+                  {ref.relationship}
+                </div>
+              )}
+              {(ref.email || ref.phone) && (
+                <div className="text-[#0d9488] font-mono leading-tight" style={{ fontSize: fs(9) }}>
+                  {ref.email} {ref.email && ref.phone ? '• ' : ''}{ref.phone}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+
   return (
     <article
       className="single-page-resume bg-white text-[#1e293b] min-h-0 font-sans shadow-none leading-normal selection:bg-teal-100 flex flex-col w-full"
@@ -667,6 +708,7 @@ export default function NovoresumeModern({
           {renderVolunteer()}
           {!placeEducationOnLeft && renderEducation()}
           {renderLanguages()}
+          {renderReferences()}
         </div>
       </div>
     </article>

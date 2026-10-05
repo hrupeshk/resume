@@ -9,7 +9,7 @@ import type {
   CertificationEntry,
 } from '../../lib/schema';
 import { loadSavedDocument, saveDocument, clearSavedDocument } from '../../lib/storage';
-import { getInitialDocument, createEmptyTechResume, sampleTechResume } from '../../lib/defaults';
+import { getInitialDocument, createEmptyResume, getSampleDocument } from '../../lib/defaults';
 import { getNextTemplateId } from '../../lib/templateRegistry';
 import { exportToPdf } from '../../lib/pdf';
 import { parseResumePdf } from '../../lib/pdfParser';
@@ -25,14 +25,24 @@ interface ResumeBuilderProps {
   category: DocumentCategory;
 }
 
-const BUILDER_STEPS: StepItem[] = [
-  { id: 'personal', title: 'Personal Info', description: 'Contact & Summary' },
-  { id: 'experience', title: 'Experience', description: 'Roles & Impact' },
-  { id: 'education', title: 'Education', description: 'Degrees & Schools' },
-  { id: 'skills_projects', title: 'Skills & Projects', description: 'Stack & Work' },
-];
+const categoryLabels: Record<string, string> = {
+  tech_resume: 'Tech Resume',
+  non_tech_resume: 'Corporate & Non-Tech Resume',
+  private_job_resume: 'Private Job Resume',
+  marriage_biodata: 'Marriage Biodata',
+};
 
 export default function ResumeBuilder({ category }: ResumeBuilderProps) {
+  const builderSteps: StepItem[] = [
+    { id: 'personal', title: 'Personal Info', description: 'Contact & Summary' },
+    { id: 'experience', title: 'Experience', description: 'Roles & Impact' },
+    { id: 'education', title: 'Education', description: 'Degrees & Schools' },
+    {
+      id: 'skills_projects',
+      title: category === 'tech_resume' ? 'Skills & Projects' : 'Skills & References',
+      description: category === 'tech_resume' ? 'Stack & Work' : 'Skills & Credentials',
+    },
+  ];
   // Initialize state from localStorage if available, or fall back to default
   const [doc, setDoc] = useState<ResumeDocument>(() => {
     const saved = loadSavedDocument(category);
@@ -184,6 +194,13 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
     }));
   };
 
+  const handleUpdateReferences = (references: any[]) => {
+    setDoc((prev) => ({
+      ...prev,
+      sections: { ...prev.sections, references },
+    }));
+  };
+
   // Template handlers (zero data loss guarantee)
   const handleSelectTemplate = (templateId: string) => {
     setDoc((prev) => ({ ...prev, templateId }));
@@ -214,7 +231,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
       // Snapshot current document to memory before wiping
       setUndoBackup({ ...doc });
       clearSavedDocument(category);
-      setDoc(createEmptyTechResume());
+      setDoc(createEmptyResume(category as any));
 
       if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
       undoTimeoutRef.current = setTimeout(() => {
@@ -233,7 +250,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
   };
 
   const handleLoadSample = () => {
-    setDoc(sampleTechResume);
+    setDoc(getSampleDocument(category));
   };
 
   // PDF Resume Importer
@@ -379,7 +396,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
           </a>
           <span className="text-hairline">/</span>
           <h1 className="text-xs sm:text-sm font-medium text-ink">
-            Resume Builder <span className="font-mono text-mute text-xs">({category})</span>
+            {categoryLabels[category] || 'Resume Builder'}
           </h1>
         </div>
 
@@ -507,7 +524,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
             >
               {/* Step Navigation Bar */}
               <StepNavigator
-                steps={BUILDER_STEPS}
+                steps={builderSteps}
                 currentStepIndex={currentStepIndex}
                 onSelectStep={setCurrentStepIndex}
               />
@@ -544,11 +561,13 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                     certifications={doc.sections.certifications || []}
                     languages={doc.sections.languages || []}
                     volunteer={doc.sections.volunteer || []}
+                    references={doc.sections.references || []}
                     onChangeSkills={handleUpdateSkills}
                     onChangeProjects={handleUpdateProjects}
                     onChangeCertifications={handleUpdateCertifications}
                     onChangeLanguages={handleUpdateLanguages}
                     onChangeVolunteer={handleUpdateVolunteer}
+                    onChangeReferences={handleUpdateReferences}
                   />
                 )}
               </div>
@@ -565,14 +584,14 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                 </button>
 
                 <span className="text-xs font-mono text-mute">
-                  Step {currentStepIndex + 1} of {BUILDER_STEPS.length}
+                  Step {currentStepIndex + 1} of {builderSteps.length}
                 </span>
 
-                {currentStepIndex < BUILDER_STEPS.length - 1 ? (
+                {currentStepIndex < builderSteps.length - 1 ? (
                   <button
                     type="button"
                     onClick={() =>
-                      setCurrentStepIndex((i) => Math.min(i + 1, BUILDER_STEPS.length - 1))
+                      setCurrentStepIndex((i) => Math.min(i + 1, builderSteps.length - 1))
                     }
                     className="px-4 py-2 rounded-sm bg-primary text-on-primary text-xs font-medium hover:opacity-90 transition-opacity cursor-pointer"
                   >

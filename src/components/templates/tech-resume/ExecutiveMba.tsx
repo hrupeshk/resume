@@ -43,6 +43,10 @@ export default function ExecutiveMba({
     (l) => l.language.trim().length > 0
   );
 
+  const validReferences = (sections.references || []).filter(
+    (r) => r.name.trim().length > 0
+  );
+
   const hasContact =
     Boolean(personalInfo.email) ||
     Boolean(personalInfo.phone) ||
@@ -378,6 +382,40 @@ export default function ExecutiveMba({
               <span key={idx}>
                 <strong>{lang.language}</strong> ({lang.proficiency})
               </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Professional References */}
+      {validReferences.length > 0 && (
+        <section data-section-type="references" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('references') && (
+            <h2
+              data-section-heading="true"
+              className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-2"
+              style={{ fontFamily: 'Georgia, Cambria, serif' }}
+            >
+              Professional References
+            </h2>
+          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-neutral-800">
+            {validReferences.map((ref, idx) => (
+              <div key={`ref-${idx}`} data-entry-item="true" className="space-y-0.5">
+                <div className="font-bold text-neutral-900">{ref.name}</div>
+                {(ref.role || ref.company) && (
+                  <div className="text-neutral-700 italic">
+                    {ref.role} {ref.role && ref.company ? '— ' : ''}{ref.company}
+                  </div>
+                )}
+                {ref.relationship && (
+                  <div className="text-[11px] text-neutral-500">Relationship: {ref.relationship}</div>
+                )}
+                <div className="text-[11px] text-neutral-600 flex flex-wrap gap-x-3">
+                  {ref.email && <span>{ref.email}</span>}
+                  {ref.phone && <span>{ref.phone}</span>}
+                </div>
+              </div>
             ))}
           </div>
         </section>
