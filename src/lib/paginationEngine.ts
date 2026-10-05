@@ -42,16 +42,18 @@ export interface TemplateMeasurements {
  */
 function matchSectionType(text: string): keyof ResumeSections | 'summary' | 'unknown' {
   const lower = text.toLowerCase().trim();
+  // Check declaration first
+  if (lower.includes('declaration') || lower.includes('signature')) return 'declaration';
   // Check volunteer before general experience to prevent "Volunteer Experience" misclassification
   if (lower.includes('volunteer') || lower.includes('community')) return 'volunteer';
   if (lower.includes('experience') || lower.includes('work') || lower.includes('employment') || lower.includes('career')) return 'experience';
-  if (lower.includes('education') || lower.includes('academic')) return 'education';
+  if (lower.includes('education') || lower.includes('academic') || lower.includes('qualification')) return 'education';
   if (lower.includes('skill') || lower.includes('tech stack') || lower.includes('technologies')) return 'skills';
   if (lower.includes('project')) return 'projects';
   if (lower.includes('certif') || lower.includes('license') || lower.includes('awards')) return 'certifications';
   if (lower.includes('language')) return 'languages';
   if (lower.includes('reference')) return 'references';
-  if (lower.includes('summary') || lower.includes('profile') || lower.includes('about')) return 'summary';
+  if (lower.includes('summary') || lower.includes('profile') || lower.includes('about') || lower.includes('objective')) return 'summary';
   return 'unknown';
 }
 
@@ -205,6 +207,13 @@ function createEmptyPageSlice(data: ResumeDocument, pageIndex: number): ResumeDo
           location: '',
           photoUrl: '',
           links: [],
+          fatherName: '',
+          dateOfBirth: '',
+          gender: '',
+          maritalStatus: '',
+          nationality: '',
+          languagesKnown: '',
+          permanentAddress: '',
         },
     summary: isFirstPage ? data.summary : '',
     continuingSections: [],
@@ -217,6 +226,7 @@ function createEmptyPageSlice(data: ResumeDocument, pageIndex: number): ResumeDo
       volunteer: [],
       languages: [],
       references: [],
+      declaration: isFirstPage ? data.sections.declaration : undefined,
     },
   };
 }
@@ -356,6 +366,10 @@ export function partitionResumeIntoPages(
       }
     });
 
+    if (data.sections.declaration && pages.length > 0) {
+      pages[pages.length - 1].sections.declaration = data.sections.declaration;
+    }
+
     return pages;
   }
 
@@ -367,7 +381,7 @@ export function partitionResumeIntoPages(
 
   // Sections that should stay atomic and never split across pages with orphan headings
   // (Only inline lists / single paragraphs that cannot be meaningfully split per-item)
-  const ATOMIC_SECTIONS = new Set(['languages', 'skills', 'summary']);
+  const ATOMIC_SECTIONS = new Set(['languages', 'skills', 'summary', 'declaration']);
 
   // Track the first page index where each section began
   const sectionStartedOnPage = new Map<string, number>();
@@ -565,6 +579,10 @@ export function partitionResumeIntoPages(
         }
       }
     }
+  }
+
+  if (data.sections.declaration && pages.length > 0) {
+    pages[pages.length - 1].sections.declaration = data.sections.declaration;
   }
 
   return pages;

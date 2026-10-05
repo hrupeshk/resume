@@ -3,9 +3,18 @@ import type { ResumeDocument } from '../../../lib/schema';
 
 interface HotelHospitalityPrivateJobProps {
   data: ResumeDocument;
+  pageNumber?: number;
+  totalPages?: number;
+  spacingDensity?: 'compact' | 'balanced' | 'spacious';
+  fontSizeScale?: number;
 }
 
-export default function HotelHospitalityPrivateJob({ data }: HotelHospitalityPrivateJobProps) {
+export default function HotelHospitalityPrivateJob({
+  data,
+  pageNumber = 1,
+  spacingDensity = 'balanced',
+  fontSizeScale = 100,
+}: HotelHospitalityPrivateJobProps) {
   const { personalInfo, summary, sections } = data;
   const { education, experience, skills, references, declaration } = sections || {};
 
@@ -31,22 +40,52 @@ export default function HotelHospitalityPrivateJob({ data }: HotelHospitalityPri
 
   const showDeclaration = Boolean(declaration?.enabled);
 
+  // Dynamic Spacing Config
+  const spacingConfig = {
+    compact: {
+      sectionMb: 'mb-2.5',
+      headingMb: 'mb-1',
+      itemSpace: 'space-y-1.5',
+    },
+    balanced: {
+      sectionMb: 'mb-3.5',
+      headingMb: 'mb-1.5',
+      itemSpace: 'space-y-2.5',
+    },
+    spacious: {
+      sectionMb: 'mb-5',
+      headingMb: 'mb-2',
+      itemSpace: 'space-y-3.5',
+    },
+  };
+  const sp = spacingConfig[spacingDensity] || spacingConfig.balanced;
+  const scale = fontSizeScale ? fontSizeScale / 100 : 1;
+
   return (
-    <div
+    <article
       className="hotel-hospitality-private-job w-full min-h-full bg-white text-neutral-900 font-sans flex box-border"
-      style={{ fontSize: '12px', lineHeight: 1.45 }}
+      style={{
+        fontSize: `${12.5 * scale}px`,
+        lineHeight: 1.45,
+      }}
     >
-      {/* Left Sidebar: Photo, Personal Particulars, Contact, Skills */}
-      <div className="w-[34%] bg-neutral-900 text-white p-5 flex flex-col justify-between space-y-4">
+      {/* Left Sidebar: Recruiter-Favorite Royal Navy Slate Palette */}
+      <aside
+        className="w-[34%] text-slate-100 p-5 flex flex-col justify-between space-y-4 shadow-sm"
+        style={{
+          backgroundColor: '#0f2842',
+          backgroundImage: 'linear-gradient(180deg, #0e2338 0%, #132e4d 50%, #0f2842 100%)',
+        }}
+      >
         <div className="space-y-4">
-          {/* Photo */}
+          {/* Circular Candidate Photo */}
           {personalInfo.photoUrl && (
-            <div className="flex justify-center">
-              <div className="w-24 h-30 rounded-xs border-2 border-white/80 overflow-hidden shadow-xs bg-neutral-800">
+            <div className="flex justify-center pt-1">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full ring-4 ring-white/20 border-2 border-white/60 overflow-hidden shadow-md bg-[#16385c] flex items-center justify-center p-0.5">
                 <img
                   src={personalInfo.photoUrl}
                   alt={personalInfo.fullName || 'Candidate'}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-full"
                 />
               </div>
             </div>
@@ -54,142 +93,168 @@ export default function HotelHospitalityPrivateJob({ data }: HotelHospitalityPri
 
           {/* Contact Details */}
           <div>
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-300 border-b border-neutral-700 pb-1 mb-2">
-              Contact
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-amber-300 border-b border-white/15 pb-1 mb-2">
+              Contact Information
             </h3>
-            <div className="space-y-1.5 text-[11px] text-neutral-300">
+            <div className="space-y-1.5 text-[11px] text-slate-200">
               {personalInfo.phone && (
                 <div>
-                  <span className="text-neutral-500 block text-[9px] uppercase font-bold">Mobile</span>
-                  <span>{personalInfo.phone}</span>
+                  <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Mobile</span>
+                  <span className="font-medium text-white">{personalInfo.phone}</span>
                 </div>
               )}
               {personalInfo.email && (
                 <div>
-                  <span className="text-neutral-500 block text-[9px] uppercase font-bold">Email</span>
-                  <span className="break-all">{personalInfo.email}</span>
+                  <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Email</span>
+                  <span className="break-all font-medium text-white">{personalInfo.email}</span>
                 </div>
               )}
               {personalInfo.location && (
                 <div>
-                  <span className="text-neutral-500 block text-[9px] uppercase font-bold">Location</span>
-                  <span>{personalInfo.location}</span>
+                  <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Current Location</span>
+                  <span className="font-medium text-white">{personalInfo.location}</span>
                 </div>
               )}
+              {personalInfo.links &&
+                personalInfo.links
+                  .filter((l) => l.url)
+                  .map((link, idx) => (
+                    <div key={idx}>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">
+                        {link.label || 'Web Link'}
+                      </span>
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-amber-200 hover:text-white break-all text-[10.5px] transition-colors"
+                      >
+                        {link.url.replace(/^https?:\/\//, '')}
+                      </a>
+                    </div>
+                  ))}
             </div>
           </div>
 
           {/* Personal Particulars */}
           {hasPersonalDetails && (
             <div>
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-300 border-b border-neutral-700 pb-1 mb-2">
-                Personal Details
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-amber-300 border-b border-white/15 pb-1 mb-2">
+                Personal Particulars
               </h3>
-              <div className="space-y-1.5 text-[11px] text-neutral-300">
+              <div className="space-y-1.5 text-[11px] text-slate-200">
                 {personalInfo.fatherName && (
                   <div>
-                    <span className="text-neutral-500 block text-[9px] uppercase font-bold">Father&apos;s Name</span>
-                    <span>{personalInfo.fatherName}</span>
+                    <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Father&apos;s Name</span>
+                    <span className="text-white font-medium">{personalInfo.fatherName}</span>
                   </div>
                 )}
                 {personalInfo.dateOfBirth && (
                   <div>
-                    <span className="text-neutral-500 block text-[9px] uppercase font-bold">Date of Birth</span>
-                    <span>{personalInfo.dateOfBirth}</span>
+                    <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Date of Birth</span>
+                    <span className="text-white font-medium">{personalInfo.dateOfBirth}</span>
                   </div>
                 )}
                 {personalInfo.gender && (
                   <div>
-                    <span className="text-neutral-500 block text-[9px] uppercase font-bold">Gender</span>
-                    <span>{personalInfo.gender}</span>
+                    <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Gender</span>
+                    <span className="text-white font-medium">{personalInfo.gender}</span>
                   </div>
                 )}
                 {personalInfo.maritalStatus && (
                   <div>
-                    <span className="text-neutral-500 block text-[9px] uppercase font-bold">Marital Status</span>
-                    <span>{personalInfo.maritalStatus}</span>
+                    <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Marital Status</span>
+                    <span className="text-white font-medium">{personalInfo.maritalStatus}</span>
+                  </div>
+                )}
+                {personalInfo.nationality && (
+                  <div>
+                    <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Nationality</span>
+                    <span className="text-white font-medium">{personalInfo.nationality}</span>
                   </div>
                 )}
                 {personalInfo.languagesKnown && (
                   <div>
-                    <span className="text-neutral-500 block text-[9px] uppercase font-bold">Languages</span>
-                    <span>{personalInfo.languagesKnown}</span>
+                    <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Languages Known</span>
+                    <span className="text-white font-medium">{personalInfo.languagesKnown}</span>
                   </div>
                 )}
                 {personalInfo.permanentAddress && (
                   <div>
-                    <span className="text-neutral-500 block text-[9px] uppercase font-bold">Permanent Address</span>
-                    <span className="leading-snug block">{personalInfo.permanentAddress}</span>
+                    <span className="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Permanent Address</span>
+                    <span className="leading-snug block text-slate-200 text-[10.5px]">{personalInfo.permanentAddress}</span>
                   </div>
                 )}
               </div>
             </div>
           )}
 
-          {/* Skills */}
+          {/* Key Skills */}
           {hasSkills && (
             <div>
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-300 border-b border-neutral-700 pb-1 mb-2">
-                Key Skills
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-amber-300 border-b border-white/15 pb-1 mb-2">
+                Core Hospitality Skills
               </h3>
-              <div className="space-y-1 text-[11px] text-neutral-300">
+              <div className="space-y-1 text-[11px] text-slate-200">
                 {skills
                   .filter((s) => s.trim())
                   .map((skill, idx) => (
                     <div key={idx} className="flex items-center gap-1.5">
-                      <span className="text-teal-400 text-xs">▸</span>
-                      <span>{skill}</span>
+                      <span className="text-amber-400 text-xs">▸</span>
+                      <span className="font-medium text-white">{skill}</span>
                     </div>
                   ))}
               </div>
             </div>
           )}
         </div>
-      </div>
+      </aside>
 
-      {/* Right Column: Name, Objective, Experience, Education, Declaration */}
-      <div className="w-[66%] p-5 sm:p-6 flex flex-col justify-between space-y-4">
+      {/* Right Column: Name, Objective, Experience, Education, References, Declaration */}
+      <main className="w-[66%] p-5 sm:p-6 flex flex-col justify-between space-y-4">
         <div className="space-y-4">
           {/* Header Title */}
-          <div className="border-b-2 border-neutral-900 pb-3">
-            <h1 className="text-2xl font-black text-neutral-950 uppercase tracking-tight">
-              {personalInfo.fullName || 'Candidate Name'}
-            </h1>
-            {personalInfo.title && (
-              <p className="text-xs font-bold text-neutral-700 uppercase tracking-wide mt-0.5">
-                {personalInfo.title}
-              </p>
-            )}
-          </div>
+          {pageNumber === 1 && (
+            <header className="border-b-2 border-neutral-900 pb-3">
+              <h1 className="text-2xl sm:text-3xl font-black text-neutral-950 uppercase tracking-tight">
+                {personalInfo.fullName || 'Candidate Name'}
+              </h1>
+              {personalInfo.title && (
+                <p className="text-xs sm:text-sm font-bold text-neutral-700 uppercase tracking-wider mt-0.5">
+                  {personalInfo.title}
+                </p>
+              )}
+            </header>
+          )}
 
           {/* Objective */}
           {hasSummary && (
-            <div>
-              <h2 className="text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b border-neutral-300 pb-1 mb-1.5">
+            <section data-section-type="summary" className={sp.sectionMb}>
+              <h2 className={`text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b-2 border-neutral-800 pb-1 ${sp.headingMb}`}>
                 Professional Objective
               </h2>
               <p className="text-xs text-neutral-700 leading-relaxed text-justify">
                 {summary}
               </p>
-            </div>
+            </section>
           )}
 
           {/* Work Experience */}
           {hasExperience && (
-            <div>
-              <h2 className="text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b border-neutral-300 pb-1 mb-2">
+            <section data-section-type="experience" className={sp.sectionMb}>
+              <h2 className={`text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b-2 border-neutral-800 pb-1 ${sp.headingMb}`}>
                 Work Experience
               </h2>
-              <div className="space-y-2.5">
+              <div className={sp.itemSpace}>
                 {experience
                   .filter((exp) => exp.company.trim() || exp.role.trim())
                   .map((exp, idx) => (
-                    <div key={idx} className="space-y-1">
+                    <div key={idx} data-entry-item="true" className="space-y-1">
                       <div className="flex justify-between items-baseline">
                         <span className="font-bold text-xs text-neutral-950">{exp.role}</span>
                         {(exp.startDate || exp.endDate) && (
                           <span className="text-[10px] text-neutral-500 font-medium">
-                            {exp.startDate} – {exp.endDate}
+                            {exp.startDate} {exp.startDate && exp.endDate ? '–' : ''} {exp.endDate}
                           </span>
                         )}
                       </div>
@@ -206,59 +271,79 @@ export default function HotelHospitalityPrivateJob({ data }: HotelHospitalityPri
                     </div>
                   ))}
               </div>
-            </div>
+            </section>
           )}
 
           {/* Educational Qualifications */}
           {hasEducation && (
-            <div>
-              <h2 className="text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b border-neutral-300 pb-1 mb-2">
+            <section data-section-type="education" className={sp.sectionMb}>
+              <h2 className={`text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b-2 border-neutral-800 pb-1 ${sp.headingMb}`}>
                 Education & Training
               </h2>
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 {education
                   .filter((edu) => edu.degree.trim() || edu.institution.trim())
                   .map((edu, idx) => (
-                    <div key={idx} className="flex justify-between items-baseline text-xs">
-                      <div>
-                        <span className="font-bold text-neutral-900">{edu.degree}</span>
-                        {edu.institution && (
-                          <span className="text-neutral-600 block text-[11px]">{edu.institution}</span>
+                    <div
+                      key={idx}
+                      data-entry-item="true"
+                      className="border-b border-neutral-100 pb-1.5 last:border-none last:pb-0 text-xs"
+                    >
+                      <div className="flex justify-between items-baseline">
+                        <span className="font-bold text-neutral-900">
+                          {edu.degree}
+                          {edu.fieldOfStudy && (
+                            <span className="font-normal text-neutral-600 ml-1">
+                              in {edu.fieldOfStudy}
+                            </span>
+                          )}
+                        </span>
+                        <span className="text-neutral-500 text-[10.5px] font-medium flex-shrink-0 ml-2">
+                          {edu.startDate && edu.endDate
+                            ? `${edu.startDate} – ${edu.endDate}`
+                            : edu.endDate || edu.startDate || ''}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-baseline mt-0.5">
+                        <span className="text-neutral-600 text-[11px]">{edu.institution}</span>
+                        {edu.grade && (
+                          <span className="text-neutral-800 font-medium text-[10.5px]">
+                            {edu.grade}
+                          </span>
                         )}
                       </div>
-                      <span className="text-neutral-600 text-[11px] font-medium flex-shrink-0 ml-2">
-                        {edu.endDate || edu.grade || ''}
-                      </span>
                     </div>
                   ))}
               </div>
-            </div>
+            </section>
           )}
 
           {/* References */}
           {hasReferences && (
-            <div>
-              <h2 className="text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b border-neutral-300 pb-1 mb-2">
-                References
+            <section data-section-type="references" className={sp.sectionMb}>
+              <h2 className={`text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b-2 border-neutral-800 pb-1 ${sp.headingMb}`}>
+                Professional References
               </h2>
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                 {references
                   .filter((r) => r.name.trim())
                   .map((ref, idx) => (
-                    <div key={idx} className="p-1.5 rounded border border-neutral-200 bg-neutral-50">
+                    <div key={idx} data-entry-item="true" className="p-2 rounded border border-neutral-200 bg-neutral-50">
                       <div className="font-bold text-neutral-900">{ref.name}</div>
-                      <div className="text-[11px] text-neutral-600">{ref.role} ({ref.company})</div>
+                      <div className="text-[11px] text-neutral-600">
+                        {ref.role} {ref.company ? `(${ref.company})` : ''}
+                      </div>
                       {ref.phone && <div className="text-[11px] text-neutral-700">Mob: {ref.phone}</div>}
                     </div>
                   ))}
               </div>
-            </div>
+            </section>
           )}
         </div>
 
-        {/* Declaration & Signature */}
+        {/* Declaration & Signature Block */}
         {showDeclaration && (
-          <div className="pt-3 border-t border-neutral-300 mt-2 text-[11px]">
+          <section data-section-type="declaration" className="pt-3 border-t border-neutral-300 mt-2 text-[11px]">
             <p className="text-neutral-600 italic leading-relaxed mb-4">
               &ldquo;{declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
             </p>
@@ -267,16 +352,32 @@ export default function HotelHospitalityPrivateJob({ data }: HotelHospitalityPri
                 <div><strong>Place:</strong> {declaration?.place || '_________'}</div>
                 <div><strong>Date:</strong> {declaration?.date || '_________'}</div>
               </div>
+
               <div className="text-center">
-                <div className="w-28 border-b border-neutral-800 mb-1" />
-                <span className="font-bold text-neutral-900 text-xs">
-                  {personalInfo.fullName || 'Signature'}
+                {declaration?.signatureName?.trim() ? (
+                  <div
+                    className="h-8 flex items-center justify-center text-[#1e3a8a] select-none"
+                    style={{
+                      fontFamily: "'Brush Script MT', 'Dancing Script', 'Caveat', 'Segoe Script', cursive",
+                      fontSize: '20px',
+                      fontWeight: 600,
+                      transform: 'rotate(-2deg)',
+                    }}
+                  >
+                    {declaration.signatureName}
+                  </div>
+                ) : (
+                  <div className="h-7" />
+                )}
+                <div className="w-32 border-b border-neutral-800 mb-0.5 mx-auto" />
+                <span className="text-[10px] text-neutral-500 font-medium">
+                  (Signature)
                 </span>
               </div>
             </div>
-          </div>
+          </section>
         )}
-      </div>
-    </div>
+      </main>
+    </article>
   );
 }

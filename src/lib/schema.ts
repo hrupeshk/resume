@@ -116,6 +116,7 @@ export interface DeclarationSection {
   text?: string;
   place?: string;
   date?: string;
+  signatureName?: string;
 }
 
 export interface ResumeSections {

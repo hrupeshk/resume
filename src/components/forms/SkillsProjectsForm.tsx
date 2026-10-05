@@ -333,118 +333,120 @@ export default function SkillsProjectsForm({
         </div>
       </section>
 
-      {/* 2. Key Projects Section */}
-      <section className="space-y-4 pt-4 border-t border-hairline">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-base font-semibold text-ink">Notable Projects</h3>
-            <p className="text-xs text-mute mt-0.5">
-              Open-source repositories, full-stack applications, and side projects.
-            </p>
+      {/* 2. Key Projects Section (Hidden for private job roles) */}
+      {category !== 'private_job_resume' && (
+        <section className="space-y-4 pt-4 border-t border-hairline">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-semibold text-ink">Notable Projects</h3>
+              <p className="text-xs text-mute mt-0.5">
+                Open-source repositories, full-stack applications, and side projects.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleAddProject}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-primary text-on-primary text-xs font-medium hover:opacity-90 transition-opacity"
+            >
+              + Add Project
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleAddProject}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-primary text-on-primary text-xs font-medium hover:opacity-90 transition-opacity"
-          >
-            + Add Project
-          </button>
-        </div>
 
-        {projects.length === 0 ? (
-          <p className="text-xs text-mute italic py-2">
-            No projects added. (This section will be omitted from the resume).
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {projects.map((proj, idx) => (
-              <div
-                key={idx}
-                className="p-4 rounded-sm border border-hairline bg-canvas space-y-3"
-              >
-                <div className="flex items-center justify-between border-b border-hairline pb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-medium text-mute uppercase">
-                      Project #{idx + 1}
-                    </span>
-                    <div className="inline-flex items-center border border-hairline rounded-sm bg-canvas-elevated shadow-2xs overflow-hidden">
-                      <button
-                        type="button"
-                        disabled={idx === 0}
-                        onClick={() => handleMoveProject(idx, 'up')}
-                        className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
-                        title="Move project up"
-                        aria-label="Move project up"
-                      >
-                        ▲
-                      </button>
-                      <div className="h-3 w-px bg-hairline" />
-                      <button
-                        type="button"
-                        disabled={idx === projects.length - 1}
-                        onClick={() => handleMoveProject(idx, 'down')}
-                        className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
-                        title="Move project down"
-                        aria-label="Move project down"
-                      >
-                        ▼
-                      </button>
+          {projects.length === 0 ? (
+            <p className="text-xs text-mute italic py-2">
+              No projects added. (This section will be omitted from the resume).
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {projects.map((proj, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 rounded-sm border border-hairline bg-canvas space-y-3"
+                >
+                  <div className="flex items-center justify-between border-b border-hairline pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-medium text-mute uppercase">
+                        Project #{idx + 1}
+                      </span>
+                      <div className="inline-flex items-center border border-hairline rounded-sm bg-canvas-elevated shadow-2xs overflow-hidden">
+                        <button
+                          type="button"
+                          disabled={idx === 0}
+                          onClick={() => handleMoveProject(idx, 'up')}
+                          className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                          title="Move project up"
+                          aria-label="Move project up"
+                        >
+                          ▲
+                        </button>
+                        <div className="h-3 w-px bg-hairline" />
+                        <button
+                          type="button"
+                          disabled={idx === projects.length - 1}
+                          onClick={() => handleMoveProject(idx, 'down')}
+                          className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                          title="Move project down"
+                          aria-label="Move project down"
+                        >
+                          ▼
+                        </button>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveProject(idx)}
+                      className="text-xs text-mute hover:text-error transition-colors cursor-pointer"
+                    >
+                      Delete Project
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-medium text-body mb-1">
+                        Project Name
+                      </label>
+                      <input
+                        type="text"
+                        value={proj.name}
+                        onChange={(e) => handleUpdateProject(idx, 'name', e.target.value)}
+                        placeholder="e.g. Cars Club – Vehicle Resale Platform"
+                        className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-medium text-body mb-1">
+                        Link / Repository URL
+                      </label>
+                      <input
+                        type="url"
+                        value={proj.link || ''}
+                        onChange={(e) => handleUpdateProject(idx, 'link', e.target.value)}
+                        placeholder="https://github.com/…"
+                        className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-medium text-body mb-1">
+                        Tech Stack & Description (e.g. Tech: React, Tailwind, Django…)
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={proj.description}
+                        onChange={(e) => handleUpdateProject(idx, 'description', e.target.value)}
+                        placeholder="Tech: ReactJS, Tailwind CSS, Django, MongoDB, REST API&#10;Developed a full-stack vehicle resale web app enabling dynamic filtering…"
+                        className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink leading-relaxed"
+                      />
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveProject(idx)}
-                    className="text-xs text-mute hover:text-error transition-colors cursor-pointer"
-                  >
-                    Delete Project
-                  </button>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-medium text-body mb-1">
-                      Project Name
-                    </label>
-                    <input
-                      type="text"
-                      value={proj.name}
-                      onChange={(e) => handleUpdateProject(idx, 'name', e.target.value)}
-                      placeholder="e.g. Cars Club – Vehicle Resale Platform"
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-medium text-body mb-1">
-                      Link / Repository URL
-                    </label>
-                    <input
-                      type="url"
-                      value={proj.link || ''}
-                      onChange={(e) => handleUpdateProject(idx, 'link', e.target.value)}
-                      placeholder="https://github.com/…"
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
-                    />
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-medium text-body mb-1">
-                      Tech Stack & Description (e.g. Tech: React, Tailwind, Django…)
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={proj.description}
-                      onChange={(e) => handleUpdateProject(idx, 'description', e.target.value)}
-                      placeholder="Tech: ReactJS, Tailwind CSS, Django, MongoDB, REST API&#10;Developed a full-stack vehicle resale web app enabling dynamic filtering…"
-                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink leading-relaxed"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* 3. Certifications Section */}
       <section className="space-y-4 pt-4 border-t border-hairline">
@@ -1002,9 +1004,22 @@ export default function SkillsProjectsForm({
                 />
               </div>
             </div>
-            <p className="text-[11px] text-mute italic">
-              Note: The candidate's name will automatically appear on the signature block alongside the place and date.
-            </p>
+
+            <div>
+              <label className="block text-[11px] font-medium text-body mb-1">
+                Digital Signature Name (Optional)
+              </label>
+              <input
+                type="text"
+                value={currentDeclaration.signatureName || ''}
+                onChange={(e) => handleUpdateDeclarationField('signatureName', e.target.value)}
+                placeholder="e.g. Amit Verma (renders as authentic handwritten cursive signature)"
+                className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+              />
+              <p className="text-[10px] text-mute mt-1">
+                Enter your name if you need an instant digital cursive signature for urgent job applications. Leave blank if you plan to sign with a physical pen after printing.
+              </p>
+            </div>
           </div>
         )}
       </section>

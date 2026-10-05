@@ -334,7 +334,7 @@ export const samplePrivateJobResume: ResumeDocument = {
     email: 'ramesh.kumar99@example.com',
     phone: '+91 98765 43210',
     location: 'Patna, Bihar',
-    photoUrl: '',
+    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&h=300&q=80',
     fatherName: 'Shri Ram Prasad',
     dateOfBirth: '12 July 1999',
     gender: 'Male',
@@ -424,6 +424,7 @@ export const samplePrivateJobResume: ResumeDocument = {
       text: 'I hereby declare that all the information mentioned above is true and correct to the best of my knowledge and belief.',
       place: 'Patna',
       date: '15/08/2025',
+      signatureName: 'Ramesh Kumar',
     },
   },
 };

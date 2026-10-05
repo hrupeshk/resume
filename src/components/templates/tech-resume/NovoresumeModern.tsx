@@ -111,28 +111,34 @@ export default function NovoresumeModern({
   const langWeight =
     validLanguages.length * 2.2 + (validLanguages.length > 0 ? 3 : 0);
 
-  // Determine section placement based on auto-balancing
-  // In classic Novorésumé: Left has Experience + Projects; Right has Skills, Certs, Volunteer, Edu, Languages.
+  const refWeight =
+    validReferences.length * 3 + (validReferences.length > 0 ? 3 : 0);
+
+  // Determine section placement based on column balancing
+  // In classic Novorésumé: Left has Experience + Projects; Right has Skills, Certs, Volunteer, Edu, Languages, References.
   let placeEducationOnLeft = false;
   let placeCertificationsOnLeft = false;
 
-  if (autoBalance) {
-    const leftInitial = expWeight + projWeight;
-    const rightInitial = skillsWeight + certsWeight + volWeight + eduWeight + langWeight;
-    const diffInitial = Math.abs(leftInitial - rightInitial);
+  const leftInitial = expWeight + projWeight;
+  const rightInitial =
+    skillsWeight + certsWeight + volWeight + eduWeight + langWeight + refWeight;
 
-    // Only move Education if Right is significantly taller AND moving it reduces the difference
-    const diffWithEduOnLeft = Math.abs(leftInitial + eduWeight - (rightInitial - eduWeight));
-    if (rightInitial > leftInitial + 4 && diffWithEduOnLeft < diffInitial - 2 && validEducation.length > 0) {
-      placeEducationOnLeft = true;
+  // Natural column balancing:
+  // When right column is heavier than left (e.g. fewer projects, or 1-2 jobs with education/skills/references on right),
+  // automatically balance the bottom by placing Education on the left column below Experience!
+  if (
+    validEducation.length > 0 &&
+    (rightInitial > leftInitial + 2 ||
+      (autoBalance && Math.abs(leftInitial + eduWeight - (rightInitial - eduWeight)) < Math.abs(leftInitial - rightInitial)))
+  ) {
+    placeEducationOnLeft = true;
 
-      const rightAfterEdu = rightInitial - eduWeight;
-      const leftAfterEdu = leftInitial + eduWeight;
-      const diffAfterEdu = Math.abs(leftAfterEdu - rightAfterEdu);
-      const diffWithCertsOnLeft = Math.abs(leftAfterEdu + certsWeight - (rightAfterEdu - certsWeight));
-      if (rightAfterEdu > leftAfterEdu + 5 && diffWithCertsOnLeft < diffAfterEdu - 2 && validCertifications.length > 0) {
-        placeCertificationsOnLeft = true;
-      }
+    const rightAfterEdu = rightInitial - eduWeight;
+    const leftAfterEdu = leftInitial + eduWeight;
+    const diffAfterEdu = Math.abs(leftAfterEdu - rightAfterEdu);
+    const diffWithCertsOnLeft = Math.abs(leftAfterEdu + certsWeight - (rightAfterEdu - certsWeight));
+    if (rightAfterEdu > leftAfterEdu + 5 && diffWithCertsOnLeft < diffAfterEdu - 2 && validCertifications.length > 0) {
+      placeCertificationsOnLeft = true;
     }
   }
 
@@ -711,6 +717,60 @@ export default function NovoresumeModern({
           {renderReferences()}
         </div>
       </div>
+
+      {/* Declaration & Signature Block (if enabled) */}
+      {sections.declaration?.enabled && (
+        <section
+          data-section-type="declaration"
+          className="pt-3 border-t border-[#e2e8f0] mt-4 text-[11px]"
+        >
+          <div className="flex items-center gap-2 mb-1.5 border-b border-[#f1f5f9] pb-0.5">
+            <span
+              className="w-2.5 h-3.5 bg-[#008c9e] rounded-[1px] inline-block flex-shrink-0"
+              style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
+            />
+            <h2
+              data-section-heading="true"
+              className="font-bold uppercase tracking-wider text-[#2e3842]"
+              style={{ fontSize: fs(11) }}
+            >
+              Declaration
+            </h2>
+          </div>
+          <p className="text-[#475569] italic leading-relaxed mb-4 text-justify">
+            &ldquo;{sections.declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
+          </p>
+
+          <div className="flex justify-between items-end">
+            <div className="space-y-0.5 text-[#334155]">
+              <div><strong>Place:</strong> {sections.declaration?.place || '_______________'}</div>
+              <div><strong>Date:</strong> {sections.declaration?.date || '_______________'}</div>
+            </div>
+
+            <div className="text-center">
+              {sections.declaration?.signatureName?.trim() ? (
+                <div
+                  className="h-8 flex items-center justify-center text-[#1e3a8a] select-none"
+                  style={{
+                    fontFamily: "'Brush Script MT', 'Dancing Script', 'Caveat', 'Segoe Script', cursive",
+                    fontSize: '20px',
+                    fontWeight: 600,
+                    transform: 'rotate(-2deg)',
+                  }}
+                >
+                  {sections.declaration.signatureName}
+                </div>
+              ) : (
+                <div className="h-7" />
+              )}
+              <div className="w-32 border-b border-neutral-700 mb-0.5 mx-auto" />
+              <span className="text-[10px] text-neutral-500 font-medium">
+                (Signature)
+              </span>
+            </div>
+          </div>
+        </section>
+      )}
     </article>
   );
 }

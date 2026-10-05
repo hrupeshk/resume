@@ -122,18 +122,20 @@ export const templates: Record<DocumentCategory, TemplateDefinition[]> = {
     {
       id: 'indian-classic-private-01',
       name: 'Classic Indian Private Job CV',
-      description: 'Standard Indian private sector format with optional passport photo, personal particulars, education table, and formal declaration.',
+      description: 'Standard Indian private sector format with circular photo, personal particulars, education table, and formal declaration.',
       badge: 'Most Popular',
       category: 'private_job_resume',
       component: IndianClassicPrivateJob,
+      supportsSpacingDensity: true,
     },
     {
       id: 'hotel-hospitality-private-02',
       name: 'Hotel & Hospitality Service CV',
-      description: 'Contemporary 2-column format with dark sidebar, photo frame, personal details, and customer service experience.',
+      description: 'Contemporary 2-column format with navy slate sidebar, circular photo frame, personal details, and customer service experience.',
       badge: 'Service Sector',
       category: 'private_job_resume',
       component: HotelHospitalityPrivateJob,
+      supportsSpacingDensity: true,
     },
     {
       id: 'commercial-operations-private-03',
@@ -142,6 +144,7 @@ export const templates: Record<DocumentCategory, TemplateDefinition[]> = {
       badge: 'Operations',
       category: 'private_job_resume',
       component: CommercialOperationsPrivateJob,
+      supportsSpacingDensity: true,
     },
     {
       id: 'modern-split-01',
