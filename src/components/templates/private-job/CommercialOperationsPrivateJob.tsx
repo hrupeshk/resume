@@ -12,6 +12,7 @@ interface CommercialOperationsPrivateJobProps {
 export default function CommercialOperationsPrivateJob({
   data,
   pageNumber = 1,
+  totalPages = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: CommercialOperationsPrivateJobProps) {
@@ -38,7 +39,8 @@ export default function CommercialOperationsPrivateJob({
     personalInfo.permanentAddress?.trim()
   );
 
-  const showDeclaration = Boolean(declaration?.enabled);
+  const isLastPage = pageNumber === totalPages;
+  const showDeclaration = Boolean(declaration?.enabled && isLastPage);
 
   // Dynamic Spacing Config
   const spacingConfig = {
@@ -63,7 +65,7 @@ export default function CommercialOperationsPrivateJob({
 
   return (
     <article
-      className="commercial-operations-private-job w-full min-h-full bg-white text-neutral-900 font-sans p-6 sm:p-8 box-border"
+      className="commercial-operations-private-job w-full min-h-0 bg-white text-neutral-900 font-sans p-0 box-border"
       style={{
         fontSize: `${12.5 * scale}px`,
         lineHeight: 1.45,
@@ -223,7 +225,7 @@ export default function CommercialOperationsPrivateJob({
 
       {/* Personal Particulars */}
       {hasPersonalDetails && (
-        <section data-section-type="unknown" className={sp.sectionMb}>
+        <section data-section-type="personalDetails" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-400 pb-0.5 ${sp.headingMb}`}>
             Personal Information
           </h2>

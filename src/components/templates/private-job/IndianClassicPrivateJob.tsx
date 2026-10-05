@@ -12,13 +12,14 @@ interface IndianClassicPrivateJobProps {
 export default function IndianClassicPrivateJob({
   data,
   pageNumber = 1,
+  totalPages = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: IndianClassicPrivateJobProps) {
   const { personalInfo, summary, sections } = data;
   const { education, experience, skills, references, declaration } = sections || {};
 
-  // Check which sections have content (Strict empty-section suppression)
+  // Check which sections have content on this slice (Strict empty-section suppression)
   const hasSummary = Boolean(summary && summary.trim().length > 0);
   const hasExperience = Boolean(
     experience && experience.some((e) => e.company.trim() || e.role.trim())
@@ -39,30 +40,32 @@ export default function IndianClassicPrivateJob({
     personalInfo.permanentAddress?.trim()
   );
 
-  const showDeclaration = Boolean(declaration?.enabled);
+  // Declaration is a closing legal affirmation and must ONLY appear on the last page of the resume
+  const isLastPage = pageNumber === totalPages;
+  const showDeclaration = Boolean(declaration?.enabled && isLastPage);
 
   // Dynamic Spacing Config based on Spacing Toolbar
   const spacingConfig = {
     compact: {
-      sectionMb: 'mb-2.5',
-      headingMb: 'mb-1.5',
+      sectionMb: 'mb-2',
+      headingMb: 'mb-1',
       itemSpace: 'space-y-1',
-      tablePy: 'py-1',
+      tablePy: 'py-0.5',
       tablePx: 'px-2',
     },
     balanced: {
+      sectionMb: 'mb-3',
+      headingMb: 'mb-1.5',
+      itemSpace: 'space-y-1.5',
+      tablePy: 'py-1',
+      tablePx: 'px-2',
+    },
+    spacious: {
       sectionMb: 'mb-4',
       headingMb: 'mb-2',
       itemSpace: 'space-y-2',
       tablePy: 'py-1.5',
       tablePx: 'px-2.5',
-    },
-    spacious: {
-      sectionMb: 'mb-5',
-      headingMb: 'mb-2.5',
-      itemSpace: 'space-y-3',
-      tablePy: 'py-2',
-      tablePx: 'px-3',
     },
   };
   const sp = spacingConfig[spacingDensity] || spacingConfig.balanced;
@@ -70,27 +73,27 @@ export default function IndianClassicPrivateJob({
 
   return (
     <article
-      className="indian-classic-private-job w-full min-h-full bg-white text-neutral-900 font-sans p-6 sm:p-8 box-border"
+      className="indian-classic-private-job w-full min-h-0 p-0 bg-white text-neutral-900 font-sans box-border"
       style={{
-        fontSize: `${13 * scale}px`,
-        lineHeight: 1.5,
+        fontSize: `${12.5 * scale}px`,
+        lineHeight: 1.45,
         color: '#1a1a1a',
       }}
     >
-      {/* Header Section: Candidate Identity & Circular Photo */}
+      {/* Header Section: Candidate Identity & Circular Photo (Page 1 Only) */}
       {pageNumber === 1 && (
-        <header className="flex items-center justify-between gap-4 pb-4 border-b-2 border-neutral-900 mb-4">
+        <header className="flex items-center justify-between gap-4 pb-3 border-b-2 border-neutral-900 mb-3">
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-wide text-neutral-950">
               {personalInfo.fullName || 'Candidate Name'}
             </h1>
             {personalInfo.title && (
-              <p className="text-sm font-semibold text-neutral-700 mt-0.5">
+              <p className="text-xs font-semibold text-neutral-700 mt-0.5">
                 {personalInfo.title}
               </p>
             )}
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-neutral-600">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-neutral-600">
               {personalInfo.phone && (
                 <span className="flex items-center gap-1">
                   <strong>Mob:</strong> {personalInfo.phone}
@@ -121,7 +124,7 @@ export default function IndianClassicPrivateJob({
           {/* Stylish Circular Photo */}
           {personalInfo.photoUrl && (
             <div className="flex-shrink-0">
-              <div className="w-24 h-24 sm:w-26 sm:h-26 rounded-full border-2 border-neutral-800 p-0.5 overflow-hidden bg-neutral-50 shadow-sm flex items-center justify-center">
+              <div className="w-22 h-22 sm:w-24 sm:h-24 rounded-full border-2 border-neutral-800 p-0.5 overflow-hidden bg-neutral-50 shadow-xs flex items-center justify-center">
                 <img
                   src={personalInfo.photoUrl}
                   alt={personalInfo.fullName || 'Candidate'}
@@ -136,7 +139,7 @@ export default function IndianClassicPrivateJob({
       {/* Career Objective */}
       {hasSummary && (
         <section data-section-type="summary" className={sp.sectionMb}>
-          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-1 border-l-4 border-neutral-900 ${sp.headingMb}`}>
+          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
             Career Objective
           </h2>
           <p className="text-xs text-neutral-800 leading-relaxed text-justify px-1">
@@ -148,7 +151,7 @@ export default function IndianClassicPrivateJob({
       {/* Work Experience */}
       {hasExperience && (
         <section data-section-type="experience" className={sp.sectionMb}>
-          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-1 border-l-4 border-neutral-900 ${sp.headingMb}`}>
+          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
             Work Experience
           </h2>
           <div className={`${sp.itemSpace} px-1`}>
@@ -158,7 +161,7 @@ export default function IndianClassicPrivateJob({
                 <div
                   key={idx}
                   data-entry-item="true"
-                  className="border-b border-neutral-200 pb-2 last:border-none last:pb-0"
+                  className="border-b border-neutral-200 pb-1.5 last:border-none last:pb-0"
                 >
                   <div className="flex flex-wrap justify-between items-baseline gap-1">
                     <span className="font-bold text-xs text-neutral-950">
@@ -171,7 +174,7 @@ export default function IndianClassicPrivateJob({
                     )}
                   </div>
                   {exp.bullets && exp.bullets.filter((b) => b.trim()).length > 0 && (
-                    <ul className="list-disc list-outside pl-4 mt-1 space-y-0.5 text-xs text-neutral-700">
+                    <ul className="list-disc list-outside pl-4 mt-0.5 space-y-0.5 text-xs text-neutral-700">
                       {exp.bullets
                         .filter((b) => b.trim())
                         .map((bullet, bIdx) => (
@@ -190,7 +193,7 @@ export default function IndianClassicPrivateJob({
       {/* Educational Qualifications (Traditional Clean Table) */}
       {hasEducation && (
         <section data-section-type="education" className={sp.sectionMb}>
-          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-1 border-l-4 border-neutral-900 ${sp.headingMb}`}>
+          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
             Educational Qualifications
           </h2>
           <div className="overflow-x-auto px-1">
@@ -200,7 +203,7 @@ export default function IndianClassicPrivateJob({
                   <th className={`${sp.tablePy} ${sp.tablePx} border-r border-neutral-300`}>Qualification</th>
                   <th className={`${sp.tablePy} ${sp.tablePx} border-r border-neutral-300`}>School / College / Board</th>
                   <th className={`${sp.tablePy} ${sp.tablePx} border-r border-neutral-300 text-center w-24`}>Duration / Year</th>
-                  <th className={`${sp.tablePy} ${sp.tablePx} text-center w-28`}>Division / %</th>
+                  <th className={`${sp.tablePy} ${sp.tablePx} text-center w-24`}>Division / %</th>
                 </tr>
               </thead>
               <tbody>
@@ -215,7 +218,7 @@ export default function IndianClassicPrivateJob({
                       <td className={`${sp.tablePy} ${sp.tablePx} border-r border-neutral-300 font-semibold text-neutral-950`}>
                         {edu.degree}
                         {edu.fieldOfStudy && (
-                          <span className="block text-[11px] font-normal text-neutral-600">
+                          <span className="block text-[10.5px] font-normal text-neutral-600">
                             {edu.fieldOfStudy}
                           </span>
                         )}
@@ -242,7 +245,7 @@ export default function IndianClassicPrivateJob({
       {/* Key Skills & Practical Strengths */}
       {hasSkills && (
         <section data-section-type="skills" className={sp.sectionMb}>
-          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-1 border-l-4 border-neutral-900 ${sp.headingMb}`}>
+          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
             Key Skills & Practical Strengths
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 text-xs px-2">
@@ -260,11 +263,11 @@ export default function IndianClassicPrivateJob({
 
       {/* Personal Details / Particulars (Indian Private Sector Standard) */}
       {hasPersonalDetails && (
-        <section data-section-type="unknown" className={sp.sectionMb}>
-          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-1 border-l-4 border-neutral-900 ${sp.headingMb}`}>
+        <section data-section-type="personalDetails" className={sp.sectionMb}>
+          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
             Personal Details
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs px-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs px-2">
             {personalInfo.fatherName && (
               <div className="flex">
                 <span className="w-32 text-neutral-600 font-medium flex-shrink-0">Father&apos;s Name:</span>
@@ -314,7 +317,7 @@ export default function IndianClassicPrivateJob({
       {/* Professional References (Optional - Omitted if empty) */}
       {hasReferences && (
         <section data-section-type="references" className={sp.sectionMb}>
-          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-1 border-l-4 border-neutral-900 ${sp.headingMb}`}>
+          <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
             References
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs px-2">
@@ -327,26 +330,26 @@ export default function IndianClassicPrivateJob({
                   className="border border-neutral-200 p-2 rounded-xs bg-neutral-50/50"
                 >
                   <div className="font-bold text-neutral-950">{ref.name}</div>
-                  <div className="text-neutral-600">
+                  <div className="text-neutral-600 text-[11px]">
                     {ref.role} {ref.company ? `— ${ref.company}` : ''}
                   </div>
-                  {ref.phone && <div className="text-neutral-700">Mob: {ref.phone}</div>}
+                  {ref.phone && <div className="text-neutral-700 text-[11px]">Mob: {ref.phone}</div>}
                 </div>
               ))}
           </div>
         </section>
       )}
 
-      {/* Formal Closing Declaration & Signature Block */}
+      {/* Formal Closing Declaration & Signature Block (Rendered strictly on final page) */}
       {showDeclaration && (
-        <section data-section-type="declaration" className="pt-3 border-t border-neutral-300 mt-4 text-xs">
-          <h2 className="font-bold uppercase tracking-wider text-neutral-900 mb-1">Declaration</h2>
-          <p className="text-neutral-700 italic leading-relaxed text-justify mb-4">
+        <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-3 text-xs">
+          <h2 className="font-bold uppercase tracking-wider text-neutral-900 mb-0.5 text-[11px]">Declaration</h2>
+          <p className="text-neutral-700 italic leading-relaxed text-justify mb-3 text-[11.5px]">
             &ldquo;{declaration?.text || 'I hereby declare that all the information mentioned above is true and correct to the best of my knowledge and belief.'}&rdquo;
           </p>
 
-          <div className="flex justify-between items-end pt-2 text-xs">
-            <div className="space-y-1">
+          <div className="flex justify-between items-end pt-1 text-xs">
+            <div className="space-y-0.5">
               <div>
                 <strong>Date:</strong> {declaration?.date || '_______________'}
               </div>
@@ -355,14 +358,13 @@ export default function IndianClassicPrivateJob({
               </div>
             </div>
 
-            <div className="text-center space-y-1">
-              {/* If digital signature name provided, render stylish cursive signature */}
+            <div className="text-center space-y-0.5">
               {declaration?.signatureName?.trim() ? (
                 <div
-                  className="h-9 flex items-center justify-center text-[#1e3a8a] select-none"
+                  className="h-8 flex items-center justify-center text-[#1e3a8a] select-none"
                   style={{
                     fontFamily: "'Brush Script MT', 'Dancing Script', 'Caveat', 'Segoe Script', cursive",
-                    fontSize: '22px',
+                    fontSize: '20px',
                     fontWeight: 600,
                     letterSpacing: '0.02em',
                     transform: 'rotate(-2deg)',
@@ -371,10 +373,10 @@ export default function IndianClassicPrivateJob({
                   {declaration.signatureName}
                 </div>
               ) : (
-                <div className="h-8" />
+                <div className="h-7" />
               )}
               <div className="w-36 border-b border-neutral-800 mx-auto" />
-              <div className="text-[11px] text-neutral-500 font-medium">
+              <div className="text-[10px] text-neutral-500 font-medium">
                 (Signature)
               </div>
             </div>

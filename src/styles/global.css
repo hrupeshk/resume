@@ -91,9 +91,7 @@ body {
   button,
   nav,
   input,
-  select,
-  footer,
-  aside {
+  select {
     display: none !important;
   }
 

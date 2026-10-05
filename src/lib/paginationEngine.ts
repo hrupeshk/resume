@@ -10,17 +10,19 @@ export const PAGE_TOP_MARGIN_PX = 28; // ~7.5mm
 export const PAGE_SIDE_MARGIN_PX = 48; // ~12.5mm
 export const PAGE_BOTTOM_MARGIN_PX = 24; // ~6.5mm - optimized bottom margin to maximize fitted content on Page 1
 // Physical printable height = 1123 - 28 - 24 = 1071px.
-// Setting calibrated ceiling to 1045px guarantees a safe 26px buffer above the bottom page edge (50px total clearance from paper edge),
-// ensuring maximum content fits on Page 1 while zero lines are ever sliced or hidden.
-export const MAX_PAGE_CONTENT_HEIGHT = 1045;
+// Setting calibrated ceiling to 995px guarantees a safe 76px buffer above the bottom page edge,
+// ensuring zero lines or signatures are ever cut off while smoothly transitioning into Page 2.
+export const MAX_PAGE_CONTENT_HEIGHT = 995;
 
 export interface ItemMeasurement {
   index: number;
   height: number;
 }
 
+export type SectionType = keyof ResumeSections | 'summary' | 'personalDetails' | 'unknown';
+
 export interface SectionMeasurement {
-  type: keyof ResumeSections | 'summary' | 'unknown';
+  type: SectionType;
   headerHeight: number;
   totalHeight: number;
   marginTop: number;
@@ -40,10 +42,11 @@ export interface TemplateMeasurements {
 /**
  * Fallback identifier for section type if data-section-type attribute is missing
  */
-function matchSectionType(text: string): keyof ResumeSections | 'summary' | 'unknown' {
+function matchSectionType(text: string): SectionType {
   const lower = text.toLowerCase().trim();
   // Check declaration first
   if (lower.includes('declaration') || lower.includes('signature')) return 'declaration';
+  if (lower.includes('personal detail') || lower.includes('personal information') || lower.includes('particulars')) return 'personalDetails';
   // Check volunteer before general experience to prevent "Volunteer Experience" misclassification
   if (lower.includes('volunteer') || lower.includes('community')) return 'volunteer';
   if (lower.includes('experience') || lower.includes('work') || lower.includes('employment') || lower.includes('career')) return 'experience';
@@ -226,7 +229,7 @@ function createEmptyPageSlice(data: ResumeDocument, pageIndex: number): ResumeDo
       volunteer: [],
       languages: [],
       references: [],
-      declaration: isFirstPage ? data.sections.declaration : undefined,
+      declaration: undefined,
     },
   };
 }
@@ -268,10 +271,16 @@ export function partitionResumeIntoPages(
     // -----------------------------------------------------------------------
     // Two-Column Partitioning (e.g. Novorésumé Modern)
     // -----------------------------------------------------------------------
+    const declarationSec = measurements.sections.find((s) => s.type === 'declaration');
+    const declarationHeight = (data.sections.declaration?.enabled && declarationSec)
+      ? declarationSec.totalHeight
+      : (data.sections.declaration?.enabled ? 100 : 0);
+
     let leftColIndex = 0;
     let rightColIndex = 0;
-    let leftRemaining = maxContentHeight - measurements.headerHeight;
-    let rightRemaining = maxContentHeight - measurements.headerHeight;
+    // Reserve space for bottom full-width declaration so Page 1 doesn't overflow
+    let leftRemaining = maxContentHeight - measurements.headerHeight - declarationHeight;
+    let rightRemaining = maxContentHeight - measurements.headerHeight - declarationHeight;
 
     const leftSections = measurements.sections.filter((s) => s.columnIndex === 0);
     const rightSections = measurements.sections.filter((s) => s.columnIndex === 1);
@@ -289,7 +298,7 @@ export function partitionResumeIntoPages(
           if (needed + 4 > leftRemaining && leftRemaining < maxContentHeight) {
             leftColIndex++;
             const newPage = getOrCreatePage(leftColIndex);
-            leftRemaining = maxContentHeight;
+            leftRemaining = maxContentHeight - declarationHeight;
             secHeaderAdded = false;
             if (!newPage.continuingSections) newPage.continuingSections = [];
             if (!newPage.continuingSections.includes(sec.type)) {
@@ -306,7 +315,7 @@ export function partitionResumeIntoPages(
         if (sec.totalHeight + 4 > leftRemaining && leftRemaining < maxContentHeight) {
           leftColIndex++;
           getOrCreatePage(leftColIndex);
-          leftRemaining = maxContentHeight;
+          leftRemaining = maxContentHeight - declarationHeight;
         }
         const target = getOrCreatePage(leftColIndex);
         (target.sections[sec.type as keyof ResumeSections] as any[]).push(...rawItems);
@@ -329,7 +338,7 @@ export function partitionResumeIntoPages(
         if (sec.totalHeight + 4 > rightRemaining && rightRemaining < maxContentHeight) {
           rightColIndex++;
           getOrCreatePage(rightColIndex);
-          rightRemaining = maxContentHeight;
+          rightRemaining = maxContentHeight - declarationHeight;
         }
         const target = getOrCreatePage(rightColIndex);
         (target.sections[sec.type as keyof ResumeSections] as any[]).push(...rawItems);
@@ -341,7 +350,7 @@ export function partitionResumeIntoPages(
           if (needed + 4 > rightRemaining && rightRemaining < maxContentHeight) {
             rightColIndex++;
             const newPage = getOrCreatePage(rightColIndex);
-            rightRemaining = maxContentHeight;
+            rightRemaining = maxContentHeight - declarationHeight;
             secHeaderAdded = false;
             if (!newPage.continuingSections) newPage.continuingSections = [];
             if (!newPage.continuingSections.includes(sec.type)) {
@@ -358,7 +367,7 @@ export function partitionResumeIntoPages(
         if (sec.totalHeight + 4 > rightRemaining && rightRemaining < maxContentHeight) {
           rightColIndex++;
           getOrCreatePage(rightColIndex);
-          rightRemaining = maxContentHeight;
+          rightRemaining = maxContentHeight - declarationHeight;
         }
         const target = getOrCreatePage(rightColIndex);
         (target.sections[sec.type as keyof ResumeSections] as any[]).push(...rawItems);
@@ -366,8 +375,11 @@ export function partitionResumeIntoPages(
       }
     });
 
-    if (data.sections.declaration && pages.length > 0) {
+    if (data.sections.declaration?.enabled && pages.length > 0) {
       pages[pages.length - 1].sections.declaration = data.sections.declaration;
+      for (let p = 0; p < pages.length - 1; p++) {
+        pages[p].sections.declaration = undefined;
+      }
     }
 
     return pages;
@@ -381,7 +393,7 @@ export function partitionResumeIntoPages(
 
   // Sections that should stay atomic and never split across pages with orphan headings
   // (Only inline lists / single paragraphs that cannot be meaningfully split per-item)
-  const ATOMIC_SECTIONS = new Set(['languages', 'skills', 'summary', 'declaration']);
+  const ATOMIC_SECTIONS = new Set(['languages', 'skills', 'summary', 'personalDetails', 'declaration']);
 
   // Track the first page index where each section began
   const sectionStartedOnPage = new Map<string, number>();
@@ -389,6 +401,76 @@ export function partitionResumeIntoPages(
   // 1. Process Main Flow Sections
   mainSections.forEach((sec) => {
     if (sec.type === 'unknown' || sec.type === 'summary') return;
+
+    // Handle standalone atomic sections (personalDetails, declaration)
+    if (sec.type === 'personalDetails') {
+      if (sec.totalHeight + 6 > currentPageRemaining && currentPageRemaining < maxContentHeight) {
+        currentPageIndex++;
+        getOrCreatePage(currentPageIndex);
+        currentPageRemaining = maxContentHeight;
+      }
+      const targetPage = getOrCreatePage(currentPageIndex);
+      targetPage.personalInfo.fatherName = data.personalInfo.fatherName;
+      targetPage.personalInfo.dateOfBirth = data.personalInfo.dateOfBirth;
+      targetPage.personalInfo.gender = data.personalInfo.gender;
+      targetPage.personalInfo.maritalStatus = data.personalInfo.maritalStatus;
+      targetPage.personalInfo.nationality = data.personalInfo.nationality;
+      targetPage.personalInfo.languagesKnown = data.personalInfo.languagesKnown;
+      targetPage.personalInfo.permanentAddress = data.personalInfo.permanentAddress;
+
+      // If personalDetails moved to Page 2+, clear from earlier pages
+      if (currentPageIndex > 0) {
+        for (let p = 0; p < currentPageIndex; p++) {
+          pages[p].personalInfo.fatherName = '';
+          pages[p].personalInfo.dateOfBirth = '';
+          pages[p].personalInfo.gender = '';
+          pages[p].personalInfo.maritalStatus = '';
+          pages[p].personalInfo.nationality = '';
+          pages[p].personalInfo.languagesKnown = '';
+          pages[p].personalInfo.permanentAddress = '';
+        }
+      }
+      currentPageRemaining -= sec.totalHeight;
+      return;
+    }
+
+    if (sec.type === 'declaration') {
+      if (sec.totalHeight + 6 > currentPageRemaining && currentPageRemaining < maxContentHeight) {
+        currentPageIndex++;
+        getOrCreatePage(currentPageIndex);
+        currentPageRemaining = maxContentHeight;
+
+        // If personalDetails was placed on the immediate previous page, move it to this final page
+        // so that the declaration signature block is never an orphan alone on the final page
+        const prevPage = pages[currentPageIndex - 1];
+        if (prevPage && (prevPage.personalInfo.fatherName || prevPage.personalInfo.permanentAddress)) {
+          const targetPage = getOrCreatePage(currentPageIndex);
+          targetPage.personalInfo.fatherName = data.personalInfo.fatherName;
+          targetPage.personalInfo.dateOfBirth = data.personalInfo.dateOfBirth;
+          targetPage.personalInfo.gender = data.personalInfo.gender;
+          targetPage.personalInfo.maritalStatus = data.personalInfo.maritalStatus;
+          targetPage.personalInfo.nationality = data.personalInfo.nationality;
+          targetPage.personalInfo.languagesKnown = data.personalInfo.languagesKnown;
+          targetPage.personalInfo.permanentAddress = data.personalInfo.permanentAddress;
+
+          prevPage.personalInfo.fatherName = '';
+          prevPage.personalInfo.dateOfBirth = '';
+          prevPage.personalInfo.gender = '';
+          prevPage.personalInfo.maritalStatus = '';
+          prevPage.personalInfo.nationality = '';
+          prevPage.personalInfo.languagesKnown = '';
+          prevPage.personalInfo.permanentAddress = '';
+        }
+      }
+      const targetPage = getOrCreatePage(currentPageIndex);
+      targetPage.sections.declaration = data.sections.declaration;
+      for (let p = 0; p < currentPageIndex; p++) {
+        pages[p].sections.declaration = undefined;
+      }
+      currentPageRemaining -= sec.totalHeight;
+      return;
+    }
+
     const rawItems = (data.sections[sec.type as keyof ResumeSections] || []) as any[];
     if (!rawItems.length) return;
 
@@ -581,8 +663,11 @@ export function partitionResumeIntoPages(
     }
   }
 
-  if (data.sections.declaration && pages.length > 0) {
+  if (data.sections.declaration?.enabled && pages.length > 0) {
     pages[pages.length - 1].sections.declaration = data.sections.declaration;
+    for (let p = 0; p < pages.length - 1; p++) {
+      pages[p].sections.declaration = undefined;
+    }
   }
 
   return pages;

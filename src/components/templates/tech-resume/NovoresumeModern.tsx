@@ -14,6 +14,7 @@ interface TemplateProps {
 export default function NovoresumeModern({
   data,
   pageNumber = 1,
+  totalPages = 1,
   autoBalance = false,
   spacingDensity = 'balanced',
   columnSplit = 58,
@@ -719,7 +720,7 @@ export default function NovoresumeModern({
       </div>
 
       {/* Declaration & Signature Block (if enabled) */}
-      {sections.declaration?.enabled && (
+      {sections.declaration?.enabled && pageNumber === totalPages && (
         <section
           data-section-type="declaration"
           className="pt-3 border-t border-[#e2e8f0] mt-4 text-[11px]"
