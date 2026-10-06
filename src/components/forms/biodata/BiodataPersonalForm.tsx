@@ -202,7 +202,7 @@ export default function BiodataPersonalForm({
             type="tel"
             value={personalInfo.phone || ''}
             onChange={(e) => handleChangeField('phone', e.target.value)}
-            placeholder="e.g. +91 98765 43210"
+            placeholder="e.g. +91 90000 00000"
             className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
           />
         </div>

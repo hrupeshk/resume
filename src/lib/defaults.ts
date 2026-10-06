@@ -93,8 +93,8 @@ export const sampleTechResume: ResumeDocument = {
   personalInfo: {
     fullName: 'Rupesh Kumar',
     title: 'Web Developer / Full-Stack Engineer',
-    email: 'rupeshbrahampur@gmail.com',
-    phone: '+91 8434795707',
+    email: 'rupesh.kumar@example.com',
+    phone: '+91 90000 00000',
     location: 'Darbhanga, India',
     photoUrl: '',
     links: [
@@ -222,7 +222,7 @@ export const sampleNonTechResume: ResumeDocument = {
     fullName: 'Priya Sharma',
     title: 'Senior Operations & Project Lead',
     email: 'priya.sharma@example.com',
-    phone: '+91 98765 43210',
+    phone: '+91 90000 00000',
     location: 'Bengaluru, India',
     photoUrl: '',
     links: [
@@ -315,6 +315,20 @@ export const sampleNonTechResume: ResumeDocument = {
       { language: 'English', proficiency: 'Full Professional' },
       { language: 'Hindi', proficiency: 'Native or Bilingual' },
     ],
+    awards: [
+      {
+        title: 'Operational Excellence Award',
+        issuer: 'Apex Global Enterprises',
+        year: '2023',
+        description: 'Recognized for standardizing cross-functional KPI dashboards and achieving 99.8% SLA adherence.',
+      },
+    ],
+    declaration: {
+      enabled: false,
+      text: 'I hereby declare that all the information provided above is true, complete, and correct to the best of my knowledge and belief.',
+      place: '',
+      date: '',
+    },
   },
 };
 
@@ -332,7 +346,7 @@ export const samplePrivateJobResume: ResumeDocument = {
     fullName: 'Ramesh Kumar',
     title: 'Hospitality & Food Service Executive',
     email: 'ramesh.kumar99@example.com',
-    phone: '+91 98765 43210',
+    phone: '+91 90000 00000',
     location: 'Patna, Bihar',
     photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&h=300&q=80',
     fatherName: 'Shri Ram Prasad',
@@ -340,7 +354,7 @@ export const samplePrivateJobResume: ResumeDocument = {
     gender: 'Male',
     maritalStatus: 'Unmarried',
     nationality: 'Indian',
-    languagesKnown: 'Hindi, Bhojpuri, English (Basic)',
+    languagesKnown: 'Hindi, Maithili, English (Basic)',
     permanentAddress: 'Vill - Rampur, Post - Lalganj, Dist - Vaishali, Bihar - 844121',
     links: [
       { label: 'Instagram', url: 'https://instagram.com/ramesh_service' },
@@ -416,7 +430,7 @@ export const samplePrivateJobResume: ResumeDocument = {
         company: 'Hotel Maurya, Patna',
         role: 'Food & Beverage Manager',
         email: 'suresh.chandra@hotelmaurya.com',
-        phone: '+91 94310 12345',
+        phone: '+91 90000 00000',
         relationship: 'Direct Supervisor',
       },
     ],
@@ -449,7 +463,7 @@ export const sampleMarriageBiodata: BiodataDocument = {
     complexion: 'Fair',
     diet: 'Vegetarian',
     photoUrl: '',
-    phone: '+91 98765 43210',
+    phone: '+91 90000 00000',
     email: 'aditya.sharma96@example.com',
   },
   sections: {
@@ -490,7 +504,7 @@ export const sampleMarriageBiodata: BiodataDocument = {
     },
     contact: {
       address: 'B-42, Shyam Nagar, Ajmer Road, Jaipur - 302019',
-      referencePhone: '+91 94140 12345 (Father)',
+      referencePhone: '+91 90000 00000 (Father)',
     },
     partnerPreferences:
       'Looking for an educated, family-oriented, and understanding partner with good cultural values. Professionally qualified (B.Tech, MBA, CA, Doctor, or equivalent). Respectful towards family traditions while holding a progressive mindset.',

@@ -159,7 +159,7 @@ export default function BiodataHoroscopePreferencesForm({
               type="text"
               value={contact.referencePhone || ''}
               onChange={(e) => handleUpdateContactField('referencePhone', e.target.value)}
-              placeholder="e.g. +91 94140 12345 (Father) / +91 98290 54321"
+              placeholder="e.g. +91 90000 00000 (Father) / +91 90000 00001"
               className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
             />
           </div>

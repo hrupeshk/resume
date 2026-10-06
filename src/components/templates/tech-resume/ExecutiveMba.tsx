@@ -12,6 +12,7 @@ interface TemplateProps {
 export default function ExecutiveMba({
   data,
   pageNumber = 1,
+  totalPages = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: TemplateProps) {
@@ -47,6 +48,13 @@ export default function ExecutiveMba({
     (r) => r.name.trim().length > 0
   );
 
+  const validAwards = (sections.awards || []).filter(
+    (a) => a.title.trim().length > 0
+  );
+
+  const isLastPage = !totalPages || pageNumber === totalPages;
+  const showDeclaration = Boolean(sections.declaration?.enabled && isLastPage);
+
   const hasContact =
     Boolean(personalInfo.email) ||
     Boolean(personalInfo.phone) ||
@@ -56,18 +64,18 @@ export default function ExecutiveMba({
   const densityConfig = {
     compact: {
       padding: 'p-0',
-      sectionMargin: 'mb-2.5',
-      headerMargin: 'pb-2 mb-2.5',
+      sectionMargin: 'mb-1.5',
+      headerMargin: 'pb-1.5 mb-2',
     },
     balanced: {
       padding: 'p-0',
-      sectionMargin: 'mb-3.5',
-      headerMargin: 'pb-3 mb-3.5',
+      sectionMargin: 'mb-2.5',
+      headerMargin: 'pb-2 mb-2.5',
     },
     spacious: {
       padding: 'p-0',
-      sectionMargin: 'mb-4',
-      headerMargin: 'pb-4 mb-4.5',
+      sectionMargin: 'mb-3',
+      headerMargin: 'pb-2.5 mb-3',
     },
   };
   const config = densityConfig[spacingDensity] || densityConfig.balanced;
@@ -328,6 +336,39 @@ export default function ExecutiveMba({
         </section>
       )}
 
+      {/* Honors & Key Achievements (Awards) */}
+      {validAwards.length > 0 && (
+        <section data-section-type="awards" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('awards') && (
+            <h2
+              data-section-heading="true"
+              className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-1.5"
+              style={{ fontFamily: 'Georgia, Cambria, serif' }}
+            >
+              Honors & Key Achievements
+            </h2>
+          )}
+          <div className="space-y-1 text-xs text-neutral-800">
+            {validAwards.map((award, idx) => (
+              <div key={`award-${idx}`} data-entry-item="true">
+                <div className="flex justify-between items-baseline">
+                  <span>
+                    <strong className="font-bold text-neutral-900">{award.title}</strong>
+                    {award.issuer && <span className="text-neutral-700"> — {award.issuer}</span>}
+                  </span>
+                  {award.year && <span className="text-[11px] text-neutral-600">[{award.year}]</span>}
+                </div>
+                {award.description && (
+                  <p className="text-[11px] text-neutral-600 leading-snug mt-0.5">
+                    {award.description}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Leadership & Volunteer Experience */}
       {validVolunteer.length > 0 && (
         <section data-section-type="volunteer" className={`${config.sectionMargin} last:mb-0`}>
@@ -417,6 +458,41 @@ export default function ExecutiveMba({
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* Formal Closing Declaration & Signature Block */}
+      {showDeclaration && (
+        <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-2 text-xs">
+          <h2
+            data-section-heading="true"
+            className="text-xs font-bold uppercase tracking-widest text-neutral-900 border-b border-neutral-300 pb-1 mb-1.5"
+            style={{ fontFamily: 'Georgia, Cambria, serif' }}
+          >
+            Declaration
+          </h2>
+          <p className="text-neutral-700 italic leading-snug">
+            &ldquo;{sections.declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
+          </p>
+          <div className="flex justify-between items-end mt-2 pt-1 text-[11px] text-neutral-700">
+            <div className="space-y-0.5">
+              <div><strong>Place:</strong> {sections.declaration?.place || '_______________'}</div>
+              <div><strong>Date:</strong> {sections.declaration?.date || '_______________'}</div>
+            </div>
+            <div className="text-right">
+              {sections.declaration?.signatureName?.trim() ? (
+                <div>
+                  <div className="font-serif italic text-neutral-900 text-sm">{sections.declaration.signatureName}</div>
+                  <div className="text-[10px] text-neutral-500 border-t border-neutral-400 mt-0.5 pt-0.5">Authorized Signature</div>
+                </div>
+              ) : (
+                <div>
+                  <div className="h-5"></div>
+                  <div className="text-[10px] text-neutral-500 border-t border-neutral-400 pt-0.5">Authorized Signature</div>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       )}

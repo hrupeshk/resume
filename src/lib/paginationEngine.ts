@@ -52,8 +52,8 @@ function matchSectionType(text: string): SectionType {
   if (lower.includes('experience') || lower.includes('work') || lower.includes('employment') || lower.includes('career')) return 'experience';
   if (lower.includes('education') || lower.includes('academic') || lower.includes('qualification')) return 'education';
   if (lower.includes('skill') || lower.includes('tech stack') || lower.includes('technologies')) return 'skills';
-  if (lower.includes('project')) return 'projects';
-  if (lower.includes('certif') || lower.includes('license') || lower.includes('awards')) return 'certifications';
+  if (lower.includes('award') || lower.includes('honor') || lower.includes('achievement')) return 'awards';
+  if (lower.includes('certif') || lower.includes('license')) return 'certifications';
   if (lower.includes('language')) return 'languages';
   if (lower.includes('reference')) return 'references';
   if (lower.includes('summary') || lower.includes('profile') || lower.includes('about') || lower.includes('objective')) return 'summary';
@@ -226,6 +226,7 @@ function createEmptyPageSlice(data: ResumeDocument, pageIndex: number): ResumeDo
       skills: [],
       projects: [],
       certifications: [],
+      awards: [],
       volunteer: [],
       languages: [],
       references: [],
@@ -324,7 +325,7 @@ export function partitionResumeIntoPages(
     });
 
     // Sections that should stay atomic (never split across pages)
-    const ATOMIC_SECTIONS = new Set(['certifications', 'education', 'languages', 'skills', 'volunteer']);
+    const ATOMIC_SECTIONS = new Set(['certifications', 'awards', 'education', 'languages', 'skills', 'volunteer']);
 
     // Allocate Right Column (typically Skills, Certifications, Volunteer, Education, Languages)
     rightSections.forEach((sec) => {
@@ -393,7 +394,7 @@ export function partitionResumeIntoPages(
 
   // Sections that should stay atomic and never split across pages with orphan headings
   // (Only inline lists / single paragraphs that cannot be meaningfully split per-item)
-  const ATOMIC_SECTIONS = new Set(['languages', 'skills', 'summary', 'personalDetails', 'declaration']);
+  const ATOMIC_SECTIONS = new Set(['languages', 'skills', 'summary', 'personalDetails', 'declaration', 'awards']);
 
   // Track the first page index where each section began
   const sectionStartedOnPage = new Map<string, number>();

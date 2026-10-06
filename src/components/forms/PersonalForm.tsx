@@ -276,7 +276,7 @@ export default function PersonalForm({
               type="text"
               value={personalInfo.languagesKnown || ''}
               onChange={(e) => handleChangeField('languagesKnown', e.target.value)}
-              placeholder="Hindi, Bhojpuri, English (Basic)"
+              placeholder="Hindi, Maithili, English (Basic)"
               className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
             />
           </div>

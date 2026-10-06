@@ -8,6 +8,7 @@ import type {
   ExperienceEntry,
   ProjectEntry,
   CertificationEntry,
+  AwardEntry,
   DeclarationSection,
   BiodataDocument,
   BiodataPersonalInfo,
@@ -280,6 +281,16 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
       return {
         ...r,
         sections: { ...r.sections, certifications },
+      };
+    });
+  };
+
+  const handleUpdateAwards = (awards: AwardEntry[]) => {
+    setDoc((prev) => {
+      const r = prev as ResumeDocument;
+      return {
+        ...r,
+        sections: { ...r.sections, awards },
       };
     });
   };
@@ -775,6 +786,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                         skills={doc.sections.skills}
                         projects={doc.sections.projects || []}
                         certifications={doc.sections.certifications || []}
+                        awards={doc.sections.awards || []}
                         languages={doc.sections.languages || []}
                         volunteer={doc.sections.volunteer || []}
                         references={doc.sections.references || []}
@@ -783,6 +795,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                         onChangeSkills={handleUpdateSkills}
                         onChangeProjects={handleUpdateProjects}
                         onChangeCertifications={handleUpdateCertifications}
+                        onChangeAwards={handleUpdateAwards}
                         onChangeLanguages={handleUpdateLanguages}
                         onChangeVolunteer={handleUpdateVolunteer}
                         onChangeReferences={handleUpdateReferences}

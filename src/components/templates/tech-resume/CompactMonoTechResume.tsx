@@ -12,6 +12,7 @@ interface TemplateProps {
 export default function CompactMonoTechResume({
   data,
   pageNumber = 1,
+  totalPages = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: TemplateProps) {
@@ -41,6 +42,10 @@ export default function CompactMonoTechResume({
     (c) => c.name.trim()
   );
 
+  const validAwards = (sections.awards || []).filter(
+    (a) => a.title.trim().length > 0
+  );
+
   const validLanguages = (sections.languages || []).filter(
     (l) => l.language.trim().length > 0
   );
@@ -53,21 +58,57 @@ export default function CompactMonoTechResume({
     (r) => r.name.trim().length > 0
   );
 
+  const isLastPage = !totalPages || pageNumber === totalPages;
+  const showDeclaration = Boolean(sections.declaration?.enabled && isLastPage);
+
+  // Compute master sequential section numbers without skipping empty sections
+  const docSummary = (data.summary || '').trim();
+  const docExperience = (data.sections.experience || []).filter((e) => e.company.trim() || e.role.trim());
+  const docProjects = (data.sections.projects || []).filter((p) => p.name.trim() || p.description.trim());
+  const docSkills = (data.sections.skills || []).filter((s) => s.trim().length > 0);
+  const docEducation = (data.sections.education || []).filter((e) => e.institution.trim() || e.degree.trim());
+  const docCertifications = (data.sections.certifications || []).filter((c) => c.name.trim());
+  const docAwards = (data.sections.awards || []).filter((a) => a.title.trim().length > 0);
+  const docLanguages = (data.sections.languages || []).filter((l) => l.language.trim().length > 0);
+  const docVolunteer = (data.sections.volunteer || []).filter((v) => v.organization.trim().length > 0);
+  const docReferences = (data.sections.references || []).filter((r) => r.name.trim().length > 0);
+  const docDeclaration = Boolean(data.sections.declaration?.enabled);
+
+  const activeDocSections: string[] = [];
+  if (docSummary.length > 0) activeDocSections.push('summary');
+  if (docExperience.length > 0) activeDocSections.push('experience');
+  if (docProjects.length > 0) activeDocSections.push('projects');
+  if (docSkills.length > 0) activeDocSections.push('skills');
+  if (docEducation.length > 0) activeDocSections.push('education');
+  if (docCertifications.length > 0) activeDocSections.push('certifications');
+  if (docAwards.length > 0) activeDocSections.push('awards');
+  if (docLanguages.length > 0) activeDocSections.push('languages');
+  if (docVolunteer.length > 0) activeDocSections.push('volunteer');
+  if (docReferences.length > 0) activeDocSections.push('references');
+  if (docDeclaration) activeDocSections.push('declaration');
+
+  const getSectionNum = (key: string): string => {
+    const idx = activeDocSections.indexOf(key);
+    if (idx === -1) return '';
+    const num = idx + 1;
+    return `[${num < 10 ? '0' + num : num}] `;
+  };
+
   const densityConfig = {
     compact: {
+      padding: 'p-0',
+      sectionMargin: 'mb-1.5',
+      headerMargin: 'pb-1.5 mb-2',
+    },
+    balanced: {
       padding: 'p-0',
       sectionMargin: 'mb-2',
       headerMargin: 'pb-2 mb-2.5',
     },
-    balanced: {
+    spacious: {
       padding: 'p-0',
       sectionMargin: 'mb-2.5',
       headerMargin: 'pb-2.5 mb-3',
-    },
-    spacious: {
-      padding: 'p-0',
-      sectionMargin: 'mb-4',
-      headerMargin: 'pb-4 mb-5',
     },
   };
   const config = densityConfig[spacingDensity] || densityConfig.balanced;
@@ -132,8 +173,8 @@ export default function CompactMonoTechResume({
       {/* Summary */}
       {summary && summary.trim().length > 0 && (
         <section data-section-type="summary" className={`${config.sectionMargin} last:mb-0`}>
-          <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
-            [01] Summary
+          <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-1.5">
+            {getSectionNum('summary')}Summary
           </h2>
           <p className="text-xs leading-relaxed text-neutral-800">{summary}</p>
         </section>
@@ -143,15 +184,15 @@ export default function CompactMonoTechResume({
       {validExperience.length > 0 && (
         <section data-section-type="experience" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('experience') && (
-            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2.5">
-              [02] Experience
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
+              {getSectionNum('experience')}Experience
             </h2>
           )}
-          <div className="space-y-3.5">
+          <div className="space-y-2.5">
             {validExperience.map((exp, idx) => {
               const bullets = (exp.bullets || []).filter((b) => b.trim().length > 0);
               return (
-                <div key={idx} data-entry-item="true" className="space-y-1">
+                <div key={idx} data-entry-item="true" className="space-y-0.5">
                   <div className="flex flex-wrap items-baseline justify-between gap-1 text-xs">
                     <div>
                       <strong className="font-semibold text-black">{exp.role}</strong>
@@ -165,7 +206,7 @@ export default function CompactMonoTechResume({
                     )}
                   </div>
                   {bullets.length > 0 && (
-                    <ul className="space-y-1 text-xs text-neutral-700 leading-snug">
+                    <ul className="space-y-0.5 text-xs text-neutral-700 leading-snug">
                       {bullets.map((b, bIdx) => (
                         <li key={bIdx} className="flex items-start gap-2">
                           <span className="font-mono text-neutral-400 select-none">›</span>
@@ -185,11 +226,11 @@ export default function CompactMonoTechResume({
       {validProjects.length > 0 && (
         <section data-section-type="projects" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('projects') && (
-            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2.5">
-              [03] Projects
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
+              {getSectionNum('projects')}Projects
             </h2>
           )}
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {validProjects.map((proj, idx) => (
               <div key={idx} data-entry-item="true" className="text-xs space-y-0.5">
                 <div className="flex items-baseline justify-between">
@@ -216,8 +257,8 @@ export default function CompactMonoTechResume({
       {validSkills.length > 0 && (
         <section data-section-type="skills" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('skills') && (
-            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
-              [04] Technical Stack
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-1.5">
+              {getSectionNum('skills')}Technical Stack
             </h2>
           )}
           <div className="flex flex-wrap gap-1 font-mono text-[11px]">
@@ -237,13 +278,13 @@ export default function CompactMonoTechResume({
       {validEducation.length > 0 && (
         <section data-section-type="education" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('education') && (
-            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
-              [05] Education
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-1.5">
+              {getSectionNum('education')}Education
             </h2>
           )}
-          <div className="space-y-1.5">
+          <div className="space-y-1 text-xs">
             {validEducation.map((edu, idx) => (
-              <div key={idx} data-entry-item="true" className="flex flex-wrap items-baseline justify-between gap-1 text-xs">
+              <div key={idx} data-entry-item="true" className="flex flex-wrap items-baseline justify-between gap-1">
                 <div>
                   <span className="font-semibold text-black">{edu.degree}</span>
                   {edu.degree && edu.field && ` in ${edu.field}`}
@@ -271,11 +312,11 @@ export default function CompactMonoTechResume({
       {validCertifications.length > 0 && (
         <section data-section-type="certifications" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('certifications') && (
-            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
-              [06] Certifications
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-1.5">
+              {getSectionNum('certifications')}Certifications
             </h2>
           )}
-          <div className="space-y-1.5 text-xs text-neutral-800">
+          <div className="space-y-1 text-xs text-neutral-800">
             {validCertifications.map((cert, idx) => (
               <div key={idx} data-entry-item="true">
                 <div className="flex justify-between items-baseline">
@@ -298,12 +339,43 @@ export default function CompactMonoTechResume({
         </section>
       )}
 
+      {/* Awards & Achievements (Completely Optional) */}
+      {validAwards.length > 0 && (
+        <section data-section-type="awards" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('awards') && (
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-1.5">
+              {getSectionNum('awards')}Honors & Awards
+            </h2>
+          )}
+          <div className="space-y-1 text-xs text-neutral-800">
+            {validAwards.map((award, idx) => (
+              <div key={idx} data-entry-item="true">
+                <div className="flex justify-between items-baseline">
+                  <span>
+                    <strong className="font-medium text-black">{award.title}</strong>
+                    {award.issuer && ` — ${award.issuer}`}
+                  </span>
+                  {award.year && (
+                    <span className="text-[11px] font-mono text-neutral-600">[{award.year}]</span>
+                  )}
+                </div>
+                {award.description && (
+                  <p className="text-[11px] text-neutral-600 font-mono mt-0.5 leading-snug">
+                    {award.description}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Languages */}
       {validLanguages.length > 0 && (
         <section data-section-type="languages" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('languages') && (
-            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
-              [07] Languages
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-1.5">
+              {getSectionNum('languages')}Languages
             </h2>
           )}
           <div className="flex flex-wrap gap-4 text-xs font-mono text-neutral-800">
@@ -320,11 +392,11 @@ export default function CompactMonoTechResume({
       {validVolunteer.length > 0 && (
         <section data-section-type="volunteer" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('volunteer') && (
-            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-2">
-              [08] Volunteer & Leadership
+            <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-1.5">
+              {getSectionNum('volunteer')}Volunteer & Leadership
             </h2>
           )}
-          <div className="space-y-2 text-xs">
+          <div className="space-y-1.5 text-xs">
             {validVolunteer.map((v, idx) => (
               <div key={idx} data-entry-item="true" className="space-y-0.5">
                 <div className="flex justify-between items-baseline">
@@ -347,8 +419,8 @@ export default function CompactMonoTechResume({
       {validReferences.length > 0 && (
         <section data-section-type="references" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('references') && (
-            <h2 data-section-heading="true" className="text-xs font-mono font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-2">
-              [09] Professional References
+            <h2 data-section-heading="true" className="text-xs font-mono font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-1.5">
+              {getSectionNum('references')}Professional References
             </h2>
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
@@ -369,6 +441,37 @@ export default function CompactMonoTechResume({
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* Declaration & Signature Block */}
+      {showDeclaration && (
+        <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-2 text-xs font-mono">
+          <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-1.5">
+            {getSectionNum('declaration')}Declaration
+          </h2>
+          <p className="text-neutral-700 text-xs leading-relaxed italic">
+            &ldquo;{sections.declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
+          </p>
+          <div className="flex justify-between items-end mt-2 pt-1 text-[11px] text-neutral-800">
+            <div className="space-y-0.5">
+              <div><strong>Place:</strong> {sections.declaration?.place || '_______________'}</div>
+              <div><strong>Date:</strong> {sections.declaration?.date || '_______________'}</div>
+            </div>
+            <div className="text-right">
+              {sections.declaration?.signatureName?.trim() ? (
+                <div>
+                  <div className="font-bold text-black text-xs">{sections.declaration.signatureName}</div>
+                  <div className="text-[10px] text-neutral-500 border-t border-neutral-400 mt-0.5 pt-0.5">Candidate Signature</div>
+                </div>
+              ) : (
+                <div>
+                  <div className="h-5"></div>
+                  <div className="text-[10px] text-neutral-500 border-t border-neutral-400 pt-0.5">Candidate Signature</div>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       )}

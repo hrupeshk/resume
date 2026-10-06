@@ -111,6 +111,13 @@ export interface VolunteerEntry {
   description?: string;
 }
 
+export interface AwardEntry {
+  title: string;
+  issuer?: string;
+  year?: string;
+  description?: string;
+}
+
 export interface DeclarationSection {
   enabled: boolean;
   text?: string;
@@ -125,6 +132,7 @@ export interface ResumeSections {
   skills: string[];
   projects?: ProjectEntry[];
   certifications?: CertificationEntry[];
+  awards?: AwardEntry[];
   references?: ReferenceEntry[];
   languages?: LanguageEntry[];
   volunteer?: VolunteerEntry[];

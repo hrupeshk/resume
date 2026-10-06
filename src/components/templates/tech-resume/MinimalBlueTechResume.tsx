@@ -12,6 +12,7 @@ interface TemplateProps {
 export default function MinimalBlueTechResume({
   data,
   pageNumber = 1,
+  totalPages = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: TemplateProps) {
@@ -53,24 +54,31 @@ export default function MinimalBlueTechResume({
     (r) => r.name.trim().length > 0
   );
 
+  const validAwards = (sections.awards || []).filter(
+    (a) => a.title.trim().length > 0
+  );
+
+  const isLastPage = !totalPages || pageNumber === totalPages;
+  const showDeclaration = Boolean(sections.declaration?.enabled && isLastPage);
+
   const densityConfig = {
     compact: {
+      padding: 'p-0',
+      sectionMargin: 'mb-1.5',
+      entryGap: 'space-y-1',
+      headerMargin: 'pb-1.5 mb-2',
+    },
+    balanced: {
       padding: 'p-0',
       sectionMargin: 'mb-2',
       entryGap: 'space-y-1',
       headerMargin: 'pb-2 mb-2.5',
     },
-    balanced: {
+    spacious: {
       padding: 'p-0',
       sectionMargin: 'mb-2.5',
       entryGap: 'space-y-1.5',
       headerMargin: 'pb-2.5 mb-3',
-    },
-    spacious: {
-      padding: 'p-0',
-      sectionMargin: 'mb-4',
-      entryGap: 'space-y-2.5',
-      headerMargin: 'pb-4 mb-5',
     },
   };
   const config = densityConfig[spacingDensity] || densityConfig.balanced;
@@ -299,6 +307,35 @@ export default function MinimalBlueTechResume({
         </section>
       )}
 
+      {/* Honors & Key Achievements (Awards) */}
+      {validAwards.length > 0 && (
+        <section data-section-type="awards" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('awards') && (
+            <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-blue-700 mb-1.5">
+              Honors & Key Achievements
+            </h2>
+          )}
+          <div className="space-y-1 text-xs text-neutral-700">
+            {validAwards.map((award, idx) => (
+              <div key={idx} data-entry-item="true">
+                <div className="flex justify-between items-baseline">
+                  <span>
+                    <strong className="font-medium text-neutral-900">{award.title}</strong>
+                    {award.issuer && ` — ${award.issuer}`}
+                  </span>
+                  {award.year && <span className="text-neutral-500 font-mono text-[11px]">{award.year}</span>}
+                </div>
+                {award.description && (
+                  <p className="text-xs text-neutral-600 mt-0.5 leading-relaxed">
+                    {award.description}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Volunteer Section */}
       {validVolunteer.length > 0 && (
         <section data-section-type="volunteer" className={`${config.sectionMargin} last:mb-0`}>
@@ -370,6 +407,37 @@ export default function MinimalBlueTechResume({
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* Declaration & Signature Block */}
+      {showDeclaration && (
+        <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-2 text-xs">
+          <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-blue-700 mb-1.5">
+            Declaration
+          </h2>
+          <p className="text-neutral-700 italic leading-snug">
+            &ldquo;{sections.declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
+          </p>
+          <div className="flex justify-between items-end mt-2 pt-1 text-[11px] text-neutral-700">
+            <div className="space-y-0.5">
+              <div><strong>Place:</strong> {sections.declaration?.place || '_______________'}</div>
+              <div><strong>Date:</strong> {sections.declaration?.date || '_______________'}</div>
+            </div>
+            <div className="text-right">
+              {sections.declaration?.signatureName?.trim() ? (
+                <div>
+                  <div className="font-semibold text-neutral-900 text-xs">{sections.declaration.signatureName}</div>
+                  <div className="text-[10px] text-neutral-500 border-t border-neutral-400 mt-0.5 pt-0.5">Signature</div>
+                </div>
+              ) : (
+                <div>
+                  <div className="h-5"></div>
+                  <div className="text-[10px] text-neutral-500 border-t border-neutral-400 pt-0.5">Signature</div>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       )}

@@ -52,6 +52,12 @@ export default function NovoresumeModern({
     (r) => r.name.trim().length > 0
   );
 
+  const validAwards = (sections.awards || []).filter(
+    (a) => a.title.trim().length > 0
+  );
+
+  const isLastPage = !totalPages || pageNumber === totalPages;
+
   const hasContact =
     Boolean(personalInfo.email) ||
     Boolean(personalInfo.phone) ||
@@ -63,23 +69,23 @@ export default function NovoresumeModern({
     compact: {
       padding: '0px',
       columnGap: 'space-y-1.5',
-      entryGap: 'space-y-1',
-      headerMargin: 'mb-1.5 pb-1',
+      entryGap: 'space-y-0.5',
+      headerMargin: 'mb-1 pb-1',
       sectionHeaderMargin: 'mb-1 pb-0.5',
     },
     balanced: {
       padding: '0px',
       columnGap: 'space-y-2',
-      entryGap: 'space-y-1.5',
-      headerMargin: 'mb-2 pb-1',
+      entryGap: 'space-y-1',
+      headerMargin: 'mb-1.5 pb-1',
       sectionHeaderMargin: 'mb-1 pb-0.5',
     },
     spacious: {
       padding: '0px',
-      columnGap: 'space-y-3.5',
-      entryGap: 'space-y-2',
-      headerMargin: 'mb-3 pb-1.5',
-      sectionHeaderMargin: 'mb-1.5 pb-0.5',
+      columnGap: 'space-y-2.5',
+      entryGap: 'space-y-1.5',
+      headerMargin: 'mb-2 pb-1',
+      sectionHeaderMargin: 'mb-1 pb-0.5',
     },
   };
   const config = densityConfig[spacingDensity] || densityConfig.balanced;
@@ -341,6 +347,47 @@ export default function NovoresumeModern({
                   style={{ fontSize: fs(9.5) }}
                 >
                   {cert.description}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+
+  const renderAwards = () =>
+    validAwards.length > 0 && (
+      <section data-section-type="awards">
+        {!data.continuingSections?.includes('awards') && renderSectionHeader('Key Honors & Awards')}
+        <div className={config.entryGap}>
+          {validAwards.map((award, idx) => (
+            <div
+              key={idx}
+              data-entry-item="true"
+              className="space-y-0.5"
+              data-avoid-break="true"
+              style={{ fontSize: fs(10) }}
+            >
+              <div
+                className="font-bold text-[#1e293b] leading-tight"
+                style={{ fontSize: fs(10) }}
+              >
+                {award.title}
+                {award.issuer && (
+                  <span className="font-normal text-[#475569]"> – {award.issuer}</span>
+                )}
+                {award.year && (
+                  <span className="text-[#0d9488] ml-1 font-medium" style={{ fontSize: fs(9.5) }}>
+                    [{award.year}]
+                  </span>
+                )}
+              </div>
+              {award.description && (
+                <p
+                  className="text-[#64748b] leading-tight"
+                  style={{ fontSize: fs(9.5) }}
+                >
+                  {award.description}
                 </p>
               )}
             </div>
@@ -706,12 +753,14 @@ export default function NovoresumeModern({
           {renderProjects()}
           {placeEducationOnLeft && renderEducation()}
           {placeCertificationsOnLeft && renderCertifications()}
+          {placeCertificationsOnLeft && renderAwards()}
         </div>
 
         {/* Sidebar Column (Right) */}
         <div className={`flex flex-col min-w-0 break-words ${config.columnGap}`}>
           {renderSkills()}
           {!placeCertificationsOnLeft && renderCertifications()}
+          {!placeCertificationsOnLeft && renderAwards()}
           {renderVolunteer()}
           {!placeEducationOnLeft && renderEducation()}
           {renderLanguages()}
@@ -720,10 +769,10 @@ export default function NovoresumeModern({
       </div>
 
       {/* Declaration & Signature Block (if enabled) */}
-      {sections.declaration?.enabled && pageNumber === totalPages && (
+      {sections.declaration?.enabled && isLastPage && (
         <section
           data-section-type="declaration"
-          className="pt-3 border-t border-[#e2e8f0] mt-4 text-[11px]"
+          className="pt-2 border-t border-[#e2e8f0] mt-2 text-[11px]"
         >
           <div className="flex items-center gap-2 mb-1.5 border-b border-[#f1f5f9] pb-0.5">
             <span
@@ -738,7 +787,7 @@ export default function NovoresumeModern({
               Declaration
             </h2>
           </div>
-          <p className="text-[#475569] italic leading-relaxed mb-4 text-justify">
+          <p className="text-[#475569] italic leading-relaxed mb-2 text-justify">
             &ldquo;{sections.declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
           </p>
 

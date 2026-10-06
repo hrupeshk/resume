@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type {
   ProjectEntry,
   CertificationEntry,
+  AwardEntry,
   LanguageEntry,
   VolunteerEntry,
   ReferenceEntry,
@@ -13,6 +14,7 @@ interface SkillsProjectsFormProps {
   skills: string[];
   projects: ProjectEntry[];
   certifications: CertificationEntry[];
+  awards?: AwardEntry[];
   languages?: LanguageEntry[];
   volunteer?: VolunteerEntry[];
   references?: ReferenceEntry[];
@@ -21,6 +23,7 @@ interface SkillsProjectsFormProps {
   onChangeSkills: (skills: string[]) => void;
   onChangeProjects: (projects: ProjectEntry[]) => void;
   onChangeCertifications: (certifications: CertificationEntry[]) => void;
+  onChangeAwards?: (awards: AwardEntry[]) => void;
   onChangeLanguages?: (languages: LanguageEntry[]) => void;
   onChangeVolunteer?: (volunteer: VolunteerEntry[]) => void;
   onChangeReferences?: (references: ReferenceEntry[]) => void;
@@ -31,6 +34,7 @@ export default function SkillsProjectsForm({
   skills,
   projects,
   certifications,
+  awards = [],
   languages = [],
   volunteer = [],
   references = [],
@@ -39,6 +43,7 @@ export default function SkillsProjectsForm({
   onChangeSkills,
   onChangeProjects,
   onChangeCertifications,
+  onChangeAwards,
   onChangeLanguages,
   onChangeVolunteer,
   onChangeReferences,
@@ -191,6 +196,38 @@ export default function SkillsProjectsForm({
     updated[index] = updated[targetIndex];
     updated[targetIndex] = temp;
     onChangeLanguages(updated);
+  };
+
+  // Awards handlers
+  const handleAddAward = () => {
+    if (!onChangeAwards) return;
+    onChangeAwards([
+      ...awards,
+      { title: '', issuer: '', year: '', description: '' },
+    ]);
+  };
+
+  const handleUpdateAward = (index: number, field: keyof AwardEntry, value: string) => {
+    if (!onChangeAwards) return;
+    const updated = [...awards];
+    updated[index] = { ...updated[index], [field]: value };
+    onChangeAwards(updated);
+  };
+
+  const handleRemoveAward = (index: number) => {
+    if (!onChangeAwards) return;
+    onChangeAwards(awards.filter((_, i) => i !== index));
+  };
+
+  const handleMoveAward = (index: number, direction: 'up' | 'down') => {
+    if (!onChangeAwards) return;
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= awards.length) return;
+    const updated = [...awards];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    onChangeAwards(updated);
   };
 
   // Volunteer handlers
@@ -552,7 +589,138 @@ export default function SkillsProjectsForm({
         )}
       </section>
 
-      {/* 4. Languages Section */}
+      {/* 4. Honors & Awards Section (Completely Optional) */}
+      <section className="space-y-4 pt-4 border-t border-hairline">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-ink flex items-center gap-2">
+              <span>Key Honors & Awards</span>
+              <span className="text-xs font-normal text-mute">(Optional)</span>
+            </h3>
+            <p className="text-xs text-mute mt-0.5">
+              Corporate recognition, awards, hackathons, academic honors, or notable achievements.
+            </p>
+          </div>
+          {onChangeAwards && (
+            <button
+              type="button"
+              onClick={handleAddAward}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-sm bg-primary text-on-primary text-xs font-medium hover:opacity-90 transition-opacity cursor-pointer"
+            >
+              + Add Award / Achievement
+            </button>
+          )}
+        </div>
+
+        {awards.length === 0 ? (
+          <p className="text-xs text-mute italic py-2">
+            No awards or achievements added. (Completely optional — this section will be hidden on your resume).
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {awards.map((award, idx) => (
+              <div
+                key={idx}
+                className="p-4 rounded-sm border border-hairline bg-canvas space-y-3"
+              >
+                <div className="flex items-center justify-between border-b border-hairline pb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-medium text-mute uppercase">
+                      Award #{idx + 1}
+                    </span>
+                    <div className="inline-flex items-center border border-hairline rounded-sm bg-canvas-elevated shadow-2xs overflow-hidden">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => handleMoveAward(idx, 'up')}
+                        className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                        title="Move award up"
+                        aria-label="Move award up"
+                      >
+                        ▲
+                      </button>
+                      <div className="h-3 w-px bg-hairline" />
+                      <button
+                        type="button"
+                        disabled={idx === awards.length - 1}
+                        onClick={() => handleMoveAward(idx, 'down')}
+                        className="px-1.5 py-0.5 text-[10px] text-mute hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed hover:bg-canvas transition-colors cursor-pointer"
+                        title="Move award down"
+                        aria-label="Move award down"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAward(idx)}
+                    className="text-xs text-mute hover:text-error transition-colors cursor-pointer"
+                  >
+                    Delete Entry
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="sm:col-span-2">
+                    <label className="block text-[11px] font-medium text-body mb-1">
+                      Award Title / Honor
+                    </label>
+                    <input
+                      type="text"
+                      value={award.title}
+                      onChange={(e) => handleUpdateAward(idx, 'title', e.target.value)}
+                      placeholder="e.g. Operational Excellence Award"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-medium text-body mb-1">
+                      Year / Date
+                    </label>
+                    <input
+                      type="text"
+                      value={award.year || ''}
+                      onChange={(e) => handleUpdateAward(idx, 'year', e.target.value)}
+                      placeholder="e.g. 2023"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <label className="block text-[11px] font-medium text-body mb-1">
+                      Issuing Organization / Issuer (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={award.issuer || ''}
+                      onChange={(e) => handleUpdateAward(idx, 'issuer', e.target.value)}
+                      placeholder="e.g. Apex Global Enterprises"
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <label className="block text-[11px] font-medium text-body mb-1">
+                      Short Description / Impact (Optional)
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={award.description || ''}
+                      onChange={(e) => handleUpdateAward(idx, 'description', e.target.value)}
+                      placeholder="e.g. Recognized for leading cross-functional delivery team and achieving 99.8% SLA adherence."
+                      className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink resize-y"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* 5. Languages Section */}
       <section className="space-y-4 pt-4 border-t border-hairline">
         <div className="flex items-center justify-between">
           <div>
@@ -922,7 +1090,7 @@ export default function SkillsProjectsForm({
                       type="tel"
                       value={ref.phone || ''}
                       onChange={(e) => handleUpdateReference(idx, 'phone', e.target.value)}
-                      placeholder="e.g. +91 98200 12345"
+                      placeholder="e.g. +91 90000 00000"
                       className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                     />
                   </div>
@@ -933,7 +1101,7 @@ export default function SkillsProjectsForm({
         )}
       </section>
 
-      {/* 7. Closing Declaration & Signature Block */}
+      {/* 8. Closing Declaration & Signature Block */}
       <section className="space-y-4 pt-4 border-t border-hairline">
         <div className="flex items-center justify-between">
           <div>
