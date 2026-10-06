@@ -42,22 +42,22 @@ export default function CommercialOperationsPrivateJob({
   const isLastPage = pageNumber === totalPages;
   const showDeclaration = Boolean(declaration?.enabled && isLastPage);
 
-  // Dynamic Spacing Config
+  // Dynamic Spacing Config (Single-Page Optimized)
   const spacingConfig = {
     compact: {
+      sectionMb: 'mb-1.5',
+      headingMb: 'mb-0.5',
+      itemSpace: 'space-y-1',
+    },
+    balanced: {
       sectionMb: 'mb-2.5',
       headingMb: 'mb-1',
       itemSpace: 'space-y-1.5',
     },
-    balanced: {
+    spacious: {
       sectionMb: 'mb-3.5',
       headingMb: 'mb-1.5',
       itemSpace: 'space-y-2',
-    },
-    spacious: {
-      sectionMb: 'mb-5',
-      headingMb: 'mb-2',
-      itemSpace: 'space-y-3',
     },
   };
   const sp = spacingConfig[spacingDensity] || spacingConfig.balanced;
@@ -73,7 +73,7 @@ export default function CommercialOperationsPrivateJob({
     >
       {/* Top Banner Header with Circular Photo */}
       {pageNumber === 1 && (
-        <header className="flex items-center justify-between border-b-2 border-neutral-900 pb-3 mb-4 gap-4">
+        <header className="flex items-center justify-between border-b-2 border-neutral-900 pb-2 mb-2.5 gap-3">
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-black text-neutral-950 uppercase tracking-tight">
               {personalInfo.fullName || 'Candidate Name'}
@@ -133,7 +133,7 @@ export default function CommercialOperationsPrivateJob({
             {experience
               .filter((exp) => exp.company.trim() || exp.role.trim())
               .map((exp, idx) => (
-                <div key={idx} data-entry-item="true" className="border-l-2 border-neutral-800 pl-2.5">
+                <div key={idx} data-entry-item="true" className="space-y-0.5">
                   <div className="flex justify-between items-baseline">
                     <span className="font-bold text-xs text-neutral-900">{exp.role}</span>
                     {(exp.startDate || exp.endDate) && (
@@ -277,8 +277,8 @@ export default function CommercialOperationsPrivateJob({
 
       {/* Formal Closing Declaration & Signature Block */}
       {showDeclaration && (
-        <section data-section-type="declaration" className="pt-3 border-t border-neutral-300 mt-4 text-xs">
-          <p className="text-neutral-700 italic leading-relaxed text-justify mb-4">
+        <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-2.5 text-xs">
+          <p className="text-neutral-700 italic leading-relaxed text-justify mb-2">
             &ldquo;{declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
           </p>
 

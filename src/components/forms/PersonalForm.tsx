@@ -16,6 +16,8 @@ export default function PersonalForm({
   onChangePersonalInfo,
   onChangeSummary,
 }: PersonalFormProps) {
+  const isPrivateJob = category === 'private_job_resume';
+
   const handleChangeField = (field: keyof ResumePersonalInfo, value: string) => {
     onChangePersonalInfo({
       ...personalInfo,
@@ -35,7 +37,14 @@ export default function PersonalForm({
   const handleAddLink = () => {
     onChangePersonalInfo({
       ...personalInfo,
-      links: [...(personalInfo.links || []), { label: 'Link', url: '' }],
+      links: [...(personalInfo.links || []), { label: isPrivateJob ? 'Instagram' : 'Link', url: '' }],
+    });
+  };
+
+  const handleAddPresetLink = (label: string, urlPrefix: string = '') => {
+    onChangePersonalInfo({
+      ...personalInfo,
+      links: [...(personalInfo.links || []), { label, url: urlPrefix }],
     });
   };
 
@@ -290,17 +299,57 @@ export default function PersonalForm({
 
       {/* Social & Professional Links */}
       <div className="space-y-3 pt-2 border-t border-hairline">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-1.5">
           <label className="text-xs font-medium text-body">
-            Links & Profiles (GitHub, LinkedIn, Portfolio)
+            {isPrivateJob
+              ? 'Social Profiles & Links (Instagram, Facebook, YouTube)'
+              : 'Links & Profiles (LinkedIn, GitHub, Portfolio)'}
           </label>
-          <button
-            type="button"
-            onClick={handleAddLink}
-            className="text-xs font-medium text-link hover:text-link-deep transition-colors"
-          >
-            + Add Link
-          </button>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {isPrivateJob && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleAddPresetLink('Instagram', 'https://instagram.com/')}
+                  className="text-[11px] font-medium text-mute hover:text-ink px-1.5 py-0.5 rounded-xs bg-canvas border border-hairline hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Add Instagram profile"
+                >
+                  + Instagram
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddPresetLink('Facebook', 'https://facebook.com/')}
+                  className="text-[11px] font-medium text-mute hover:text-ink px-1.5 py-0.5 rounded-xs bg-canvas border border-hairline hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Add Facebook profile"
+                >
+                  + Facebook
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddPresetLink('YouTube', 'https://youtube.com/@')}
+                  className="text-[11px] font-medium text-mute hover:text-ink px-1.5 py-0.5 rounded-xs bg-canvas border border-hairline hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Add YouTube channel"
+                >
+                  + YouTube
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddPresetLink('Portfolio', 'https://')}
+                  className="text-[11px] font-medium text-mute hover:text-ink px-1.5 py-0.5 rounded-xs bg-canvas border border-hairline hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Add Portfolio/Website"
+                >
+                  + Portfolio
+                </button>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={handleAddLink}
+              className="text-xs font-medium text-link hover:text-link-deep transition-colors cursor-pointer"
+            >
+              + Add Link
+            </button>
+          </div>
         </div>
 
         {(personalInfo.links || []).map((link, idx) => (
@@ -309,14 +358,14 @@ export default function PersonalForm({
               type="text"
               value={link.label}
               onChange={(e) => handleLinkChange(idx, 'label', e.target.value)}
-              placeholder="Label (e.g. GitHub)"
+              placeholder={isPrivateJob ? "Label (e.g. Instagram)" : "Label (e.g. GitHub)"}
               className="w-1/3 px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
             />
             <input
               type="url"
               value={link.url}
               onChange={(e) => handleLinkChange(idx, 'url', e.target.value)}
-              placeholder="https://…"
+              placeholder={isPrivateJob ? "https://instagram.com/… or facebook.com/…" : "https://…"}
               className="flex-1 px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
             />
             <div className="flex items-center gap-0.5">

@@ -10,9 +10,9 @@ export const PAGE_TOP_MARGIN_PX = 28; // ~7.5mm
 export const PAGE_SIDE_MARGIN_PX = 48; // ~12.5mm
 export const PAGE_BOTTOM_MARGIN_PX = 24; // ~6.5mm - optimized bottom margin to maximize fitted content on Page 1
 // Physical printable height = 1123 - 28 - 24 = 1071px.
-// Setting calibrated ceiling to 995px guarantees a safe 76px buffer above the bottom page edge,
-// ensuring zero lines or signatures are ever cut off while smoothly transitioning into Page 2.
-export const MAX_PAGE_CONTENT_HEIGHT = 995;
+// Setting calibrated ceiling to 1030px maximizes single-page fit while preserving
+// a safe 41px buffer above the bottom page edge to eliminate subpixel cutoffs.
+export const MAX_PAGE_CONTENT_HEIGHT = 1030;
 
 export interface ItemMeasurement {
   index: number;

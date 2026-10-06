@@ -44,28 +44,28 @@ export default function IndianClassicPrivateJob({
   const isLastPage = pageNumber === totalPages;
   const showDeclaration = Boolean(declaration?.enabled && isLastPage);
 
-  // Dynamic Spacing Config based on Spacing Toolbar
+  // Dynamic Spacing Config based on Spacing Toolbar (Single-Page Optimized)
   const spacingConfig = {
     compact: {
-      sectionMb: 'mb-2',
-      headingMb: 'mb-1',
+      sectionMb: 'mb-1.5',
+      headingMb: 'mb-0.5',
       itemSpace: 'space-y-1',
+      tablePy: 'py-0.5',
+      tablePx: 'px-1.5',
+    },
+    balanced: {
+      sectionMb: 'mb-2.5',
+      headingMb: 'mb-1',
+      itemSpace: 'space-y-1.5',
       tablePy: 'py-0.5',
       tablePx: 'px-2',
     },
-    balanced: {
-      sectionMb: 'mb-3',
+    spacious: {
+      sectionMb: 'mb-3.5',
       headingMb: 'mb-1.5',
-      itemSpace: 'space-y-1.5',
+      itemSpace: 'space-y-2',
       tablePy: 'py-1',
       tablePx: 'px-2',
-    },
-    spacious: {
-      sectionMb: 'mb-4',
-      headingMb: 'mb-2',
-      itemSpace: 'space-y-2',
-      tablePy: 'py-1.5',
-      tablePx: 'px-2.5',
     },
   };
   const sp = spacingConfig[spacingDensity] || spacingConfig.balanced;
@@ -342,9 +342,9 @@ export default function IndianClassicPrivateJob({
 
       {/* Formal Closing Declaration & Signature Block (Rendered strictly on final page) */}
       {showDeclaration && (
-        <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-3 text-xs">
+        <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-2 text-xs">
           <h2 className="font-bold uppercase tracking-wider text-neutral-900 mb-0.5 text-[11px]">Declaration</h2>
-          <p className="text-neutral-700 italic leading-relaxed text-justify mb-3 text-[11.5px]">
+          <p className="text-neutral-700 italic leading-relaxed text-justify mb-2 text-[11.5px]">
             &ldquo;{declaration?.text || 'I hereby declare that all the information mentioned above is true and correct to the best of my knowledge and belief.'}&rdquo;
           </p>
 

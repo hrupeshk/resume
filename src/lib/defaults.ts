@@ -24,8 +24,8 @@ export function createEmptyResume(category: ResumeCategory = 'tech_resume'): Res
           { label: 'Portfolio', url: '' },
         ]
       : [
-          { label: 'LinkedIn', url: '' },
-          { label: 'Website', url: '' },
+          { label: 'Instagram', url: '' },
+          { label: 'Facebook', url: '' },
         ];
 
   return {
@@ -343,7 +343,8 @@ export const samplePrivateJobResume: ResumeDocument = {
     languagesKnown: 'Hindi, Bhojpuri, English (Basic)',
     permanentAddress: 'Vill - Rampur, Post - Lalganj, Dist - Vaishali, Bihar - 844121',
     links: [
-      { label: 'LinkedIn', url: '' },
+      { label: 'Instagram', url: 'https://instagram.com/ramesh_service' },
+      { label: 'Facebook', url: 'https://facebook.com/ramesh.kumar' },
     ],
   },
   summary:

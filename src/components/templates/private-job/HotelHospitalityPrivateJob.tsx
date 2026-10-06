@@ -43,22 +43,22 @@ export default function HotelHospitalityPrivateJob({
   const isLastPage = pageNumber === totalPages;
   const showDeclaration = Boolean(declaration?.enabled && isLastPage);
 
-  // Dynamic Spacing Config
+  // Dynamic Spacing Config (Single-Page Optimized)
   const spacingConfig = {
     compact: {
-      sectionMb: 'mb-2',
-      headingMb: 'mb-1',
+      sectionMb: 'mb-1.5',
+      headingMb: 'mb-0.5',
       itemSpace: 'space-y-1',
     },
     balanced: {
-      sectionMb: 'mb-3',
-      headingMb: 'mb-1.5',
-      itemSpace: 'space-y-2',
+      sectionMb: 'mb-2.5',
+      headingMb: 'mb-1',
+      itemSpace: 'space-y-1.5',
     },
     spacious: {
-      sectionMb: 'mb-4',
-      headingMb: 'mb-2',
-      itemSpace: 'space-y-2.5',
+      sectionMb: 'mb-3.5',
+      headingMb: 'mb-1.5',
+      itemSpace: 'space-y-2',
     },
   };
   const sp = spacingConfig[spacingDensity] || spacingConfig.balanced;
@@ -350,7 +350,7 @@ export default function HotelHospitalityPrivateJob({
         {/* Declaration & Signature Block (Rendered strictly on final page) */}
         {showDeclaration && (
           <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-2 text-[10.5px]">
-            <p className="text-neutral-600 italic leading-relaxed mb-3 text-[11px]">
+            <p className="text-neutral-600 italic leading-relaxed mb-2 text-[11px]">
               &ldquo;{declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
             </p>
             <div className="flex justify-between items-end">
