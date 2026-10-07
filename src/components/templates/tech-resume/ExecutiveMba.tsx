@@ -3,6 +3,7 @@ import type { ResumeDocument } from '../../../lib/schema';
 
 interface TemplateProps {
   data: ResumeDocument;
+  fullData?: ResumeDocument;
   pageNumber?: number;
   totalPages?: number;
   spacingDensity?: 'compact' | 'balanced' | 'spacious';
@@ -11,6 +12,7 @@ interface TemplateProps {
 
 export default function ExecutiveMba({
   data,
+  fullData,
   pageNumber = 1,
   totalPages = 1,
   spacingDensity = 'balanced',
@@ -480,15 +482,25 @@ export default function ExecutiveMba({
               <div><strong>Place:</strong> {sections.declaration?.place || '_______________'}</div>
               <div><strong>Date:</strong> {sections.declaration?.date || '_______________'}</div>
             </div>
-            <div className="text-right">
+            <div className="text-right min-w-[140px]">
               {sections.declaration?.signatureName?.trim() ? (
                 <div>
-                  <div className="font-serif italic text-neutral-900 text-sm">{sections.declaration.signatureName}</div>
+                  <div
+                    className="h-8 flex items-center justify-end text-[#1e3a8a] select-none pr-1"
+                    style={{
+                      fontFamily: "'Caveat', 'Dancing Script', 'Brush Script MT', 'Segoe Script', cursive",
+                      fontSize: '20px',
+                      fontWeight: 600,
+                      transform: 'rotate(-2deg)',
+                    }}
+                  >
+                    {sections.declaration.signatureName}
+                  </div>
                   <div className="text-[10px] text-neutral-500 border-t border-neutral-400 mt-0.5 pt-0.5">Authorized Signature</div>
                 </div>
               ) : (
                 <div>
-                  <div className="h-5"></div>
+                  <div className="h-7"></div>
                   <div className="text-[10px] text-neutral-500 border-t border-neutral-400 pt-0.5">Authorized Signature</div>
                 </div>
               )}

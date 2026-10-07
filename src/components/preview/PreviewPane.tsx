@@ -469,6 +469,7 @@ export default function PreviewPane({
                         // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale
                         <TemplateComponent
                           data={slice}
+                          fullData={data}
                           pageNumber={pageNum}
                           totalPages={pageSlices.length}
                           autoBalance={autoBalance}
@@ -508,6 +509,7 @@ export default function PreviewPane({
                 // @ts-ignore - TemplateComponent accepts optional autoBalance, spacingDensity, columnSplit, fontSizeScale
                 <TemplateComponent
                   data={data}
+                  fullData={data}
                   autoBalance={autoBalance}
                   spacingDensity={spacingDensity}
                   columnSplit={columnSplit}

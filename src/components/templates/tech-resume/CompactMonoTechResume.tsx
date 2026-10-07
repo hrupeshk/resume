@@ -3,6 +3,7 @@ import type { ResumeDocument } from '../../../lib/schema';
 
 interface TemplateProps {
   data: ResumeDocument;
+  fullData?: ResumeDocument;
   pageNumber?: number;
   totalPages?: number;
   spacingDensity?: 'compact' | 'balanced' | 'spacious';
@@ -11,6 +12,7 @@ interface TemplateProps {
 
 export default function CompactMonoTechResume({
   data,
+  fullData,
   pageNumber = 1,
   totalPages = 1,
   spacingDensity = 'balanced',
@@ -61,18 +63,19 @@ export default function CompactMonoTechResume({
   const isLastPage = !totalPages || pageNumber === totalPages;
   const showDeclaration = Boolean(sections.declaration?.enabled && isLastPage);
 
-  // Compute master sequential section numbers without skipping empty sections
-  const docSummary = (data.summary || '').trim();
-  const docExperience = (data.sections.experience || []).filter((e) => e.company.trim() || e.role.trim());
-  const docProjects = (data.sections.projects || []).filter((p) => p.name.trim() || p.description.trim());
-  const docSkills = (data.sections.skills || []).filter((s) => s.trim().length > 0);
-  const docEducation = (data.sections.education || []).filter((e) => e.institution.trim() || e.degree.trim());
-  const docCertifications = (data.sections.certifications || []).filter((c) => c.name.trim());
-  const docAwards = (data.sections.awards || []).filter((a) => a.title.trim().length > 0);
-  const docLanguages = (data.sections.languages || []).filter((l) => l.language.trim().length > 0);
-  const docVolunteer = (data.sections.volunteer || []).filter((v) => v.organization.trim().length > 0);
-  const docReferences = (data.sections.references || []).filter((r) => r.name.trim().length > 0);
-  const docDeclaration = Boolean(data.sections.declaration?.enabled);
+  // Compute master sequential section numbers from full master document so numbering remains continuous across all pages
+  const masterDoc = fullData || data._masterDocument || data;
+  const docSummary = (masterDoc.summary || '').trim();
+  const docExperience = (masterDoc.sections.experience || []).filter((e) => e.company?.trim() || e.role?.trim());
+  const docProjects = (masterDoc.sections.projects || []).filter((p) => p.name?.trim() || p.description?.trim());
+  const docSkills = (masterDoc.sections.skills || []).filter((s) => s?.trim().length > 0);
+  const docEducation = (masterDoc.sections.education || []).filter((e) => e.institution?.trim() || e.degree?.trim());
+  const docCertifications = (masterDoc.sections.certifications || []).filter((c) => c.name?.trim());
+  const docAwards = (masterDoc.sections.awards || []).filter((a) => a.title?.trim().length > 0);
+  const docLanguages = (masterDoc.sections.languages || []).filter((l) => l.language?.trim().length > 0);
+  const docVolunteer = (masterDoc.sections.volunteer || []).filter((v) => v.organization?.trim().length > 0);
+  const docReferences = (masterDoc.sections.references || []).filter((r) => r.name?.trim().length > 0);
+  const docDeclaration = Boolean(masterDoc.sections.declaration?.enabled);
 
   const activeDocSections: string[] = [];
   if (docSummary.length > 0) activeDocSections.push('summary');
@@ -393,7 +396,7 @@ export default function CompactMonoTechResume({
         <section data-section-type="volunteer" className={`${config.sectionMargin} last:mb-0`}>
           {!data.continuingSections?.includes('volunteer') && (
             <h2 data-section-heading="true" className="text-[11px] font-mono font-bold uppercase tracking-widest text-black border-b border-neutral-300 pb-1 mb-1.5">
-              {getSectionNum('volunteer')}Volunteer & Leadership
+              {getSectionNum('volunteer')}Leadership & Community Engagements
             </h2>
           )}
           <div className="space-y-1.5 text-xs">
@@ -459,15 +462,25 @@ export default function CompactMonoTechResume({
               <div><strong>Place:</strong> {sections.declaration?.place || '_______________'}</div>
               <div><strong>Date:</strong> {sections.declaration?.date || '_______________'}</div>
             </div>
-            <div className="text-right">
+            <div className="text-right min-w-[140px]">
               {sections.declaration?.signatureName?.trim() ? (
                 <div>
-                  <div className="font-bold text-black text-xs">{sections.declaration.signatureName}</div>
+                  <div
+                    className="h-8 flex items-center justify-end text-[#1e3a8a] select-none pr-1"
+                    style={{
+                      fontFamily: "'Caveat', 'Dancing Script', 'Brush Script MT', 'Segoe Script', cursive",
+                      fontSize: '20px',
+                      fontWeight: 600,
+                      transform: 'rotate(-2deg)',
+                    }}
+                  >
+                    {sections.declaration.signatureName}
+                  </div>
                   <div className="text-[10px] text-neutral-500 border-t border-neutral-400 mt-0.5 pt-0.5">Candidate Signature</div>
                 </div>
               ) : (
                 <div>
-                  <div className="h-5"></div>
+                  <div className="h-7"></div>
                   <div className="text-[10px] text-neutral-500 border-t border-neutral-400 pt-0.5">Candidate Signature</div>
                 </div>
               )}

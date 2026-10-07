@@ -145,6 +145,7 @@ export interface ResumeDocument extends BaseDocument {
   summary: string;
   sections: ResumeSections;
   continuingSections?: string[];
+  _masterDocument?: ResumeDocument;
 }
 
 // ---------------------------------------------------------------------------

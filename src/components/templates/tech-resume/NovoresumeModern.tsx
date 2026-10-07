@@ -3,6 +3,7 @@ import type { ResumeDocument } from '../../../lib/schema';
 
 interface TemplateProps {
   data: ResumeDocument;
+  fullData?: ResumeDocument;
   pageNumber?: number;
   totalPages?: number;
   autoBalance?: boolean;
@@ -13,6 +14,7 @@ interface TemplateProps {
 
 export default function NovoresumeModern({
   data,
+  fullData,
   pageNumber = 1,
   totalPages = 1,
   autoBalance = false,
@@ -91,38 +93,60 @@ export default function NovoresumeModern({
   const config = densityConfig[spacingDensity] || densityConfig.balanced;
 
   // -------------------------------------------------------------------------
-  // Intelligent Column Auto-Balancing Algorithm
+  // Intelligent Column Auto-Balancing Algorithm (derived from master document)
   // -------------------------------------------------------------------------
+  const masterDoc = fullData || data._masterDocument || data;
+  const masterExp = (masterDoc.sections.experience || []).filter(
+    (e: any) => e.company?.trim() || e.role?.trim()
+  );
+  const masterProj = (masterDoc.sections.projects || []).filter(
+    (p: any) => p.name?.trim() || p.description?.trim()
+  );
+  const masterSkills = (masterDoc.sections.skills || []).filter((s: string) => s?.trim().length > 0);
+  const masterCerts = (masterDoc.sections.certifications || []).filter(
+    (c: any) => c.name?.trim()
+  );
+  const masterEdu = (masterDoc.sections.education || []).filter(
+    (e: any) => e.institution?.trim() || e.degree?.trim()
+  );
+  const masterLang = (masterDoc.sections.languages || []).filter(
+    (l: any) => l.language?.trim().length > 0
+  );
+  const masterVol = (masterDoc.sections.volunteer || []).filter(
+    (v: any) => v.organization?.trim().length > 0
+  );
+  const masterRef = (masterDoc.sections.references || []).filter(
+    (r: any) => r.name?.trim().length > 0
+  );
+
   const expWeight =
-    validExperience.reduce((sum, e) => sum + 3 + (e.bullets?.length || 1) * 1.5, 0) +
-    (validExperience.length > 0 ? 3 : 0);
+    masterExp.reduce((sum: number, e: any) => sum + 3 + (e.bullets?.length || 1) * 1.5, 0) +
+    (masterExp.length > 0 ? 3 : 0);
 
   const projWeight =
-    validProjects.reduce(
-      (sum, p) => sum + 3 + (p.description ? p.description.split('\n').length : 1) * 1.4,
+    masterProj.reduce(
+      (sum: number, p: any) => sum + 3 + (p.description ? p.description.split('\n').length : 1) * 1.4,
       0
-    ) + (validProjects.length > 0 ? 3 : 0);
+    ) + (masterProj.length > 0 ? 3 : 0);
 
   const skillsWeight =
-    Math.ceil(validSkills.length / 3) * 1.8 + (validSkills.length > 0 ? 3 : 0);
+    Math.ceil(masterSkills.length / 3) * 1.8 + (masterSkills.length > 0 ? 3 : 0);
 
   const certsWeight =
-    validCertifications.length * 3 + (validCertifications.length > 0 ? 3 : 0);
+    masterCerts.length * 3 + (masterCerts.length > 0 ? 3 : 0);
 
   const volWeight =
-    validVolunteer.length * 3.5 + (validVolunteer.length > 0 ? 3 : 0);
+    masterVol.length * 3.5 + (masterVol.length > 0 ? 3 : 0);
 
   const eduWeight =
-    validEducation.length * 3.2 + (validEducation.length > 0 ? 3 : 0);
+    masterEdu.length * 3.2 + (masterEdu.length > 0 ? 3 : 0);
 
   const langWeight =
-    validLanguages.length * 2.2 + (validLanguages.length > 0 ? 3 : 0);
+    masterLang.length * 2.2 + (masterLang.length > 0 ? 3 : 0);
 
   const refWeight =
-    validReferences.length * 3 + (validReferences.length > 0 ? 3 : 0);
+    masterRef.length * 3 + (masterRef.length > 0 ? 3 : 0);
 
-  // Determine section placement based on column balancing
-  // In classic Novorésumé: Left has Experience + Projects; Right has Skills, Certs, Volunteer, Edu, Languages, References.
   let placeEducationOnLeft = false;
   let placeCertificationsOnLeft = false;
 
@@ -130,11 +154,8 @@ export default function NovoresumeModern({
   const rightInitial =
     skillsWeight + certsWeight + volWeight + eduWeight + langWeight + refWeight;
 
-  // Natural column balancing:
-  // When right column is heavier than left (e.g. fewer projects, or 1-2 jobs with education/skills/references on right),
-  // automatically balance the bottom by placing Education on the left column below Experience!
   if (
-    validEducation.length > 0 &&
+    masterEdu.length > 0 &&
     (rightInitial > leftInitial + 2 ||
       (autoBalance && Math.abs(leftInitial + eduWeight - (rightInitial - eduWeight)) < Math.abs(leftInitial - rightInitial)))
   ) {
@@ -144,7 +165,7 @@ export default function NovoresumeModern({
     const leftAfterEdu = leftInitial + eduWeight;
     const diffAfterEdu = Math.abs(leftAfterEdu - rightAfterEdu);
     const diffWithCertsOnLeft = Math.abs(leftAfterEdu + certsWeight - (rightAfterEdu - certsWeight));
-    if (rightAfterEdu > leftAfterEdu + 5 && diffWithCertsOnLeft < diffAfterEdu - 2 && validCertifications.length > 0) {
+    if (rightAfterEdu > leftAfterEdu + 5 && diffWithCertsOnLeft < diffAfterEdu - 2 && masterCerts.length > 0) {
       placeCertificationsOnLeft = true;
     }
   }
@@ -399,7 +420,7 @@ export default function NovoresumeModern({
   const renderVolunteer = () =>
     validVolunteer.length > 0 && (
       <section data-section-type="volunteer">
-        {!data.continuingSections?.includes('volunteer') && renderSectionHeader('Volunteer Experience')}
+        {!data.continuingSections?.includes('volunteer') && renderSectionHeader('Leadership & Community Engagements')}
         <div className={config.entryGap}>
           {validVolunteer.map((v, idx) => (
             <div
@@ -802,7 +823,7 @@ export default function NovoresumeModern({
                 <div
                   className="h-8 flex items-center justify-center text-[#1e3a8a] select-none"
                   style={{
-                    fontFamily: "'Brush Script MT', 'Dancing Script', 'Caveat', 'Segoe Script', cursive",
+                    fontFamily: "'Caveat', 'Dancing Script', 'Brush Script MT', 'Segoe Script', cursive",
                     fontSize: '20px',
                     fontWeight: 600,
                     transform: 'rotate(-2deg)',

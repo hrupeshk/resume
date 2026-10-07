@@ -8,11 +8,11 @@ export const A4_HEIGHT_PX = 1123;
 export const CONTENT_WIDTH_PX = 698;
 export const PAGE_TOP_MARGIN_PX = 28; // ~7.5mm
 export const PAGE_SIDE_MARGIN_PX = 48; // ~12.5mm
-export const PAGE_BOTTOM_MARGIN_PX = 24; // ~6.5mm - optimized bottom margin to maximize fitted content on Page 1
-// Physical printable height = 1123 - 28 - 24 = 1071px.
-// Setting calibrated ceiling to 1030px maximizes single-page fit while preserving
-// a safe 41px buffer above the bottom page edge to eliminate subpixel cutoffs.
-export const MAX_PAGE_CONTENT_HEIGHT = 1030;
+export const PAGE_BOTTOM_MARGIN_PX = 20; // ~5.3mm - snug bottom margin to maximize fitted content
+// Physical printable height = 1123 - 28 - 20 = 1075px.
+// Calibrated ceiling to 1055px maximizes single-page fit while preserving
+// a safe 20px buffer above the bottom page edge to eliminate subpixel cutoffs.
+export const MAX_PAGE_CONTENT_HEIGHT = 1055;
 
 export interface ItemMeasurement {
   index: number;
@@ -48,7 +48,7 @@ function matchSectionType(text: string): SectionType {
   if (lower.includes('declaration') || lower.includes('signature')) return 'declaration';
   if (lower.includes('personal detail') || lower.includes('personal information') || lower.includes('particulars')) return 'personalDetails';
   // Check volunteer before general experience to prevent "Volunteer Experience" misclassification
-  if (lower.includes('volunteer') || lower.includes('community')) return 'volunteer';
+  if (lower.includes('volunteer') || lower.includes('community') || lower.includes('leadership')) return 'volunteer';
   if (lower.includes('experience') || lower.includes('work') || lower.includes('employment') || lower.includes('career')) return 'experience';
   if (lower.includes('education') || lower.includes('academic') || lower.includes('qualification')) return 'education';
   if (lower.includes('skill') || lower.includes('tech stack') || lower.includes('technologies')) return 'skills';
@@ -220,6 +220,7 @@ function createEmptyPageSlice(data: ResumeDocument, pageIndex: number): ResumeDo
         },
     summary: isFirstPage ? data.summary : '',
     continuingSections: [],
+    _masterDocument: data,
     sections: {
       education: [],
       experience: [],
@@ -279,55 +280,80 @@ export function partitionResumeIntoPages(
 
     let leftColIndex = 0;
     let rightColIndex = 0;
-    // Reserve space for bottom full-width declaration so Page 1 doesn't overflow
-    let leftRemaining = maxContentHeight - measurements.headerHeight - declarationHeight;
-    let rightRemaining = maxContentHeight - measurements.headerHeight - declarationHeight;
+    // On Page 1, declaration is NEVER rendered (it only renders on the final page).
+    // Do NOT deduct declarationHeight from Page 1 so that Page 1 fills completely without large bottom gap!
+    let leftRemaining = maxContentHeight - measurements.headerHeight;
+    let rightRemaining = maxContentHeight - measurements.headerHeight;
 
     const leftSections = measurements.sections.filter((s) => s.columnIndex === 0);
     const rightSections = measurements.sections.filter((s) => s.columnIndex === 1);
 
-    // Allocate Left Column (typically Experience, Projects)
+    // Track the first page index where each section began
+    const sectionStartedOnPage = new Map<string, number>();
+
+    // Allocate Left Column (typically Experience, Projects, or Education if balanced left)
     leftSections.forEach((sec) => {
       if (sec.type === 'unknown' || sec.type === 'summary') return;
       const rawItems = (data.sections[sec.type as keyof ResumeSections] || []) as any[];
       if (!rawItems.length) return;
 
       if (sec.items.length > 0 && rawItems.length === sec.items.length) {
-        let secHeaderAdded = false;
         sec.items.forEach((item, idx) => {
-          const needed = item.height + (secHeaderAdded ? 0 : sec.headerHeight);
-          if (needed + 4 > leftRemaining && leftRemaining < maxContentHeight) {
+          const hasStartedBefore = sectionStartedOnPage.has(sec.type);
+          const headerCost = !hasStartedBefore ? sec.headerHeight : 0;
+          const needed = item.height + headerCost;
+
+          const colCap = leftColIndex === 0
+            ? (maxContentHeight - measurements.headerHeight)
+            : (maxContentHeight - declarationHeight);
+
+          if (needed + 4 > leftRemaining && leftRemaining < colCap) {
             leftColIndex++;
             const newPage = getOrCreatePage(leftColIndex);
             leftRemaining = maxContentHeight - declarationHeight;
-            secHeaderAdded = false;
-            if (!newPage.continuingSections) newPage.continuingSections = [];
-            if (!newPage.continuingSections.includes(sec.type)) {
-              newPage.continuingSections.push(sec.type);
+            if (hasStartedBefore) {
+              if (!newPage.continuingSections) newPage.continuingSections = [];
+              if (!newPage.continuingSections.includes(sec.type)) {
+                newPage.continuingSections.push(sec.type);
+              }
             }
           }
+
           const target = getOrCreatePage(leftColIndex);
+          if (!sectionStartedOnPage.has(sec.type)) {
+            sectionStartedOnPage.set(sec.type, leftColIndex);
+          } else if (sectionStartedOnPage.get(sec.type) !== leftColIndex) {
+            if (!target.continuingSections) target.continuingSections = [];
+            if (!target.continuingSections.includes(sec.type)) {
+              target.continuingSections.push(sec.type);
+            }
+          }
+
           (target.sections[sec.type as keyof ResumeSections] as any[]).push(rawItems[idx]);
-          secHeaderAdded = true;
           leftRemaining -= needed;
         });
         leftRemaining -= (sec.marginBottom > 0 ? sec.marginBottom : 6);
       } else {
-        if (sec.totalHeight + 4 > leftRemaining && leftRemaining < maxContentHeight) {
+        const colCap = leftColIndex === 0
+          ? (maxContentHeight - measurements.headerHeight)
+          : (maxContentHeight - declarationHeight);
+
+        if (sec.totalHeight + 4 > leftRemaining && leftRemaining < colCap) {
           leftColIndex++;
           getOrCreatePage(leftColIndex);
           leftRemaining = maxContentHeight - declarationHeight;
         }
         const target = getOrCreatePage(leftColIndex);
+        sectionStartedOnPage.set(sec.type, leftColIndex);
         (target.sections[sec.type as keyof ResumeSections] as any[]).push(...rawItems);
         leftRemaining -= sec.totalHeight;
       }
     });
 
-    // Sections that should stay atomic (never split across pages)
-    const ATOMIC_SECTIONS = new Set(['certifications', 'awards', 'education', 'languages', 'skills', 'volunteer']);
+    // Sections that should stay atomic (never split across pages without meaning)
+    const ATOMIC_SECTIONS = new Set(['certifications', 'awards', 'languages', 'skills']);
 
-    // Allocate Right Column (typically Skills, Certifications, Volunteer, Education, Languages)
+    // Allocate Right Column (typically Skills, Certifications, Volunteer, Education, Languages, References)
     rightSections.forEach((sec) => {
       if (sec.type === 'unknown' || sec.type === 'summary') return;
       const rawItems = (data.sections[sec.type as keyof ResumeSections] || []) as any[];
@@ -336,41 +362,67 @@ export function partitionResumeIntoPages(
       const isAtomic = ATOMIC_SECTIONS.has(sec.type);
 
       if (isAtomic) {
-        if (sec.totalHeight + 4 > rightRemaining && rightRemaining < maxContentHeight) {
+        const colCap = rightColIndex === 0
+          ? (maxContentHeight - measurements.headerHeight)
+          : (maxContentHeight - declarationHeight);
+
+        if (sec.totalHeight + 4 > rightRemaining && rightRemaining < colCap) {
           rightColIndex++;
           getOrCreatePage(rightColIndex);
           rightRemaining = maxContentHeight - declarationHeight;
         }
         const target = getOrCreatePage(rightColIndex);
+        sectionStartedOnPage.set(sec.type, rightColIndex);
         (target.sections[sec.type as keyof ResumeSections] as any[]).push(...rawItems);
         rightRemaining -= sec.totalHeight;
       } else if (sec.items.length > 0 && rawItems.length === sec.items.length) {
-        let secHeaderAdded = false;
         sec.items.forEach((item, idx) => {
-          const needed = item.height + (secHeaderAdded ? 0 : sec.headerHeight);
-          if (needed + 4 > rightRemaining && rightRemaining < maxContentHeight) {
+          const hasStartedBefore = sectionStartedOnPage.has(sec.type);
+          const headerCost = !hasStartedBefore ? sec.headerHeight : 0;
+          const needed = item.height + headerCost;
+
+          const colCap = rightColIndex === 0
+            ? (maxContentHeight - measurements.headerHeight)
+            : (maxContentHeight - declarationHeight);
+
+          if (needed + 4 > rightRemaining && rightRemaining < colCap) {
             rightColIndex++;
             const newPage = getOrCreatePage(rightColIndex);
             rightRemaining = maxContentHeight - declarationHeight;
-            secHeaderAdded = false;
-            if (!newPage.continuingSections) newPage.continuingSections = [];
-            if (!newPage.continuingSections.includes(sec.type)) {
-              newPage.continuingSections.push(sec.type);
+            if (hasStartedBefore) {
+              if (!newPage.continuingSections) newPage.continuingSections = [];
+              if (!newPage.continuingSections.includes(sec.type)) {
+                newPage.continuingSections.push(sec.type);
+              }
             }
           }
+
           const target = getOrCreatePage(rightColIndex);
+          if (!sectionStartedOnPage.has(sec.type)) {
+            sectionStartedOnPage.set(sec.type, rightColIndex);
+          } else if (sectionStartedOnPage.get(sec.type) !== rightColIndex) {
+            if (!target.continuingSections) target.continuingSections = [];
+            if (!target.continuingSections.includes(sec.type)) {
+              target.continuingSections.push(sec.type);
+            }
+          }
+
           (target.sections[sec.type as keyof ResumeSections] as any[]).push(rawItems[idx]);
-          secHeaderAdded = true;
           rightRemaining -= needed;
         });
         rightRemaining -= (sec.marginBottom > 0 ? sec.marginBottom : 6);
       } else {
-        if (sec.totalHeight + 4 > rightRemaining && rightRemaining < maxContentHeight) {
+        const colCap = rightColIndex === 0
+          ? (maxContentHeight - measurements.headerHeight)
+          : (maxContentHeight - declarationHeight);
+
+        if (sec.totalHeight + 4 > rightRemaining && rightRemaining < colCap) {
           rightColIndex++;
           getOrCreatePage(rightColIndex);
           rightRemaining = maxContentHeight - declarationHeight;
         }
         const target = getOrCreatePage(rightColIndex);
+        sectionStartedOnPage.set(sec.type, rightColIndex);
         (target.sections[sec.type as keyof ResumeSections] as any[]).push(...rawItems);
         rightRemaining -= sec.totalHeight;
       }
