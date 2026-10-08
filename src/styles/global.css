@@ -161,7 +161,7 @@ body {
     max-height: 297mm !important;
     margin: 0 !important;
     padding-top: var(--page-top-margin, 28px) !important;
-    padding-bottom: var(--page-bottom-margin, 24px) !important;
+    padding-bottom: var(--page-bottom-margin, 26px) !important;
     padding-left: var(--page-side-margin, 48px) !important;
     padding-right: var(--page-side-margin, 48px) !important;
     box-sizing: border-box !important;

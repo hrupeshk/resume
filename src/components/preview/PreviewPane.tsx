@@ -423,7 +423,7 @@ export default function PreviewPane({
             width: `${Math.round(A4_WIDTH_PX * activeScale)}px`,
             height: `${Math.round(visualCanvasHeight * activeScale)}px`,
           }}
-          className="relative flex-shrink-0 transition-[height] duration-150 flex flex-col items-center mb-12 sm:mb-16 print:!mb-0 print:!w-full print:!h-auto print:!min-h-0 print:static"
+          className="relative flex-shrink-0 flex flex-col items-center mb-12 sm:mb-16 print:!mb-0 print:!w-full print:!h-auto print:!min-h-0 print:static"
         >
           {/* Discrete Visual A4 Sheet Cards for Screen Preview and Chromium Print */}
           <div

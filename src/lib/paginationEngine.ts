@@ -8,11 +8,11 @@ export const A4_HEIGHT_PX = 1123;
 export const CONTENT_WIDTH_PX = 698;
 export const PAGE_TOP_MARGIN_PX = 28; // ~7.5mm
 export const PAGE_SIDE_MARGIN_PX = 48; // ~12.5mm
-export const PAGE_BOTTOM_MARGIN_PX = 20; // ~5.3mm - snug bottom margin to maximize fitted content
-// Physical printable height = 1123 - 28 - 20 = 1075px.
-// Calibrated ceiling to 1055px maximizes single-page fit while preserving
-// a safe 20px buffer above the bottom page edge to eliminate subpixel cutoffs.
-export const MAX_PAGE_CONTENT_HEIGHT = 1055;
+export const PAGE_BOTTOM_MARGIN_PX = 26; // ~6.9mm - elegant bottom margin for professional printing
+// Physical printable height = 1123 - 28 - 26 = 1069px.
+// Calibrated ceiling to 1045px maximizes single-page fit while preserving
+// a safe 24px buffer above the bottom page edge to eliminate print cutoffs.
+export const MAX_PAGE_CONTENT_HEIGHT = 1045;
 
 export interface ItemMeasurement {
   index: number;
@@ -275,18 +275,25 @@ export function partitionResumeIntoPages(
     // -----------------------------------------------------------------------
     const declarationSec = measurements.sections.find((s) => s.type === 'declaration');
     const declarationHeight = (data.sections.declaration?.enabled && declarationSec)
-      ? declarationSec.totalHeight
-      : (data.sections.declaration?.enabled ? 100 : 0);
-
-    let leftColIndex = 0;
-    let rightColIndex = 0;
-    // On Page 1, declaration is NEVER rendered (it only renders on the final page).
-    // Do NOT deduct declarationHeight from Page 1 so that Page 1 fills completely without large bottom gap!
-    let leftRemaining = maxContentHeight - measurements.headerHeight;
-    let rightRemaining = maxContentHeight - measurements.headerHeight;
+      ? Math.max(declarationSec.totalHeight, 130)
+      : (data.sections.declaration?.enabled ? 135 : 0);
 
     const leftSections = measurements.sections.filter((s) => s.columnIndex === 0);
     const rightSections = measurements.sections.filter((s) => s.columnIndex === 1);
+
+    // Check if the entire resume can fit on a single page with declaration included
+    const totalLeftHeight = leftSections.reduce((sum, s) => sum + s.totalHeight, 0);
+    const totalRightHeight = rightSections.reduce((sum, s) => sum + s.totalHeight, 0);
+    const totalNeededForOnePage = measurements.headerHeight +
+      Math.max(totalLeftHeight, totalRightHeight) +
+      (data.sections.declaration?.enabled ? declarationHeight + 12 : 0);
+    const fitsOnOnePage = totalNeededForOnePage <= maxContentHeight;
+
+    let leftColIndex = 0;
+    let rightColIndex = 0;
+    // On Page 1, declaration is only rendered if it fits on Page 1 or is a single-page document.
+    let leftRemaining = maxContentHeight - measurements.headerHeight;
+    let rightRemaining = maxContentHeight - measurements.headerHeight;
 
     // Track the first page index where each section began
     const sectionStartedOnPage = new Map<string, number>();
@@ -359,6 +366,21 @@ export function partitionResumeIntoPages(
       const rawItems = (data.sections[sec.type as keyof ResumeSections] || []) as any[];
       if (!rawItems.length) return;
 
+      // If document cannot fit on a single page with declaration included,
+      // and we are placing references on page 0 while declaration is enabled:
+      // Proactively move references to page 1 so page 2 has legitimate content (References + Declaration)
+      // and page 0 never crowds out or clips declaration.
+      if (
+        sec.type === 'references' &&
+        rightColIndex === 0 &&
+        !fitsOnOnePage &&
+        data.sections.declaration?.enabled
+      ) {
+        rightColIndex++;
+        getOrCreatePage(rightColIndex);
+        rightRemaining = maxContentHeight - declarationHeight;
+      }
+
       const isAtomic = ATOMIC_SECTIONS.has(sec.type);
 
       if (isAtomic) {
@@ -429,7 +451,27 @@ export function partitionResumeIntoPages(
     });
 
     if (data.sections.declaration?.enabled && pages.length > 0) {
-      pages[pages.length - 1].sections.declaration = data.sections.declaration;
+      const lastPageIdx = pages.length - 1;
+      const cap = lastPageIdx === 0
+        ? (maxContentHeight - measurements.headerHeight)
+        : maxContentHeight;
+      const leftUsed = cap - leftRemaining;
+      const rightUsed = cap - rightRemaining;
+      const gridHeightOnLast = (leftColIndex === rightColIndex)
+        ? Math.max(leftUsed, rightUsed)
+        : (leftColIndex > rightColIndex ? leftUsed : rightUsed);
+      const remainingOnLast = cap - gridHeightOnLast;
+
+      if (declarationHeight + 8 <= remainingOnLast) {
+        pages[lastPageIdx].sections.declaration = data.sections.declaration;
+      } else {
+        // Declaration cannot fit on current last page without clipping:
+        // Proactively advance to next page so declaration NEVER clips!
+        const nextPageIndex = lastPageIdx + 1;
+        const newPage = getOrCreatePage(nextPageIndex);
+        newPage.sections.declaration = data.sections.declaration;
+      }
+
       for (let p = 0; p < pages.length - 1; p++) {
         pages[p].sections.declaration = undefined;
       }
@@ -717,7 +759,18 @@ export function partitionResumeIntoPages(
   }
 
   if (data.sections.declaration?.enabled && pages.length > 0) {
-    pages[pages.length - 1].sections.declaration = data.sections.declaration;
+    const lastPageIdx = pages.length - 1;
+    const declSec = measurements.sections.find((s) => s.type === 'declaration');
+    const declHeight = declSec ? Math.max(declSec.totalHeight, 130) : 135;
+
+    if (currentPageRemaining < declHeight + 8 && currentPageRemaining < maxContentHeight) {
+      const nextPageIndex = lastPageIdx + 1;
+      const newPage = getOrCreatePage(nextPageIndex);
+      newPage.sections.declaration = data.sections.declaration;
+    } else {
+      pages[lastPageIdx].sections.declaration = data.sections.declaration;
+    }
+
     for (let p = 0; p < pages.length - 1; p++) {
       pages[p].sections.declaration = undefined;
     }

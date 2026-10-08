@@ -170,6 +170,22 @@ export default function NovoresumeModern({
     }
   }
 
+  const hasLeftContent = Boolean(
+    validExperience.length > 0 ||
+    validProjects.length > 0 ||
+    (placeEducationOnLeft && validEducation.length > 0) ||
+    (placeCertificationsOnLeft && (validCertifications.length > 0 || validAwards.length > 0))
+  );
+
+  const hasRightContent = Boolean(
+    validSkills.length > 0 ||
+    (!placeCertificationsOnLeft && (validCertifications.length > 0 || validAwards.length > 0)) ||
+    validVolunteer.length > 0 ||
+    (!placeEducationOnLeft && validEducation.length > 0) ||
+    validLanguages.length > 0 ||
+    validReferences.length > 0
+  );
+
   // -------------------------------------------------------------------------
   // -------------------------------------------------------------------------
   // Reusable Section Renderers (Novorésumé Signature Styling)
@@ -758,35 +774,58 @@ export default function NovoresumeModern({
 
       {/* --------------------------------------------------------------------
           2-Column Body Layout with Dynamic Column Split ("Moving Bar")
+          Adaptive Single-Column when Page 2+ only has content in one column
           -------------------------------------------------------------------- */}
       <div
         data-novoresume-grid="true"
         className="flex-1 items-start"
         style={{
           display: 'grid',
-          gridTemplateColumns: `${columnSplit}fr ${100 - columnSplit}fr`,
+          gridTemplateColumns:
+            !hasLeftContent && hasRightContent
+              ? '1fr'
+              : hasLeftContent && !hasRightContent
+              ? '1fr'
+              : `${columnSplit}fr ${100 - columnSplit}fr`,
           gap: '1.75rem',
         }}
       >
-        {/* Main Column (Left) */}
-        <div className={`flex flex-col min-w-0 break-words ${config.columnGap}`}>
-          {renderExperience()}
-          {renderProjects()}
-          {placeEducationOnLeft && renderEducation()}
-          {placeCertificationsOnLeft && renderCertifications()}
-          {placeCertificationsOnLeft && renderAwards()}
-        </div>
+        {!hasLeftContent && hasRightContent ? (
+          /* Sidebar sections shifted to primary left position when left column is empty (e.g. Page 2 References) */
+          <div className={`flex flex-col min-w-0 break-words ${config.columnGap}`}>
+            {renderSkills()}
+            {!placeCertificationsOnLeft && renderCertifications()}
+            {!placeCertificationsOnLeft && renderAwards()}
+            {renderVolunteer()}
+            {!placeEducationOnLeft && renderEducation()}
+            {renderLanguages()}
+            {renderReferences()}
+          </div>
+        ) : (
+          <>
+            {/* Main Column (Left) */}
+            <div className={`flex flex-col min-w-0 break-words ${config.columnGap}`}>
+              {renderExperience()}
+              {renderProjects()}
+              {placeEducationOnLeft && renderEducation()}
+              {placeCertificationsOnLeft && renderCertifications()}
+              {placeCertificationsOnLeft && renderAwards()}
+            </div>
 
-        {/* Sidebar Column (Right) */}
-        <div className={`flex flex-col min-w-0 break-words ${config.columnGap}`}>
-          {renderSkills()}
-          {!placeCertificationsOnLeft && renderCertifications()}
-          {!placeCertificationsOnLeft && renderAwards()}
-          {renderVolunteer()}
-          {!placeEducationOnLeft && renderEducation()}
-          {renderLanguages()}
-          {renderReferences()}
-        </div>
+            {/* Sidebar Column (Right) */}
+            {hasRightContent && (
+              <div className={`flex flex-col min-w-0 break-words ${config.columnGap}`}>
+                {renderSkills()}
+                {!placeCertificationsOnLeft && renderCertifications()}
+                {!placeCertificationsOnLeft && renderAwards()}
+                {renderVolunteer()}
+                {!placeEducationOnLeft && renderEducation()}
+                {renderLanguages()}
+                {renderReferences()}
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Declaration & Signature Block (if enabled) */}
