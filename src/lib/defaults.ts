@@ -121,19 +121,19 @@ export const sampleTechResume: ResumeDocument = {
       {
         name: 'Cars Club – Vehicle Resale Platform',
         description:
-          'Tech: ReactJS, Tailwind CSS, Django, MongoDB, PyMongo, REST API\nDeveloped a full-stack vehicle resale web app enabling dynamic filtering (by engine, torque, CC) for enhanced UX. Designed REST APIs with Django & PyMongo reducing data retrieval time. Implemented secure API endpoints for data transactions with validation and role-based access.',
+          'Tech: ReactJS, Tailwind CSS, Django, MongoDB, PyMongo, REST API\nDeveloped a full-stack vehicle resale web app enabling dynamic filtering (by engine, torque, CC) for enhanced UX.\nDesigned REST APIs with Django & PyMongo reducing data retrieval time.\nImplemented secure API endpoints for data transactions with validation and role-based access.',
         link: 'https://github.com/hrupeshk/cars-club',
       },
       {
         name: 'CSE Department Website – Tezpur University',
         description:
-          'Tech: ReactJS, Tailwind CSS, FastAPI, MySQL, Figma\nBuilt a responsive departmental website featuring sections like Faculty, Research, and Contact. Designed UI/UX in Figma and translated into clean ReactJS components with smooth client-side routing. Developed Admin Dashboard for faculty to manage data directly.',
+          'Tech: ReactJS, Tailwind CSS, FastAPI, MySQL, Figma\nBuilt a responsive departmental website featuring sections like Faculty, Research, and Contact.\nDesigned UI/UX in Figma and translated into clean ReactJS components with smooth client-side routing.\nDeveloped Admin Dashboard for faculty to manage data directly.',
         link: 'https://github.com/hrupeshk/department-portal',
       },
       {
         name: 'Automated Vehicle Number Plate Detection (ANPR)',
         description:
-          'Tech: YOLOv5, EasyOCR, OpenCV, MySQL, Python\nDeveloped a real-time license plate recognition system using CCTV feed and YOLOv5. Integrated EasyOCR for text extraction and MySQL for vehicle-entry logging and personnel tracking. Designed the pipeline to handle real-time video input under varied lighting conditions.',
+          'Tech: YOLOv5, EasyOCR, OpenCV, MySQL, Python\nDeveloped a real-time license plate recognition system using CCTV feed and YOLOv5.\nIntegrated EasyOCR for text extraction and MySQL for vehicle-entry logging and personnel tracking.\nDesigned the pipeline to handle real-time video input under varied lighting conditions.',
         link: 'https://github.com/hrupeshk/anpr-system',
       },
     ],

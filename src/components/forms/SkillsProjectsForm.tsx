@@ -467,13 +467,13 @@ export default function SkillsProjectsForm({
 
                     <div className="sm:col-span-2">
                       <label className="block text-[11px] font-medium text-body mb-1">
-                        Tech Stack & Description (e.g. Tech: React, Tailwind, Django…)
+                        Tech Stack & Description (enter each bullet point on a new line)
                       </label>
                       <textarea
                         rows={3}
                         value={proj.description}
                         onChange={(e) => handleUpdateProject(idx, 'description', e.target.value)}
-                        placeholder="Tech: ReactJS, Tailwind CSS, Django, MongoDB, REST API&#10;Developed a full-stack vehicle resale web app enabling dynamic filtering…"
+                        placeholder="Tech: ReactJS, Tailwind CSS, Django, MongoDB, REST API&#10;• Developed full-stack vehicle resale web app enabling dynamic filtering&#10;• Designed high-performance REST APIs reducing retrieval time"
                         className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink leading-relaxed"
                       />
                     </div>

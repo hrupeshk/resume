@@ -234,24 +234,56 @@ export default function CompactMonoTechResume({
             </h2>
           )}
           <div className="space-y-2">
-            {validProjects.map((proj, idx) => (
-              <div key={idx} data-entry-item="true" className="text-xs space-y-0.5">
-                <div className="flex items-baseline justify-between">
-                  <span className="font-semibold text-black">{proj.name}</span>
-                  {proj.link && (
-                    <a
-                      href={proj.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-neutral-500 font-mono text-[10.5px] hover:text-black"
-                    >
-                      [view]
-                    </a>
+            {validProjects.map((proj, idx) => {
+              const rawLines = proj.description.includes('\n')
+                ? proj.description.split('\n')
+                : proj.description.includes('•')
+                ? proj.description.split('•')
+                : [proj.description];
+              const lines = rawLines.map((l) => l.trim()).filter(Boolean);
+              const isTechLine = (l: string) => /^(tech|technologies|tech\s+stack):/i.test(l);
+              const techLine = lines.find(isTechLine);
+              const tech = techLine ? techLine.replace(/^(tech|technologies|tech\s+stack):\s*/i, '').trim() : null;
+              const bullets = lines
+                .filter((l) => !isTechLine(l))
+                .map((l) => l.replace(/^[-•*›]\s*/, '').trim())
+                .filter(Boolean);
+
+              return (
+                <div key={idx} data-entry-item="true" className="text-xs space-y-0.5">
+                  <div className="flex flex-wrap items-baseline justify-between gap-1">
+                    <div className="flex flex-wrap items-baseline gap-1.5">
+                      <span className="font-semibold text-black">{proj.name}</span>
+                      {tech && (
+                        <span className="font-mono text-[10px] text-neutral-600 bg-neutral-100 px-1 py-0.2 rounded border border-neutral-200">
+                          [{tech}]
+                        </span>
+                      )}
+                    </div>
+                    {proj.link && (
+                      <a
+                        href={proj.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-neutral-500 font-mono text-[10.5px] hover:text-black shrink-0 ml-auto"
+                      >
+                        [view]
+                      </a>
+                    )}
+                  </div>
+                  {bullets.length > 0 && (
+                    <ul className="space-y-0.5 text-xs text-neutral-700 leading-snug">
+                      {bullets.map((b, bIdx) => (
+                        <li key={bIdx} className="flex items-start gap-2">
+                          <span className="font-mono text-neutral-400 select-none">›</span>
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
                   )}
                 </div>
-                <p className="text-neutral-700 text-xs leading-relaxed">{proj.description}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}

@@ -530,6 +530,8 @@ export function partitionResumeIntoPages(
     }
 
     if (sec.type === 'declaration') {
+      if (flowSecondarySections.length > 0) return; // Deferred to end of pipeline so it strictly closes after flow secondary grid
+
       if (sec.totalHeight + 6 > currentPageRemaining && currentPageRemaining < maxContentHeight) {
         currentPageIndex++;
         getOrCreatePage(currentPageIndex);

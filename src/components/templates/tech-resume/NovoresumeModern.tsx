@@ -272,9 +272,19 @@ export default function NovoresumeModern({
         {!data.continuingSections?.includes('projects') && renderSectionHeader('Personal Projects')}
         <div className={config.entryGap}>
           {validProjects.map((proj, idx) => {
-            const lines = proj.description.split('\n');
-            const techLine = lines.find((l) => l.trim().toLowerCase().startsWith('tech:'));
-            const descLines = lines.filter((l) => !l.trim().toLowerCase().startsWith('tech:'));
+            const rawLines = proj.description.includes('\n')
+              ? proj.description.split('\n')
+              : proj.description.includes('•')
+              ? proj.description.split('•')
+              : [proj.description];
+            const lines = rawLines.map((l) => l.trim()).filter(Boolean);
+            const isTechLine = (l: string) => /^(tech|technologies|tech\s+stack):/i.test(l);
+            const techLine = lines.find(isTechLine);
+            const tech = techLine ? techLine.replace(/^(tech|technologies|tech\s+stack):\s*/i, '').trim() : null;
+            const descLines = lines
+              .filter((l) => !isTechLine(l))
+              .map((l) => l.replace(/^[-•*›]\s*/, '').trim())
+              .filter(Boolean);
 
             return (
               <div
@@ -303,12 +313,12 @@ export default function NovoresumeModern({
                   )}
                 </div>
 
-                {techLine && (
+                {tech && (
                   <div
                     className="text-[#008c9e] font-semibold"
                     style={{ fontSize: fs(9.5) }}
                   >
-                    {techLine}
+                    Tech: {tech}
                   </div>
                 )}
 
@@ -317,9 +327,9 @@ export default function NovoresumeModern({
                     className="list-disc list-outside pl-5 space-y-0.5 text-[#475569] leading-relaxed"
                     style={{ fontSize: fs(9.5) }}
                   >
-                    {descLines.map((line, lIdx) =>
-                      line.trim() ? <li key={lIdx}>{line.trim()}</li> : null
-                    )}
+                    {descLines.map((line, lIdx) => (
+                      <li key={lIdx}>{line}</li>
+                    ))}
                   </ul>
                 )}
               </div>

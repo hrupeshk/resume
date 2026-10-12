@@ -251,24 +251,53 @@ export default function ExecutiveMba({
             </h2>
           )}
           <div className="space-y-3">
-            {validProjects.map((proj, idx) => (
-              <div key={idx} data-entry-item="true" className="text-xs space-y-0.5">
-                <div className="flex justify-between items-baseline font-semibold text-neutral-900">
-                  <span>{proj.name}</span>
-                  {proj.link && (
-                    <a
-                      href={proj.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-neutral-600 hover:text-neutral-900 underline text-[11px] font-normal"
-                    >
-                      View Details ↗
-                    </a>
+            {validProjects.map((proj, idx) => {
+              const rawLines = proj.description.includes('\n')
+                ? proj.description.split('\n')
+                : proj.description.includes('•')
+                ? proj.description.split('•')
+                : [proj.description];
+              const lines = rawLines.map((l) => l.trim()).filter(Boolean);
+              const isTechLine = (l: string) => /^(tech|technologies|tech\s+stack):/i.test(l);
+              const techLine = lines.find(isTechLine);
+              const tech = techLine ? techLine.replace(/^(tech|technologies|tech\s+stack):\s*/i, '').trim() : null;
+              const bullets = lines
+                .filter((l) => !isTechLine(l))
+                .map((l) => l.replace(/^[-•*›]\s*/, '').trim())
+                .filter(Boolean);
+
+              return (
+                <div key={idx} data-entry-item="true" className="text-xs space-y-1">
+                  <div className="flex flex-wrap items-baseline justify-between gap-1 font-semibold text-neutral-900">
+                    <div className="flex flex-wrap items-baseline gap-1.5">
+                      <span className="font-bold text-neutral-900">{proj.name}</span>
+                      {tech && (
+                        <span className="font-normal text-neutral-600 text-[11px] italic">
+                          | {tech}
+                        </span>
+                      )}
+                    </div>
+                    {proj.link && (
+                      <a
+                        href={proj.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-neutral-600 hover:text-neutral-900 underline text-[11px] font-normal shrink-0 ml-auto"
+                      >
+                        View Details ↗
+                      </a>
+                    )}
+                  </div>
+                  {bullets.length > 0 && (
+                    <ul className="list-disc list-outside pl-5 space-y-0.5 text-xs text-neutral-700 leading-relaxed">
+                      {bullets.map((b, bIdx) => (
+                        <li key={bIdx}>{b}</li>
+                      ))}
+                    </ul>
                   )}
                 </div>
-                <p className="text-neutral-700 leading-relaxed text-xs">{proj.description}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}

@@ -12,6 +12,7 @@ interface TemplateProps {
 export default function FaangClassic({
   data,
   pageNumber = 1,
+  totalPages = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: TemplateProps) {
@@ -39,6 +40,10 @@ export default function FaangClassic({
     (l) => l.language.trim().length > 0
   );
 
+  const validAwards = (sections.awards || []).filter(
+    (a) => a.title.trim().length > 0
+  );
+
   const validVolunteer = (sections.volunteer || []).filter(
     (v) => v.organization.trim().length > 0
   );
@@ -46,6 +51,9 @@ export default function FaangClassic({
   const validReferences = (sections.references || []).filter(
     (r) => r.name.trim().length > 0
   );
+
+  const isLastPage = pageNumber === totalPages;
+  const showDeclaration = Boolean(sections.declaration?.enabled && isLastPage);
 
   const hasContact =
     Boolean(personalInfo.email) ||
@@ -233,18 +241,28 @@ export default function FaangClassic({
           )}
           <div className={config.entryGap}>
             {validProjects.map((proj, idx) => {
-              const lines = proj.description.split('\n');
-              const techLine = lines.find((l) => l.trim().toLowerCase().startsWith('tech:'));
-              const descLines = lines.filter((l) => !l.trim().toLowerCase().startsWith('tech:'));
+              const rawLines = proj.description.includes('\n')
+                ? proj.description.split('\n')
+                : proj.description.includes('•')
+                ? proj.description.split('•')
+                : [proj.description];
+              const lines = rawLines.map((l) => l.trim()).filter(Boolean);
+              const isTechLine = (l: string) => /^(tech|technologies|tech\s+stack):/i.test(l);
+              const techLine = lines.find(isTechLine);
+              const tech = techLine ? techLine.replace(/^(tech|technologies|tech\s+stack):\s*/i, '').trim() : null;
+              const descLines = lines
+                .filter((l) => !isTechLine(l))
+                .map((l) => l.replace(/^[-•*›]\s*/, '').trim())
+                .filter(Boolean);
 
               return (
                 <div key={idx} data-entry-item="true" className="text-xs space-y-0.5">
                   <div className="flex justify-between items-baseline">
                     <div className="font-bold text-black flex items-center gap-1.5">
                       <span>{proj.name}</span>
-                      {techLine && (
+                      {tech && (
                         <span className="font-normal italic text-neutral-700 text-[11px]">
-                          | {techLine.replace(/^tech:\s*/i, '')}
+                          | {tech}
                         </span>
                       )}
                     </div>
@@ -261,13 +279,11 @@ export default function FaangClassic({
                   </div>
                   {descLines.length > 0 ? (
                     <ul className="list-disc list-outside pl-5 space-y-0.5 text-[11px] text-neutral-800 leading-relaxed">
-                      {descLines.map((line, lIdx) =>
-                        line.trim() ? <li key={lIdx}>{line.trim()}</li> : null
-                      )}
+                      {descLines.map((line, lIdx) => (
+                        <li key={lIdx}>{line}</li>
+                      ))}
                     </ul>
-                  ) : (
-                    <p className="text-[11px] text-neutral-800 leading-relaxed">{proj.description}</p>
-                  )}
+                  ) : null}
                 </div>
               );
             })}
@@ -312,6 +328,36 @@ export default function FaangClassic({
               </li>
             ))}
           </ul>
+        </section>
+      )}
+
+      {/* Key Honors & Awards */}
+      {validAwards.length > 0 && (
+        <section data-section-type="awards" className={`${config.sectionMargin} last:mb-0`}>
+          {!data.continuingSections?.includes('awards') && (
+            <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-1.5">
+              Honors & Awards
+            </h2>
+          )}
+          <div className={config.entryGap}>
+            {validAwards.map((award, idx) => (
+              <div key={idx} data-entry-item="true" className="text-xs">
+                <div className="flex justify-between items-baseline font-bold text-black">
+                  <span>
+                    {award.title} {award.issuer ? `| ${award.issuer}` : ''}
+                  </span>
+                  {award.year && (
+                    <span className="font-normal text-[11px] text-neutral-700">
+                      {award.year}
+                    </span>
+                  )}
+                </div>
+                {award.description && (
+                  <p className="text-[11px] text-neutral-800 leading-relaxed mt-0.5">{award.description}</p>
+                )}
+              </div>
+            ))}
+          </div>
         </section>
       )}
 
@@ -390,6 +436,47 @@ export default function FaangClassic({
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* Formal Closing Declaration & Signature Block */}
+      {showDeclaration && (
+        <section data-section-type="declaration" className="pt-2 border-t border-black mt-2 text-xs">
+          <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-black pb-0.5 mb-1">
+            Declaration
+          </h2>
+          <p className="text-neutral-800 italic leading-snug">
+            &ldquo;{sections.declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
+          </p>
+          <div className="flex justify-between items-end mt-2 pt-1 text-[11px] text-neutral-800">
+            <div className="space-y-0.5">
+              <div><strong>Place:</strong> {sections.declaration?.place || '_______________'}</div>
+              <div><strong>Date:</strong> {sections.declaration?.date || '_______________'}</div>
+            </div>
+            <div className="text-right min-w-[140px]">
+              {sections.declaration?.signatureName?.trim() ? (
+                <div>
+                  <div
+                    className="h-8 flex items-center justify-end text-black select-none pr-1"
+                    style={{
+                      fontFamily: "'Caveat', 'Dancing Script', 'Brush Script MT', 'Segoe Script', cursive",
+                      fontSize: '20px',
+                      fontWeight: 600,
+                      transform: 'rotate(-2deg)',
+                    }}
+                  >
+                    {sections.declaration.signatureName}
+                  </div>
+                  <div className="text-[10px] text-neutral-600 border-t border-black mt-0.5 pt-0.5">Signature</div>
+                </div>
+              ) : (
+                <div>
+                  <div className="h-7"></div>
+                  <div className="text-[10px] text-neutral-600 border-t border-black pt-0.5">Signature</div>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       )}

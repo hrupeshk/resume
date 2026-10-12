@@ -203,12 +203,13 @@ export default function PersonalForm({
       </div>
 
       {/* Indian Private Sector Personal Particulars */}
-      <div className="space-y-4 pt-3 border-t border-hairline">
-        <div className="border-b border-hairline pb-2">
-          <h4 className="text-xs font-semibold text-ink uppercase tracking-wider">
-            Personal Particulars <span className="text-mute font-normal lowercase">(standard for Indian private jobs, hotel management, retail, & freshers)</span>
-          </h4>
-        </div>
+      {isPrivateJob && (
+        <div className="space-y-4 pt-3 border-t border-hairline">
+          <div className="border-b border-hairline pb-2">
+            <h4 className="text-xs font-semibold text-ink uppercase tracking-wider">
+              Personal Particulars <span className="text-mute font-normal lowercase">(standard for Indian private jobs, hotel management, retail, & freshers)</span>
+            </h4>
+          </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -296,6 +297,7 @@ export default function PersonalForm({
           </div>
         </div>
       </div>
+    )}
 
       {/* Social & Professional Links */}
       <div className="space-y-3 pt-2 border-t border-hairline">

@@ -50,6 +50,13 @@ export default function FlowDeveloper({
     (r) => r.name.trim().length > 0
   );
 
+  const validAwards = (sections.awards || []).filter(
+    (a) => a.title.trim().length > 0
+  );
+
+  const isLastPage = pageNumber === totalPages;
+  const showDeclaration = Boolean(sections.declaration?.enabled && isLastPage);
+
   const hasContact =
     Boolean(personalInfo.email) ||
     Boolean(personalInfo.phone) ||
@@ -235,18 +242,28 @@ export default function FlowDeveloper({
             )}
             <div className={config.entryGap}>
               {validProjects.map((proj, idx) => {
-                const lines = proj.description.split('\n');
-                const techLine = lines.find((l) => l.trim().toLowerCase().startsWith('tech:'));
-                const descLines = lines.filter((l) => !l.trim().toLowerCase().startsWith('tech:'));
+                const rawLines = proj.description.includes('\n')
+                  ? proj.description.split('\n')
+                  : proj.description.includes('•')
+                  ? proj.description.split('•')
+                  : [proj.description];
+                const lines = rawLines.map((l) => l.trim()).filter(Boolean);
+                const isTechLine = (l: string) => /^(tech|technologies|tech\s+stack):/i.test(l);
+                const techLine = lines.find(isTechLine);
+                const tech = techLine ? techLine.replace(/^(tech|technologies|tech\s+stack):\s*/i, '').trim() : null;
+                const descLines = lines
+                  .filter((l) => !isTechLine(l))
+                  .map((l) => l.replace(/^[-•*›]\s*/, '').trim())
+                  .filter(Boolean);
 
                 return (
                   <div key={idx} data-entry-item="true" className="text-xs space-y-0.5">
                     <div className="flex justify-between items-baseline">
                       <div className="font-bold text-neutral-950 flex items-center gap-2">
                         <span>{proj.name}</span>
-                        {techLine && (
+                        {tech && (
                           <span className="font-mono text-[10px] text-neutral-800 bg-neutral-100 px-1.5 py-0.5 rounded border border-neutral-200">
-                            {techLine.replace(/^tech:\s*/i, '')}
+                            {tech}
                           </span>
                         )}
                       </div>
@@ -265,9 +282,9 @@ export default function FlowDeveloper({
 
                     {descLines.length > 0 && (
                       <ul className="list-disc list-outside pl-5 space-y-0.5 text-xs text-neutral-700 leading-relaxed">
-                        {descLines.map((line, lIdx) =>
-                          line.trim() ? <li key={lIdx}>{line.trim()}</li> : null
-                        )}
+                        {descLines.map((line, lIdx) => (
+                          <li key={lIdx}>{line}</li>
+                        ))}
                       </ul>
                     )}
                   </div>
@@ -392,6 +409,40 @@ export default function FlowDeveloper({
               </section>
             );
 
+          const renderAwards = () =>
+            validAwards.length > 0 && (
+              <section data-section-type="awards" className="avoid-break">
+                {!data.continuingSections?.includes('awards') && (
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 mb-2 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 ml-0.5 shrink-0" />
+                    Honors & Key Achievements
+                  </h2>
+                )}
+                <div className="space-y-1.5 text-xs">
+                  {validAwards.map((award, idx) => (
+                    <div key={idx} data-entry-item="true" className="space-y-0.5">
+                      <div className="flex justify-between items-baseline font-bold text-neutral-950">
+                        <span>
+                          {award.title}
+                          {award.issuer && <span className="font-medium text-neutral-700"> — {award.issuer}</span>}
+                        </span>
+                        {award.year && (
+                          <span className="text-[10.5px] text-neutral-500 font-mono font-normal">
+                            ({award.year})
+                          </span>
+                        )}
+                      </div>
+                      {award.description && (
+                        <p className="text-[11px] text-neutral-600 leading-snug">
+                          {award.description}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+
           const renderReferences = (inColumn = false) =>
             validReferences.length > 0 && (
               <section data-section-type="references" className="avoid-break pt-1">
@@ -401,7 +452,7 @@ export default function FlowDeveloper({
                     References
                   </h2>
                 )}
-                <div className="space-y-2 text-xs">
+                <div className={inColumn ? 'space-y-2 text-xs' : 'grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs'}>
                   {validReferences.map((ref, idx) => (
                     <div key={idx} data-entry-item="true" className="space-y-0.5">
                       <div className="font-bold text-neutral-900">{ref.name}</div>
@@ -424,7 +475,7 @@ export default function FlowDeveloper({
             );
 
           interface SecondaryItem {
-            id: 'education' | 'certifications' | 'volunteer' | 'languages' | 'references';
+            id: 'education' | 'certifications' | 'awards' | 'volunteer' | 'languages' | 'references';
             weight: number;
             render: (inCol?: boolean) => React.ReactNode;
           }
@@ -444,6 +495,14 @@ export default function FlowDeveloper({
               id: 'certifications',
               weight: 30 + validCertifications.length * 26,
               render: () => renderCertifications(),
+            });
+          }
+
+          if (validAwards.length > 0) {
+            secondaryItems.push({
+              id: 'awards',
+              weight: 30 + validAwards.length * 28,
+              render: () => renderAwards(),
             });
           }
 
@@ -512,64 +571,40 @@ export default function FlowDeveloper({
             );
           }
 
-          // 3. Exactly 3 secondary sections exist:
-          // Sort descending: [tallest, mid, shortest]
-          // Pair (mid + shortest) against (tallest) to balance heights
-          if (secondaryItems.length === 3) {
-            const sorted = [...secondaryItems].sort((a, b) => b.weight - a.weight);
-            const tallest = sorted[0];
-            const mid = sorted[1];
-            const shortest = sorted[2];
-
-            const comboWeight = mid.weight + shortest.weight;
-            const [colLeft, colRight] =
-              tallest.weight >= comboWeight
-                ? [[tallest], [mid, shortest]]
-                : [[mid, shortest], [tallest]];
-
-            return (
-              <div data-flow-grid="true" style={gridStyle}>
-                <div data-flow-col="0" className={config.sectionGap}>
-                  {colLeft.map((item) => (
-                    <React.Fragment key={item.id}>{item.render(true)}</React.Fragment>
-                  ))}
-                </div>
-                <div data-flow-col="1" className={config.sectionGap}>
-                  {colRight.map((item) => (
-                    <React.Fragment key={item.id}>{item.render(true)}</React.Fragment>
-                  ))}
-                </div>
-              </div>
-            );
-          }
-
-          // 4. Exactly 4 secondary sections exist (Education, Certifications, Volunteer, Languages):
-          // Find optimal partition into 2 non-empty subsets that minimizes height difference
-          const partitions: [number[], number[]][] = [
-            [[0, 1], [2, 3]],
-            [[0, 2], [1, 3]],
-            [[0, 3], [1, 2]],
-            [[0], [1, 2, 3]],
-            [[1], [0, 2, 3]],
-            [[2], [0, 1, 3]],
-            [[3], [0, 1, 2]],
-          ];
-
+          // 3. Three or more secondary sections exist:
+          // Find optimal 2-subset partition that minimizes height difference across ANY number of items
+          const n = secondaryItems.length;
           let bestDiff = Infinity;
-          let bestPartition: [number[], number[]] = partitions[0];
+          let bestMask = 1;
 
-          for (const [subA, subB] of partitions) {
-            const weightA = subA.reduce((sum, idx) => sum + secondaryItems[idx].weight, 0);
-            const weightB = subB.reduce((sum, idx) => sum + secondaryItems[idx].weight, 0);
+          const totalSubsets = 1 << n;
+          for (let mask = 1; mask < totalSubsets - 1; mask++) {
+            let weightA = 0;
+            let weightB = 0;
+            for (let i = 0; i < n; i++) {
+              if ((mask & (1 << i)) !== 0) {
+                weightA += secondaryItems[i].weight;
+              } else {
+                weightB += secondaryItems[i].weight;
+              }
+            }
             const diff = Math.abs(weightA - weightB);
             if (diff < bestDiff) {
               bestDiff = diff;
-              bestPartition = [subA, subB];
+              bestMask = mask;
             }
           }
 
-          const itemsA = bestPartition[0].map((idx) => secondaryItems[idx]);
-          const itemsB = bestPartition[1].map((idx) => secondaryItems[idx]);
+          const itemsA: SecondaryItem[] = [];
+          const itemsB: SecondaryItem[] = [];
+          for (let i = 0; i < n; i++) {
+            if ((bestMask & (1 << i)) !== 0) {
+              itemsA.push(secondaryItems[i]);
+            } else {
+              itemsB.push(secondaryItems[i]);
+            }
+          }
+
           const weightA = itemsA.reduce((sum, it) => sum + it.weight, 0);
           const weightB = itemsB.reduce((sum, it) => sum + it.weight, 0);
 
@@ -592,6 +627,48 @@ export default function FlowDeveloper({
           );
         })()}
       </div>
+
+      {/* Formal Closing Declaration & Signature Block */}
+      {showDeclaration && (
+        <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-2.5 text-xs">
+          <h2 data-section-heading="true" className="text-xs font-bold uppercase tracking-wider text-neutral-900 mb-1 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 ml-0.5 shrink-0" />
+            Declaration
+          </h2>
+          <p className="text-neutral-700 italic leading-snug">
+            &ldquo;{sections.declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
+          </p>
+          <div className="flex justify-between items-end mt-2 pt-1 text-[11px] text-neutral-700">
+            <div className="space-y-0.5">
+              <div><strong>Place:</strong> {sections.declaration?.place || '_______________'}</div>
+              <div><strong>Date:</strong> {sections.declaration?.date || '_______________'}</div>
+            </div>
+            <div className="text-right min-w-[140px]">
+              {sections.declaration?.signatureName?.trim() ? (
+                <div>
+                  <div
+                    className="h-8 flex items-center justify-end text-neutral-900 select-none pr-1"
+                    style={{
+                      fontFamily: "'Caveat', 'Dancing Script', 'Brush Script MT', 'Segoe Script', cursive",
+                      fontSize: '20px',
+                      fontWeight: 600,
+                      transform: 'rotate(-2deg)',
+                    }}
+                  >
+                    {sections.declaration.signatureName}
+                  </div>
+                  <div className="text-[10px] text-neutral-500 border-t border-neutral-400 mt-0.5 pt-0.5">Signature</div>
+                </div>
+              ) : (
+                <div>
+                  <div className="h-7"></div>
+                  <div className="text-[10px] text-neutral-500 border-t border-neutral-400 pt-0.5">Signature</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
     </article>
   );
 }

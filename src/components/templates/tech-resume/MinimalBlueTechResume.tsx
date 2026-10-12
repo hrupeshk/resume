@@ -223,27 +223,54 @@ export default function MinimalBlueTechResume({
               Key Projects
             </h2>
           )}
-          <div className="space-y-3">
-            {validProjects.map((proj, idx) => (
-              <div key={idx} data-entry-item="true" className="text-xs space-y-0.5">
-                <div className="flex items-baseline justify-between">
-                  <span className="font-semibold text-neutral-900">{proj.name}</span>
-                  {proj.link && (
-                    <a
-                      href={proj.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline text-[11px]"
-                    >
-                      {proj.link.replace(/^https?:\/\//, '')}
-                    </a>
+          <div className="space-y-2.5">
+            {validProjects.map((proj, idx) => {
+              const rawLines = proj.description.includes('\n')
+                ? proj.description.split('\n')
+                : proj.description.includes('•')
+                ? proj.description.split('•')
+                : [proj.description];
+              const lines = rawLines.map((l) => l.trim()).filter(Boolean);
+              const isTechLine = (l: string) => /^(tech|technologies|tech\s+stack):/i.test(l);
+              const techLine = lines.find(isTechLine);
+              const tech = techLine ? techLine.replace(/^(tech|technologies|tech\s+stack):\s*/i, '').trim() : null;
+              const bullets = lines
+                .filter((l) => !isTechLine(l))
+                .map((l) => l.replace(/^[-•*›]\s*/, '').trim())
+                .filter(Boolean);
+
+              return (
+                <div key={idx} data-entry-item="true" className="text-xs space-y-0.5">
+                  <div className="flex flex-wrap items-baseline justify-between gap-1">
+                    <div className="flex flex-wrap items-baseline gap-1.5">
+                      <span className="font-semibold text-neutral-900">{proj.name}</span>
+                      {tech && (
+                        <span className="text-[11px] font-medium text-blue-700">
+                          | {tech}
+                        </span>
+                      )}
+                    </div>
+                    {proj.link && (
+                      <a
+                        href={proj.link.startsWith('http') ? proj.link : `https://${proj.link}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline text-[11px] font-mono shrink-0 ml-auto"
+                      >
+                        [Link]
+                      </a>
+                    )}
+                  </div>
+                  {bullets.length > 0 && (
+                    <ul className="list-disc list-outside pl-5 space-y-0.5 text-xs text-neutral-700 leading-relaxed">
+                      {bullets.map((b, bIdx) => (
+                        <li key={bIdx}>{b}</li>
+                      ))}
+                    </ul>
                   )}
                 </div>
-                {proj.description && (
-                  <p className="text-neutral-700 leading-relaxed">{proj.description}</p>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
