@@ -2,11 +2,107 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Contact Us — Free Resume & Biodata Builder">
-  <main class="max-w-3xl mx-auto px-6 py-16">
-    <h1 class="text-3xl font-semibold tracking-tight text-ink mb-4">Contact Us</h1>
-    <p class="text-body leading-relaxed mb-6">
-      Have feedback, questions, or template suggestions? Reach out to our team.
-    </p>
+<Layout
+  title="Contact Us — Free Resume & Indian Biodata Builder"
+  description="Get in touch with our team for questions, template suggestions, bug reports, or partnership inquiries."
+>
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+    <div class="mb-10">
+      <a href="/" class="text-xs font-mono text-mute hover:text-ink transition-colors mb-4 inline-block">
+        ← Back to Home
+      </a>
+      <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-ink mb-3">Contact Us</h1>
+      <p class="text-xs font-mono text-mute">We welcome your feedback, template suggestions, and inquiries.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-body leading-relaxed">
+      <div class="space-y-6">
+        <section class="p-5 rounded-md border border-hairline bg-canvas-elevated space-y-3">
+          <h2 class="text-base font-semibold text-ink">Get in Touch</h2>
+          <p>
+            Have suggestions for a new resume template, an astrology field for marriage biodata, or experiencing an issue with PDF generation? Reach out directly to our maintainers:
+          </p>
+          <div class="space-y-2 pt-2">
+            <div class="flex items-center gap-2 text-xs font-mono">
+              <span class="text-mute">Email:</span>
+              <a href="mailto:support@resume.com" class="text-link hover:underline font-semibold">
+                support@resume.com
+              </a>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-mono">
+              <span class="text-mute">Response time:</span>
+              <span class="text-ink">Within 24–48 business hours</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="space-y-2">
+          <h3 class="text-sm font-semibold text-ink">Common Inquiries:</h3>
+          <ul class="list-disc pl-5 space-y-1.5 text-xs text-mute">
+            <li><strong>Template Requests:</strong> If your university or company requires a specific format, share a sample PDF and we'll review it for addition.</li>
+            <li><strong>Bug Reports:</strong> Please include your browser name (Chrome, Safari, Edge, Firefox) and device type.</li>
+            <li><strong>Privacy Questions:</strong> Check our <a href="/privacy" class="text-link hover:underline">Privacy Policy</a> for complete details on client-side storage.</li>
+          </ul>
+        </section>
+      </div>
+
+      <div class="p-6 rounded-md border border-hairline bg-canvas space-y-4">
+        <h3 class="text-base font-semibold text-ink">Send a Quick Note</h3>
+        <form
+          action="mailto:support@resume.com"
+          method="GET"
+          enctype="text/plain"
+          class="space-y-3"
+        >
+          <div>
+            <label for="contact-name" class="block text-xs font-medium text-body mb-1">
+              Your Name
+            </label>
+            <input
+              id="contact-name"
+              type="text"
+              name="subject"
+              placeholder="e.g. Rahul Sharma"
+              class="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink"
+            />
+          </div>
+
+          <div>
+            <label for="contact-category" class="block text-xs font-medium text-body mb-1">
+              Topic
+            </label>
+            <select
+              id="contact-category"
+              class="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink cursor-pointer"
+            >
+              <option value="template">Request New Template</option>
+              <option value="bug">Report an Issue / PDF Glitch</option>
+              <option value="feature">Feature Suggestion</option>
+              <option value="other">General Feedback</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="contact-msg" class="block text-xs font-medium text-body mb-1">
+              Message
+            </label>
+            <textarea
+              id="contact-msg"
+              name="body"
+              rows={4}
+              placeholder="How can we help or improve your experience?"
+              class="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus:border-ink resize-y"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full py-2 rounded-sm bg-primary text-on-primary text-xs font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
+          >
+            Open Mail Client to Send
+          </button>
+        </form>
+      </div>
+    </div>
   </main>
 </Layout>

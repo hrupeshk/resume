@@ -2,11 +2,86 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Privacy Policy — Free Resume & Biodata Builder">
-  <main class="max-w-3xl mx-auto px-6 py-16">
-    <h1 class="text-3xl font-semibold tracking-tight text-ink mb-4">Privacy Policy</h1>
-    <p class="text-body leading-relaxed mb-6">
-      Your data belongs to you. Resumes and biodata you create remain stored locally in your browser unless you explicitly choose to export or sync. We do not sell or harvest your personal information.
-    </p>
+<Layout
+  title="Privacy Policy — Free Resume & Indian Biodata Builder"
+  description="Our privacy commitment: zero account required, 100% browser-based storage, no data selling, and complete data ownership for resumes and marriage biodata."
+>
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+    <div class="mb-10">
+      <a href="/" class="text-xs font-mono text-mute hover:text-ink transition-colors mb-4 inline-block">
+        ← Back to Home
+      </a>
+      <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-ink mb-3">Privacy Policy</h1>
+      <p class="text-xs font-mono text-mute">Last updated: October 2026 • Effective immediately</p>
+    </div>
+
+    <div class="space-y-8 text-sm text-body leading-relaxed">
+      <section class="p-4 sm:p-5 rounded-lg border border-hairline bg-canvas-elevated">
+        <h2 class="text-base font-semibold text-ink mb-2">Our Fundamental Privacy Promise</h2>
+        <p>
+          At <strong>Resume & Biodata Builder</strong>, your sensitive personal documents belong exclusively to you. Whether you are drafting a software engineering resume, an executive leadership CV, or an Indian matrimonial biodata, your information is <strong>never sold, shared, or brokered</strong> to third-party data aggregators, recruitment agencies, or advertisers.
+        </p>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-ink">1. Where Your Data is Stored (Local-First Architecture)</h2>
+        <p>
+          Our web application operates on a <strong>local-first, client-side model</strong>:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-body">
+          <li>
+            <strong>Browser LocalStorage:</strong> All document contents (names, phone numbers, addresses, education, work experience, horoscope, and family particulars) are saved exclusively in your browser’s local storage on your own device.
+          </li>
+          <li>
+            <strong>Zero Forced Accounts:</strong> We do not require registration, passwords, or emails to build and download documents.
+          </li>
+          <li>
+            <strong>Zero Database Ingestion:</strong> Your typed content is never transmitted to or stored on our web servers during regular use.
+          </li>
+        </ul>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-ink">2. PDF & Document Generation</h2>
+        <p>
+          When you click "Download PDF", the rendering occurs <strong>locally inside your browser engine</strong> using modern print stylesheets and vector canvas calculations. Your document content does not leave your computer to undergo server-side rendering.
+        </p>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-ink">3. "Delete My Data" & Complete Reset</h2>
+        <p>
+          You have absolute control over your stored drafts. At any time, clicking the <strong>"Clear"</strong> button in the builder navigation header permanently wipes your saved document from your browser's LocalStorage. You can also clear your browser's site cookies and local storage at any time to delete all traces.
+        </p>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-ink">4. Advertising & Third-Party Cookies (Google AdSense)</h2>
+        <p>
+          To keep this application genuinely 100% free with unlimited downloads and zero watermarks, we may display unobtrusive third-party banner advertisements via partners like Google AdSense:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-body">
+          <li>
+            Third-party vendors, including Google, use cookies to serve ads based on prior visits to this or other websites.
+          </li>
+          <li>
+            Google's use of advertising cookies enables it and its partners to serve ads based on your visit to this site and/or other sites on the Internet.
+          </li>
+          <li>
+            Users may opt out of personalized advertising by visiting <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" class="text-link hover:underline">Google Ads Settings</a>.
+          </li>
+          <li>
+            <strong>Strict Principle:</strong> Advertisements will <em>never</em> appear inside the active form-filling or live preview screen to guarantee a focused writing experience.
+          </li>
+        </ul>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-ink">5. Contact Regarding Privacy</h2>
+        <p>
+          If you have any questions, concerns, or feedback regarding our privacy practices, please contact us via our <a href="/contact" class="text-link hover:underline">Contact Page</a>.
+        </p>
+      </section>
+    </div>
   </main>
 </Layout>

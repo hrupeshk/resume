@@ -2,11 +2,69 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="About Us — Free Resume & Biodata Builder">
-  <main class="max-w-3xl mx-auto px-6 py-16">
-    <h1 class="text-3xl font-semibold tracking-tight text-ink mb-4">About Us</h1>
-    <p class="text-body leading-relaxed mb-6">
-      Our mission is simple: provide a truly free, unlimited, and privacy-respecting document builder for job seekers and families. No paywalls, no forced logins, and no watermarks.
-    </p>
+<Layout
+  title="About Us — Free Resume & Indian Biodata Builder"
+  description="Learn about our mission: providing a genuinely free, unlimited, watermark-free document builder for job seekers, corporate professionals, and Indian families."
+>
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+    <div class="mb-10">
+      <a href="/" class="text-xs font-mono text-mute hover:text-ink transition-colors mb-4 inline-block">
+        ← Back to Home
+      </a>
+      <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-ink mb-3">About Us</h1>
+      <p class="text-xs font-mono text-mute">Built for job seekers, career switchers, and families worldwide.</p>
+    </div>
+
+    <div class="space-y-8 text-sm text-body leading-relaxed">
+      <section class="p-6 rounded-lg border border-hairline bg-canvas-elevated">
+        <h2 class="text-lg font-semibold text-ink mb-3">Our Core Mission</h2>
+        <p className="text-base text-body leading-relaxed">
+          Most online resume builders claim to be free, only to introduce a catch at the finish line: a forced account signup, a one-resume limitation, an unsightly watermark, or a download paywall.
+        </p>
+        <p className="text-base text-body leading-relaxed mt-3">
+          <strong>Resume & Biodata Builder</strong> was built to fix this directly. Our promise is simple and unwavering: <strong>100% free forever, no login required, zero watermarks, and unlimited documents</strong>.
+        </p>
+      </section>
+
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-5 rounded-md border border-hairline bg-canvas space-y-2">
+          <div class="text-xs font-mono uppercase tracking-wider text-primary font-bold">Pillar 01</div>
+          <h3 class="text-base font-semibold text-ink">Career Resumes & CVs</h3>
+          <p class="text-xs text-mute leading-relaxed">
+            Engineered for applicant tracking systems (ATS). Whether you are a software engineer needing Jake's FAANG standard, an MBA director needing an executive competency matrix, or an Indian private sector applicant needing a formal declaration, our certified formats ensure recruiter compliance.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-md border border-hairline bg-canvas space-y-2">
+          <div class="text-xs font-mono uppercase tracking-wider text-rose-800 font-bold">Pillar 02</div>
+          <h3 class="text-base font-semibold text-ink">Indian Marriage Biodata</h3>
+          <p class="text-xs text-mute leading-relaxed">
+            Dignified matrimonial biodata profiles created with deep respect for Indian cultural traditions. Featuring auspicious Devanagari invocations, Vedic horoscope & Kundali details, family heritage particulars, and classical royal gold/maroon aesthetics.
+          </p>
+        </div>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-ink">Engineered for Privacy & Speed</h2>
+        <p>
+          We rely on modern, privacy-first web architecture:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-body">
+          <li><strong>Instant Template Switching:</strong> Your data and layout templates are strictly decoupled. You can switch between 6+ templates in one click without retyping a single line.</li>
+          <li><strong>Real Vector Print Engine:</strong> Exported PDFs feature copyable, selectable text that passes automated ATS parsers without rasterization blur.</li>
+          <li><strong>Local Browser Storage:</strong> Your drafts auto-save to your own browser's LocalStorage, keeping your data confidential.</li>
+        </ul>
+      </section>
+
+      <div class="pt-6 border-t border-hairline flex flex-wrap items-center justify-between gap-4">
+        <span class="text-xs font-mono text-mute">Ready to create your document?</span>
+        <a
+          href="/build/tech_resume"
+          class="px-5 py-2 rounded-sm bg-primary text-on-primary text-xs font-semibold hover:opacity-90 transition-opacity"
+        >
+          Launch Builder →
+        </a>
+      </div>
+    </div>
   </main>
 </Layout>

@@ -83,6 +83,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
   const [isImporting, setIsImporting] = useState<boolean>(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const jsonInputRef = useRef<HTMLInputElement>(null);
   const lastShortcutTimeRef = useRef<number>(0);
   const [undoBackup, setUndoBackup] = useState<DocumentData | null>(null);
   const undoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -486,6 +487,54 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
     }
   };
 
+  // JSON Data Backup & Restore (Full Data Ownership & Offline Portability)
+  const handleExportJson = () => {
+    const isBio = doc.category === 'marriage_biodata';
+    const fallback = isBio ? 'Biodata' : 'Resume';
+    const nameSlug = (doc.personalInfo.fullName || fallback)
+      .trim()
+      .replace(/\s+/g, '_');
+    const jsonString = JSON.stringify(doc, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${nameSlug}_${doc.category}_backup.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleJsonUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target?.result as string);
+        if (!parsed || typeof parsed !== 'object' || !parsed.personalInfo) {
+          alert('Invalid backup file. Please select a valid document backup JSON.');
+          return;
+        }
+
+        // Snapshot current doc for undo
+        setUndoBackup({ ...doc });
+        setDoc({
+          ...parsed,
+          category: doc.category, // maintain current category route
+        });
+        setImportStatus('✓ Backup data restored successfully!');
+        setTimeout(() => setImportStatus(null), 3500);
+      } catch (err: any) {
+        alert('Could not read backup file: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    if (jsonInputRef.current) jsonInputRef.current.value = '';
+  };
+
   // PDF Export
   const handleExportPdf = () => {
     const isBio = doc.category === 'marriage_biodata';
@@ -639,6 +688,31 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
               </button>
             </>
           )}
+
+          {/* JSON Backup & Restore (Universal Data Ownership & Unlimited Offline Resumes) */}
+          <input
+            type="file"
+            ref={jsonInputRef}
+            accept=".json,application/json"
+            onChange={handleJsonUpload}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={handleExportJson}
+            className="hidden sm:inline-flex items-center gap-1 text-xs text-mute hover:text-ink transition-colors cursor-pointer"
+            title="Download full JSON backup of your document to keep unlimited resumes offline"
+          >
+            <span>Backup JSON</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => jsonInputRef.current?.click()}
+            className="hidden sm:inline-flex items-center gap-1 text-xs text-mute hover:text-ink transition-colors cursor-pointer"
+            title="Restore a previously downloaded JSON backup file"
+          >
+            <span>Restore</span>
+          </button>
 
           <span
             role="status"

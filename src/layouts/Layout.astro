@@ -10,6 +10,33 @@ const {
   title = 'Free Resume & Biodata Builder — Unlimited, No Watermark, No Login',
   description = 'Build professional tech resumes and Indian marriage biodata for free. No login required, unlimited downloads, ATS-friendly templates, and instant template switching.',
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://resume.com');
+const siteTitle = 'Free Resume & Biodata Builder';
+const ogImage = new URL('/favicon.svg', Astro.site || 'https://resume.com').href;
+
+const schemaData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: siteTitle,
+  url: canonicalURL.href,
+  description: description,
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'All',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  featureList: [
+    '100% Free Forever',
+    'No Login or Signup Required',
+    'Zero Watermarks',
+    'ATS-Compliant PDF Export',
+    'FAANG and Executive MBA Templates',
+    'Indian Marriage Biodata Formats',
+  ],
+};
 ---
 
 <!doctype html>
@@ -22,6 +49,26 @@ const {
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <link rel="canonical" href={canonicalURL.href} />
+
+    <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteTitle} />
+    <meta property="og:url" content={canonicalURL.href} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content={canonicalURL.href} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+
     <!-- Geist and Geist Mono font CDN -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/core.css" />

@@ -300,14 +300,66 @@ export default function SkillsProjectsForm({
     onChangeReferences(updated);
   };
 
+  const isPrivateJob = category === 'private_job_resume';
+
+  const suggestedSkills =
+    category === 'non_tech_resume'
+      ? [
+          'Operations Management',
+          'P&L Management',
+          'Stakeholder Management',
+          'Strategic Planning',
+          'Cross-Functional Leadership',
+          'Process Optimization',
+          'Budgeting',
+          'Agile / Scrum',
+          'Risk Mitigation',
+          'Advanced Excel',
+          'Vendor Negotiation',
+          'Tableau & BI',
+        ]
+      : isPrivateJob
+      ? [
+          'MS Office & Excel',
+          'Client Servicing',
+          'Billing & Invoicing',
+          'Inventory Control',
+          'Vendor Coordination',
+          'Customer Communication',
+          'ERP & Tally',
+          'Team Supervision',
+        ]
+      : [
+          'React',
+          'TypeScript',
+          'Node.js',
+          'Python',
+          'SQL',
+          'Docker',
+          'AWS',
+          'Git',
+          'REST APIs',
+          'Tailwind CSS',
+          'Next.js',
+          'GraphQL',
+        ];
+
+  const handleAddSuggestedSkill = (suggested: string) => {
+    if (!skills.includes(suggested)) {
+      onChangeSkills([...skills, suggested]);
+    }
+  };
+
   return (
     <div className="space-y-8 text-xs sm:text-sm">
       {/* 1. Skills Section */}
       <section className="space-y-3">
         <div className="border-b border-hairline pb-2">
-          <h3 className="text-base font-semibold text-ink">Skills & Technologies</h3>
+          <h3 className="text-base font-semibold text-ink">
+            {category === 'non_tech_resume' ? 'Core Competencies & Skills' : 'Skills & Technologies'}
+          </h3>
           <p className="text-xs text-mute mt-0.5">
-            Press Enter or comma to add each skill tag.
+            Press Enter or comma to add each skill tag, or select from curated suggestions below.
           </p>
         </div>
 
@@ -317,7 +369,13 @@ export default function SkillsProjectsForm({
             value={skillInput}
             onChange={(e) => setSkillInput(e.target.value)}
             onKeyDown={handleKeyDownSkill}
-            placeholder="Type a skill (e.g. React, Python, Django, Docker) and press Enter"
+            placeholder={
+              category === 'non_tech_resume'
+                ? 'Type a skill or competency (e.g. Strategic Planning, P&L, Agile) and press Enter'
+                : isPrivateJob
+                ? 'Type a skill (e.g. MS Office, Billing, Client Servicing) and press Enter'
+                : 'Type a skill (e.g. React, Python, Docker, SQL) and press Enter'
+            }
             className="flex-1 px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
           />
           <button
@@ -327,6 +385,33 @@ export default function SkillsProjectsForm({
           >
             Add
           </button>
+        </div>
+
+        {/* Suggested Quick Add Chips */}
+        <div className="space-y-1.5 pt-1">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-mute">
+            Quick Add Suggested {category === 'non_tech_resume' ? 'Competencies' : 'Skills'}:
+          </span>
+          <div className="flex flex-wrap gap-1">
+            {suggestedSkills.map((s) => {
+              const alreadyAdded = skills.includes(s);
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  disabled={alreadyAdded}
+                  onClick={() => handleAddSuggestedSkill(s)}
+                  className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors cursor-pointer ${
+                    alreadyAdded
+                      ? 'border-hairline bg-canvas text-mute opacity-40 cursor-default'
+                      : 'border-hairline bg-canvas-elevated hover:bg-neutral-100 hover:border-ink/40 text-body'
+                  }`}
+                >
+                  {alreadyAdded ? '✓ ' : '+ '}{s}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-1.5 pt-1">
@@ -375,9 +460,13 @@ export default function SkillsProjectsForm({
         <section className="space-y-4 pt-4 border-t border-hairline">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-semibold text-ink">Notable Projects</h3>
+              <h3 className="text-base font-semibold text-ink">
+                {category === 'non_tech_resume' ? 'Key Projects & Strategic Initiatives' : 'Notable Projects'}
+              </h3>
               <p className="text-xs text-mute mt-0.5">
-                Open-source repositories, full-stack applications, and side projects.
+                {category === 'non_tech_resume'
+                  ? 'Business turnarounds, operational rollouts, enterprise transformations, or consulting projects.'
+                  : 'Open-source repositories, full-stack applications, and technical side projects.'}
               </p>
             </div>
             <button
@@ -447,7 +536,11 @@ export default function SkillsProjectsForm({
                         type="text"
                         value={proj.name}
                         onChange={(e) => handleUpdateProject(idx, 'name', e.target.value)}
-                        placeholder="e.g. Cars Club – Vehicle Resale Platform"
+                        placeholder={
+                          category === 'non_tech_resume'
+                            ? 'e.g. Pan-India Supply Chain Optimization / ERP Rollout'
+                            : 'e.g. Cars Club – Vehicle Resale Platform'
+                        }
                         className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                       />
                     </div>
@@ -460,20 +553,26 @@ export default function SkillsProjectsForm({
                         type="url"
                         value={proj.link || ''}
                         onChange={(e) => handleUpdateProject(idx, 'link', e.target.value)}
-                        placeholder="https://github.com/…"
+                        placeholder={category === 'non_tech_resume' ? 'https://… (Optional case study or company URL)' : 'https://github.com/…'}
                         className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink"
                       />
                     </div>
 
                     <div className="sm:col-span-2">
                       <label className="block text-[11px] font-medium text-body mb-1">
-                        Tech Stack & Description (enter each bullet point on a new line)
+                        {category === 'non_tech_resume'
+                          ? 'Impact, Scope & Key Results (enter each bullet point on a new line)'
+                          : 'Tech Stack & Description (enter each bullet point on a new line)'}
                       </label>
                       <textarea
                         rows={3}
                         value={proj.description}
                         onChange={(e) => handleUpdateProject(idx, 'description', e.target.value)}
-                        placeholder="Tech: ReactJS, Tailwind CSS, Django, MongoDB, REST API&#10;• Developed full-stack vehicle resale web app enabling dynamic filtering&#10;• Designed high-performance REST APIs reducing retrieval time"
+                        placeholder={
+                          category === 'non_tech_resume'
+                            ? 'Scope: Cross-Functional Operations, SAP ERP, PowerBI\n• Standardized multi-hub fulfillment workflows across 14 enterprise hubs\n• Reduced turnaround time by 22% while maintaining 99.8% SLA adherence'
+                            : 'Tech: ReactJS, Tailwind CSS, Django, MongoDB, REST API\n• Developed full-stack vehicle resale web app enabling dynamic filtering\n• Designed high-performance REST APIs reducing retrieval time'
+                        }
                         className="w-full px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink text-xs focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink leading-relaxed"
                       />
                     </div>

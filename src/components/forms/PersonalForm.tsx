@@ -96,14 +96,20 @@ export default function PersonalForm({
 
         <div>
           <label htmlFor="title" className="block text-xs font-medium text-body mb-1">
-            Target Role / Headline <span className="text-mute">(e.g. Web Developer)</span>
+            Target Role / Headline <span className="text-mute">(e.g. {category === 'non_tech_resume' ? 'Operations Manager' : isPrivateJob ? 'Operations Associate' : 'Web Developer'})</span>
           </label>
           <input
             id="title"
             type="text"
             value={personalInfo.title || ''}
             onChange={(e) => handleChangeField('title', e.target.value)}
-            placeholder="Web Developer / Full-Stack Engineer"
+            placeholder={
+              category === 'non_tech_resume'
+                ? 'Senior Operations & Project Lead / MBA Associate'
+                : isPrivateJob
+                ? 'Operations Associate / Store Executive'
+                : 'Web Developer / Full-Stack Engineer'
+            }
             className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
           />
         </div>
@@ -308,7 +314,7 @@ export default function PersonalForm({
               : 'Links & Profiles (LinkedIn, GitHub, Portfolio)'}
           </label>
           <div className="flex flex-wrap items-center gap-1.5">
-            {isPrivateJob && (
+            {isPrivateJob ? (
               <>
                 <button
                   type="button"
@@ -343,13 +349,75 @@ export default function PersonalForm({
                   + Portfolio
                 </button>
               </>
+            ) : category === 'non_tech_resume' ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleAddPresetLink('LinkedIn', 'https://linkedin.com/in/')}
+                  className="text-[11px] font-medium text-mute hover:text-ink px-1.5 py-0.5 rounded-xs bg-canvas border border-hairline hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Add LinkedIn profile"
+                >
+                  + LinkedIn
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddPresetLink('Portfolio', 'https://')}
+                  className="text-[11px] font-medium text-mute hover:text-ink px-1.5 py-0.5 rounded-xs bg-canvas border border-hairline hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Add Executive Portfolio or Personal Site"
+                >
+                  + Portfolio / Web
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddPresetLink('Publications', 'https://')}
+                  className="text-[11px] font-medium text-mute hover:text-ink px-1.5 py-0.5 rounded-xs bg-canvas border border-hairline hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Add Publications, Articles, or Media link"
+                >
+                  + Publications
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleAddPresetLink('LinkedIn', 'https://linkedin.com/in/')}
+                  className="text-[11px] font-medium text-mute hover:text-ink px-1.5 py-0.5 rounded-xs bg-canvas border border-hairline hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Add LinkedIn profile"
+                >
+                  + LinkedIn
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddPresetLink('GitHub', 'https://github.com/')}
+                  className="text-[11px] font-medium text-mute hover:text-ink px-1.5 py-0.5 rounded-xs bg-canvas border border-hairline hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Add GitHub profile"
+                >
+                  + GitHub
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddPresetLink('Portfolio', 'https://')}
+                  className="text-[11px] font-medium text-mute hover:text-ink px-1.5 py-0.5 rounded-xs bg-canvas border border-hairline hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Add Portfolio/Website"
+                >
+                  + Portfolio
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAddPresetLink('LeetCode', 'https://leetcode.com/')}
+                  className="text-[11px] font-medium text-mute hover:text-ink px-1.5 py-0.5 rounded-xs bg-canvas border border-hairline hover:bg-canvas-subtle transition-colors cursor-pointer"
+                  title="Add LeetCode / Coding profile"
+                >
+                  + LeetCode
+                </button>
+              </>
             )}
             <button
               type="button"
               onClick={handleAddLink}
               className="text-xs font-medium text-link hover:text-link-deep transition-colors cursor-pointer"
             >
-              + Add Link
+              + Add Custom Link
             </button>
           </div>
         </div>
@@ -415,7 +483,13 @@ export default function PersonalForm({
           rows={4}
           value={summary || ''}
           onChange={(e) => onChangeSummary(e.target.value)}
-          placeholder="Experienced engineer passionate about building reliable web systems…"
+          placeholder={
+            category === 'non_tech_resume'
+              ? 'Strategic Operations & Project Lead with 6+ years of cross-functional experience optimizing corporate workflows, managing multi-million rupee budgets, and driving executive stakeholder alignment…'
+              : isPrivateJob
+              ? 'Reliable and detail-oriented operations executive with proven experience in document handling, billing systems, store administration, and client servicing…'
+              : 'Passionate Web Developer with a strong foundation in building scalable web applications using ReactJS, Node.js, Python, and REST APIs. Focused on clean architecture and high performance…'
+          }
           className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors leading-relaxed text-xs sm:text-sm"
         />
       </div>
