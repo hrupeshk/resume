@@ -25,6 +25,7 @@ import { getNextTemplateId } from '../../lib/templateRegistry';
 import { exportToPdf } from '../../lib/pdf';
 import { parseResumePdf } from '../../lib/pdfParser';
 import { compressAndResizeImage } from '../../lib/imageUtils';
+import { sanitizeImportedDocument } from '../../lib/jsonSecurity';
 
 import StepNavigator, { type StepItem } from '../forms/StepNavigator';
 import PersonalForm from '../forms/PersonalForm';
@@ -238,6 +239,26 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
       return {
         ...b,
         sections: { ...b.sections, partnerPreferences },
+      };
+    });
+  };
+
+  const handleUpdateBiodataAchievements = (achievements: string[]) => {
+    setDoc((prev) => {
+      const b = prev as BiodataDocument;
+      return {
+        ...b,
+        sections: { ...b.sections, achievements },
+      };
+    });
+  };
+
+  const handleUpdateBiodataHobbies = (hobbies: string[]) => {
+    setDoc((prev) => {
+      const b = prev as BiodataDocument;
+      return {
+        ...b,
+        sections: { ...b.sections, hobbies },
       };
     });
   };
@@ -525,19 +546,30 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Guard against large file denial-of-service / memory exhaustion
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size exceeds the 5MB limit. Please upload a valid document backup JSON.');
+      if (jsonInputRef.current) jsonInputRef.current.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {
-        const parsed = JSON.parse(event.target?.result as string);
+        const rawJson = event.target?.result as string;
+        const parsed = JSON.parse(rawJson);
         if (!parsed || typeof parsed !== 'object' || !parsed.personalInfo) {
           alert('Invalid backup file. Please select a valid document backup JSON.');
           return;
         }
 
+        // Sanitize imported document: strip prototype pollution, neutralize malicious URLs, ensure arrays
+        const safeDoc = sanitizeImportedDocument(parsed);
+
         // Auto-compress legacy oversized photos in restored backup (> 60KB)
-        if (parsed.personalInfo.photoUrl && parsed.personalInfo.photoUrl.length > 60000) {
+        if (safeDoc.personalInfo.photoUrl && safeDoc.personalInfo.photoUrl.length > 60000) {
           try {
-            parsed.personalInfo.photoUrl = await compressAndResizeImage(parsed.personalInfo.photoUrl, 500, 0.85);
+            safeDoc.personalInfo.photoUrl = await compressAndResizeImage(safeDoc.personalInfo.photoUrl, 500, 0.85);
           } catch (compressErr) {
             console.warn('Failed to auto-compress restored photo:', compressErr);
           }
@@ -546,7 +578,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
         // Snapshot current doc for undo
         setUndoBackup({ ...doc });
         setDoc({
-          ...parsed,
+          ...safeDoc,
           category: doc.category, // maintain current category route
         });
         setImportStatus('✓ Backup data restored successfully!');
@@ -812,8 +844,10 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                         occupation={
                           doc.sections.occupation || { designation: '', company: '', income: '' }
                         }
+                        achievements={doc.sections.achievements || []}
                         onChangeEducation={handleUpdateBiodataEducation}
                         onChangeOccupation={handleUpdateBiodataOccupation}
+                        onChangeAchievements={handleUpdateBiodataAchievements}
                       />
                     )}
 
@@ -826,6 +860,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                             motherName: '',
                             motherOccupation: '',
                             siblings: [],
+                            relatives: [],
                             nativePlace: '',
                           }
                         }
@@ -841,15 +876,18 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                             nakshatra: '',
                             rashi: '',
                             manglik: '',
+                            kuldevta: '',
                           }
                         }
                         contact={
                           doc.sections.contact || { address: '', referencePhone: '' }
                         }
                         partnerPreferences={doc.sections.partnerPreferences || ''}
+                        hobbies={doc.sections.hobbies || []}
                         onChangeHoroscope={handleUpdateBiodataHoroscope}
                         onChangeContact={handleUpdateBiodataContact}
                         onChangePartnerPreferences={handleUpdatePartnerPreferences}
+                        onChangeHobbies={handleUpdateBiodataHobbies}
                       />
                     )}
                   </>

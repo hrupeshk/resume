@@ -4,16 +4,41 @@ import type { BiodataEducationEntry, BiodataOccupation } from '../../../lib/sche
 interface BiodataEducationOccupationFormProps {
   education: BiodataEducationEntry[];
   occupation: BiodataOccupation;
+  achievements?: string[];
   onChangeEducation: (education: BiodataEducationEntry[]) => void;
   onChangeOccupation: (occupation: BiodataOccupation) => void;
+  onChangeAchievements?: (achievements: string[]) => void;
 }
 
 export default function BiodataEducationOccupationForm({
   education,
   occupation,
+  achievements = [],
   onChangeEducation,
   onChangeOccupation,
+  onChangeAchievements,
 }: BiodataEducationOccupationFormProps) {
+  // Achievements handlers
+  const handleAddAchievement = () => {
+    if (onChangeAchievements) {
+      onChangeAchievements([...achievements, '']);
+    }
+  };
+
+  const handleUpdateAchievement = (index: number, val: string) => {
+    if (onChangeAchievements) {
+      const updated = [...achievements];
+      updated[index] = val;
+      onChangeAchievements(updated);
+    }
+  };
+
+  const handleRemoveAchievement = (index: number) => {
+    if (onChangeAchievements) {
+      onChangeAchievements(achievements.filter((_, i) => i !== index));
+    }
+  };
+
   // Education entry handlers
   const handleAddEducation = () => {
     onChangeEducation([
@@ -213,6 +238,54 @@ export default function BiodataEducationOccupationForm({
             />
           </div>
         </div>
+      </div>
+
+      {/* Key Achievements & Honors Section */}
+      <div className="space-y-4 pt-4 border-t border-hairline">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-hairline pb-3">
+          <div>
+            <h3 className="text-base font-semibold text-ink">
+              Notable Achievements & Honors <span className="text-mute font-normal text-xs">(Optional)</span>
+            </h3>
+            <p className="text-xs text-mute mt-0.5">
+              Academic ranks, competitive exam scores (CAT/GATE/UPSC), promotions, or state/national awards.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddAchievement}
+            className="px-2.5 py-1 rounded-sm bg-canvas border border-hairline hover:border-mute text-xs font-medium text-ink transition-colors cursor-pointer"
+          >
+            <span>+ Add Achievement</span>
+          </button>
+        </div>
+
+        {achievements.length === 0 ? (
+          <div className="p-3 text-center rounded-sm border border-dashed border-hairline text-xs text-mute bg-canvas/30">
+            No achievements added yet. Click &quot;+ Add Achievement&quot; to highlight honors or awards.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {achievements.map((ach, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={ach}
+                  onChange={(e) => handleUpdateAchievement(idx, e.target.value)}
+                  placeholder="e.g. Gold Medalist in B.Tech CSE (NIT Jaipur) / AIR 45 in GATE"
+                  className="flex-1 px-3 py-1.5 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveAchievement(idx)}
+                  className="px-2 py-1 text-xs text-error hover:underline cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

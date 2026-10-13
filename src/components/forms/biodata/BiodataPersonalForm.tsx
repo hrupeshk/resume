@@ -194,6 +194,90 @@ export default function BiodataPersonalForm({
         </div>
 
         <div>
+          <label htmlFor="bioBloodGroup" className="block text-xs font-medium text-body mb-1">
+            Blood Group <span className="text-mute">(Optional)</span>
+          </label>
+          <input
+            id="bioBloodGroup"
+            type="text"
+            value={personalInfo.bloodGroup || ''}
+            onChange={(e) => handleChangeField('bloodGroup', e.target.value)}
+            placeholder="e.g. B+ / O+ / A+"
+            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="bioReligion" className="block text-xs font-medium text-body mb-1">
+            Religion <span className="text-mute">(Optional)</span>
+          </label>
+          <input
+            id="bioReligion"
+            type="text"
+            value={personalInfo.religion || ''}
+            onChange={(e) => handleChangeField('religion', e.target.value)}
+            placeholder="e.g. Hindu / Jain / Sikh"
+            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="bioCaste" className="block text-xs font-medium text-body mb-1">
+            Caste / Community <span className="text-mute">(Optional)</span>
+          </label>
+          <input
+            id="bioCaste"
+            type="text"
+            value={personalInfo.caste || ''}
+            onChange={(e) => handleChangeField('caste', e.target.value)}
+            placeholder="e.g. Brahmin / Agarwal / Rajput / Kayastha"
+            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="bioSubCaste" className="block text-xs font-medium text-body mb-1">
+            Sub-Caste / Gotra-Branch <span className="text-mute">(Optional)</span>
+          </label>
+          <input
+            id="bioSubCaste"
+            type="text"
+            value={personalInfo.subCaste || ''}
+            onChange={(e) => handleChangeField('subCaste', e.target.value)}
+            placeholder="e.g. Gaur / Khandelwal / Marwari"
+            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="bioMotherTongue" className="block text-xs font-medium text-body mb-1">
+            Mother Tongue <span className="text-mute">(Optional)</span>
+          </label>
+          <input
+            id="bioMotherTongue"
+            type="text"
+            value={personalInfo.motherTongue || ''}
+            onChange={(e) => handleChangeField('motherTongue', e.target.value)}
+            placeholder="e.g. Hindi / Gujarati / Punjabi / Marathi"
+            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="bioLanguages" className="block text-xs font-medium text-body mb-1">
+            Languages Known <span className="text-mute">(Optional)</span>
+          </label>
+          <input
+            id="bioLanguages"
+            type="text"
+            value={personalInfo.languagesKnown || ''}
+            onChange={(e) => handleChangeField('languagesKnown', e.target.value)}
+            placeholder="e.g. English, Hindi, Rajasthani"
+            className="w-full px-3 py-2 rounded-sm border border-hairline bg-canvas-elevated text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+          />
+        </div>
+
+        <div>
           <label htmlFor="bioPhone" className="block text-xs font-medium text-body mb-1">
             Contact Number <span className="text-mute">(Optional)</span>
           </label>

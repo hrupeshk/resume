@@ -160,6 +160,12 @@ export interface BiodataPersonalInfo {
   height: string;
   complexion: string;
   diet: string;
+  bloodGroup?: string;
+  religion?: string;
+  caste?: string;
+  subCaste?: string;
+  motherTongue?: string;
+  languagesKnown?: string;
   photoUrl?: string;
   phone: string;
   email: string;
@@ -182,12 +188,19 @@ export interface SiblingEntry {
   occupation: string;
 }
 
+export interface RelativeEntry {
+  name: string;
+  relation: string;
+  occupation: string;
+}
+
 export interface BiodataFamily {
   fatherName: string;
   fatherOccupation: string;
   motherName: string;
   motherOccupation: string;
   siblings: SiblingEntry[];
+  relatives?: RelativeEntry[];
   nativePlace: string;
 }
 
@@ -196,6 +209,7 @@ export interface BiodataHoroscope {
   nakshatra: string;
   rashi: string;
   manglik: string;
+  kuldevta?: string;
 }
 
 export interface BiodataContact {
@@ -210,6 +224,8 @@ export interface BiodataSections {
   horoscope: BiodataHoroscope;
   contact: BiodataContact;
   partnerPreferences: string;
+  achievements?: string[];
+  hobbies?: string[];
 }
 
 export interface BiodataDocument extends BaseDocument {

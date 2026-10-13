@@ -442,13 +442,25 @@ export default function PreviewPane({
                 scale={activeScale}
                 noPadding={true}
               >
-                {TemplateComponent ? (
-                  <TemplateComponent data={data} />
-                ) : (
-                  <div className="p-8 text-center text-mute bg-white rounded border border-hairline">
-                    No template found for ID: {data.templateId}
-                  </div>
-                )}
+                <div
+                  style={{
+                    '--fs': fontSizeScale / 100,
+                  } as React.CSSProperties}
+                  className="w-full h-full"
+                >
+                  {TemplateComponent ? (
+                    // @ts-ignore
+                    <TemplateComponent
+                      data={data}
+                      spacingDensity={spacingDensity}
+                      fontSizeScale={fontSizeScale}
+                    />
+                  ) : (
+                    <div className="p-8 text-center text-mute bg-white rounded border border-hairline">
+                      No template found for ID: {data.templateId}
+                    </div>
+                  )}
+                </div>
               </ResumePageSheet>
             ) : (
               pageSlices.map((slice, i) => {

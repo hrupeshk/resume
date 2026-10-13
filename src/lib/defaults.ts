@@ -462,6 +462,12 @@ export const sampleMarriageBiodata: BiodataDocument = {
     height: "5' 11\" (180 cm)",
     complexion: 'Fair',
     diet: 'Vegetarian',
+    bloodGroup: 'B+',
+    religion: 'Hindu',
+    caste: 'Brahmin',
+    subCaste: 'Gaur Brahmin',
+    motherTongue: 'Hindi',
+    languagesKnown: 'English, Hindi',
     photoUrl: '',
     phone: '+91 90000 00000',
     email: 'aditya.sharma96@example.com',
@@ -494,6 +500,13 @@ export const sampleMarriageBiodata: BiodataDocument = {
           occupation: 'Architect, settled in Bengaluru',
         },
       ],
+      relatives: [
+        {
+          name: 'Justice Mahendra Sharma',
+          relation: 'Paternal Uncle (Chacha)',
+          occupation: 'Judge, Rajasthan High Court',
+        },
+      ],
       nativePlace: 'Jaipur, Rajasthan (Ancestral: Alwar)',
     },
     horoscope: {
@@ -501,6 +514,7 @@ export const sampleMarriageBiodata: BiodataDocument = {
       nakshatra: 'Pushya',
       rashi: 'Karka (Cancer)',
       manglik: 'Non-Manglik',
+      kuldevta: 'Shri Shakambhari Mata (Sikar)',
     },
     contact: {
       address: 'B-42, Shyam Nagar, Ajmer Road, Jaipur - 302019',
@@ -508,6 +522,11 @@ export const sampleMarriageBiodata: BiodataDocument = {
     },
     partnerPreferences:
       'Looking for an educated, family-oriented, and understanding partner with good cultural values. Professionally qualified (B.Tech, MBA, CA, Doctor, or equivalent). Respectful towards family traditions while holding a progressive mindset.',
+    achievements: [
+      'Gold Medalist, B.Tech CSE (NIT Jaipur)',
+      'Published IEEE Research Paper on Cloud Scalability',
+    ],
+    hobbies: ['Indian Classical Music', 'Cricket', 'Reading Non-Fiction'],
   },
 };
 
@@ -530,6 +549,12 @@ export function createEmptyBiodata(): BiodataDocument {
       height: '',
       complexion: '',
       diet: '',
+      bloodGroup: '',
+      religion: '',
+      caste: '',
+      subCaste: '',
+      motherTongue: '',
+      languagesKnown: '',
       photoUrl: '',
       phone: '',
       email: '',
@@ -547,6 +572,7 @@ export function createEmptyBiodata(): BiodataDocument {
         motherName: '',
         motherOccupation: '',
         siblings: [],
+        relatives: [],
         nativePlace: '',
       },
       horoscope: {
@@ -554,12 +580,15 @@ export function createEmptyBiodata(): BiodataDocument {
         nakshatra: '',
         rashi: '',
         manglik: '',
+        kuldevta: '',
       },
       contact: {
         address: '',
         referencePhone: '',
       },
       partnerPreferences: '',
+      achievements: [],
+      hobbies: [],
     },
   };
 }

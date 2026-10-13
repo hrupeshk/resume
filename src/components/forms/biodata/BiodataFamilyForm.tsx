@@ -1,5 +1,5 @@
 import React from 'react';
-import type { BiodataFamily, SiblingEntry } from '../../../lib/schema';
+import type { BiodataFamily, SiblingEntry, RelativeEntry } from '../../../lib/schema';
 
 interface BiodataFamilyFormProps {
   family: BiodataFamily;
@@ -38,6 +38,29 @@ export default function BiodataFamilyForm({
   const handleRemoveSibling = (index: number) => {
     const updated = (family.siblings || []).filter((_, i) => i !== index);
     handleUpdateFamilyField('siblings', updated);
+  };
+
+  const handleAddRelative = () => {
+    const updated = [
+      ...(family.relatives || []),
+      { name: '', relation: '', occupation: '' },
+    ];
+    handleUpdateFamilyField('relatives', updated);
+  };
+
+  const handleUpdateRelativeEntry = (
+    index: number,
+    field: keyof RelativeEntry,
+    value: string
+  ) => {
+    const updated = [...(family.relatives || [])];
+    updated[index] = { ...updated[index], [field]: value };
+    handleUpdateFamilyField('relatives', updated);
+  };
+
+  const handleRemoveRelative = (index: number) => {
+    const updated = (family.relatives || []).filter((_, i) => i !== index);
+    handleUpdateFamilyField('relatives', updated);
   };
 
   return (
@@ -197,6 +220,86 @@ export default function BiodataFamilyForm({
                       value={sibling.occupation}
                       onChange={(e) => handleUpdateSiblingEntry(index, 'occupation', e.target.value)}
                       placeholder="e.g. Architect, Bengaluru"
+                      className="w-full px-2.5 py-1.5 rounded-sm border border-hairline bg-canvas text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Notable Relatives Section */}
+      <div className="space-y-3 pt-3 border-t border-hairline">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-semibold text-ink">Notable Family Relatives <span className="text-mute font-normal text-xs">(Optional)</span></h4>
+            <p className="text-[11px] text-mute">
+              Prominent uncles, maternal/paternal relatives, or respected family figures (e.g. Judges, Civil Servants, Doctors, Officers).
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddRelative}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm bg-canvas border border-hairline hover:border-mute text-xs font-medium text-ink transition-colors cursor-pointer"
+          >
+            <span>+ Add Relative</span>
+          </button>
+        </div>
+
+        {(!family.relatives || family.relatives.length === 0) ? (
+          <div className="p-3 text-center rounded-sm border border-dashed border-hairline text-xs text-mute bg-canvas/30">
+            No extended relatives added. Click &quot;+ Add Relative&quot; to showcase prominent family connections.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {family.relatives.map((rel, index) => (
+              <div
+                key={index}
+                className="p-3 rounded-sm border border-hairline bg-canvas/60 space-y-2 relative"
+              >
+                <div className="flex items-center justify-between pb-1 border-b border-hairline/60">
+                  <span className="text-xs font-semibold text-ink">Relative #{index + 1}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveRelative(index)}
+                    className="text-xs text-error hover:underline cursor-pointer"
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div>
+                    <label className="block text-xs font-medium text-body mb-1">Relative Name</label>
+                    <input
+                      type="text"
+                      value={rel.name}
+                      onChange={(e) => handleUpdateRelativeEntry(index, 'name', e.target.value)}
+                      placeholder="e.g. Justice Mahendra Sharma"
+                      className="w-full px-2.5 py-1.5 rounded-sm border border-hairline bg-canvas text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-body mb-1">Relation</label>
+                    <input
+                      type="text"
+                      value={rel.relation}
+                      onChange={(e) => handleUpdateRelativeEntry(index, 'relation', e.target.value)}
+                      placeholder="e.g. Paternal Uncle (Chacha) / Mama"
+                      className="w-full px-2.5 py-1.5 rounded-sm border border-hairline bg-canvas text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-body mb-1">Designation / Status</label>
+                    <input
+                      type="text"
+                      value={rel.occupation}
+                      onChange={(e) => handleUpdateRelativeEntry(index, 'occupation', e.target.value)}
+                      placeholder="e.g. High Court Judge / Senior IPS"
                       className="w-full px-2.5 py-1.5 rounded-sm border border-hairline bg-canvas text-ink placeholder:text-neutral-400 focus:outline-none focus-visible:ring-1 focus-visible:ring-ink focus-visible:border-ink transition-colors"
                     />
                   </div>

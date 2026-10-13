@@ -164,6 +164,7 @@ export const templates: Record<DocumentCategory, TemplateDefinition[]> = {
       badge: 'Traditional',
       category: 'marriage_biodata',
       component: TraditionalMaroonBiodata,
+      supportsSpacingDensity: true,
     },
     {
       id: 'ivory-gold-royal-02',
@@ -172,6 +173,7 @@ export const templates: Record<DocumentCategory, TemplateDefinition[]> = {
       badge: 'Popular',
       category: 'marriage_biodata',
       component: IvoryGoldRoyalBiodata,
+      supportsSpacingDensity: true,
     },
   ],
 };
