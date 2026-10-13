@@ -217,7 +217,9 @@ body {
   /* Full-bleed marriage biodata single-page frame in print */
   .resume-page-content > div.h-full,
   .traditional-maroon-biodata,
-  .ivory-gold-royal-biodata {
+  .ivory-gold-royal-biodata,
+  .peacock-emerald-royal-biodata,
+  .kesar-mandap-crimson-biodata {
     width: 100% !important;
     height: 100% !important;
     min-height: 100% !important;

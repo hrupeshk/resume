@@ -8,6 +8,8 @@ import MinimalBlueTechResume from '../components/templates/tech-resume/MinimalBl
 import CompactMonoTechResume from '../components/templates/tech-resume/CompactMonoTechResume';
 import TraditionalMaroonBiodata from '../components/templates/marriage-biodata/TraditionalMaroonBiodata';
 import IvoryGoldRoyalBiodata from '../components/templates/marriage-biodata/IvoryGoldRoyalBiodata';
+import PeacockEmeraldRoyalBiodata from '../components/templates/marriage-biodata/PeacockEmeraldRoyalBiodata';
+import KesarMandapCrimsonBiodata from '../components/templates/marriage-biodata/KesarMandapCrimsonBiodata';
 import IndianClassicPrivateJob from '../components/templates/private-job/IndianClassicPrivateJob';
 import HotelHospitalityPrivateJob from '../components/templates/private-job/HotelHospitalityPrivateJob';
 import CommercialOperationsPrivateJob from '../components/templates/private-job/CommercialOperationsPrivateJob';
@@ -173,6 +175,24 @@ export const templates: Record<DocumentCategory, TemplateDefinition[]> = {
       badge: 'Popular',
       category: 'marriage_biodata',
       component: IvoryGoldRoyalBiodata,
+      supportsSpacingDensity: true,
+    },
+    {
+      id: 'peacock-emerald-royal-03',
+      name: 'Mayur Emerald & Gold',
+      description: 'Regal peacock emerald aesthetic with Vedic Kundali box, sacred Ganesha invocation, and antique gold filigrees.',
+      badge: 'Heritage',
+      category: 'marriage_biodata',
+      component: PeacockEmeraldRoyalBiodata,
+      supportsSpacingDensity: true,
+    },
+    {
+      id: 'kesar-mandap-crimson-04',
+      name: 'Kesar Sindoor & Mandap',
+      description: 'Grand temple mandap & Jharokha archway with Vivaha Mangalashtakam shloka, paisley filigrees, and warm sandalwood parchment.',
+      badge: 'Auspicious',
+      category: 'marriage_biodata',
+      component: KesarMandapCrimsonBiodata,
       supportsSpacingDensity: true,
     },
   ],
