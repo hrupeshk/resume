@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ResumeDocument } from '../../../lib/schema';
+import { compressAndResizeImage } from '../../../lib/imageUtils';
 
 interface TemplateProps {
   data: ResumeDocument;
@@ -683,21 +684,20 @@ export default function NovoresumeModern({
                 type="file"
                 accept="image/*"
                 className="hidden"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
-                  if (file.size > 4 * 1024 * 1024) {
-                    alert('Please select an image smaller than 4MB.');
+                  if (file.size > 8 * 1024 * 1024) {
+                    alert('Please select an image smaller than 8MB.');
                     return;
                   }
-                  const reader = new FileReader();
-                  reader.onload = (evt) => {
-                    const result = evt.target?.result as string;
-                    if (result) {
-                      window.dispatchEvent(new CustomEvent('resume:update-photo', { detail: result }));
-                    }
-                  };
-                  reader.readAsDataURL(file);
+                  try {
+                    const optimized = await compressAndResizeImage(file, 500, 0.85);
+                    window.dispatchEvent(new CustomEvent('resume:update-photo', { detail: optimized }));
+                  } catch (err: any) {
+                    console.error('Image compression failed:', err);
+                    alert('Failed to process image. Please try a different photo.');
+                  }
                 }}
               />
             </label>

@@ -1,5 +1,6 @@
 import * as pdfjsLib from 'pdfjs-dist';
 import type { ResumeDocument, ExperienceEntry, ProjectEntry, EducationEntry, CertificationEntry, VolunteerEntry } from './schema';
+import { compressAndResizeImage } from './imageUtils';
 
 // Configure worker for in-browser PDF parsing
 if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
@@ -234,7 +235,14 @@ export async function extractPhotoFromPdf(file: File): Promise<string | undefine
  */
 export async function parseResumePdf(file: File): Promise<ParsedResumeResult> {
   const lines = await extractLinesFromPdf(file);
-  const photoUrl = await extractPhotoFromPdf(file);
+  let photoUrl = await extractPhotoFromPdf(file);
+  if (photoUrl) {
+    try {
+      photoUrl = await compressAndResizeImage(photoUrl, 500, 0.85);
+    } catch {
+      // keep extracted image as-is if compression encounters an issue
+    }
+  }
   const detectedSections: string[] = [];
 
   const partialDoc: Partial<ResumeDocument> = {

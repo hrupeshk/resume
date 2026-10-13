@@ -24,6 +24,7 @@ import { getInitialDocument, createEmptyResume, createEmptyBiodata, getSampleDoc
 import { getNextTemplateId } from '../../lib/templateRegistry';
 import { exportToPdf } from '../../lib/pdf';
 import { parseResumePdf } from '../../lib/pdfParser';
+import { compressAndResizeImage } from '../../lib/imageUtils';
 
 import StepNavigator, { type StepItem } from '../forms/StepNavigator';
 import PersonalForm from '../forms/PersonalForm';
@@ -160,6 +161,20 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
     };
     window.addEventListener('resume:update-photo', handlePhotoEvent);
     return () => window.removeEventListener('resume:update-photo', handlePhotoEvent);
+  }, []);
+
+  // Auto-compress legacy oversized photo in localStorage on mount (> 60KB)
+  useEffect(() => {
+    if (doc.personalInfo?.photoUrl && doc.personalInfo.photoUrl.length > 60000) {
+      compressAndResizeImage(doc.personalInfo.photoUrl, 500, 0.85)
+        .then((optimized) => {
+          setDoc((prev) => ({
+            ...prev,
+            personalInfo: { ...prev.personalInfo, photoUrl: optimized },
+          }));
+        })
+        .catch((err) => console.warn('Could not auto-compress legacy photo in localStorage:', err));
+    }
   }, []);
 
   // Section update handlers for Biodata
@@ -511,12 +526,21 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const parsed = JSON.parse(event.target?.result as string);
         if (!parsed || typeof parsed !== 'object' || !parsed.personalInfo) {
           alert('Invalid backup file. Please select a valid document backup JSON.');
           return;
+        }
+
+        // Auto-compress legacy oversized photos in restored backup (> 60KB)
+        if (parsed.personalInfo.photoUrl && parsed.personalInfo.photoUrl.length > 60000) {
+          try {
+            parsed.personalInfo.photoUrl = await compressAndResizeImage(parsed.personalInfo.photoUrl, 500, 0.85);
+          } catch (compressErr) {
+            console.warn('Failed to auto-compress restored photo:', compressErr);
+          }
         }
 
         // Snapshot current doc for undo

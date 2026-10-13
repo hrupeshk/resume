@@ -1,5 +1,6 @@
 import React from 'react';
 import type { BiodataPersonalInfo } from '../../../lib/schema';
+import { compressAndResizeImage } from '../../../lib/imageUtils';
 
 interface BiodataPersonalFormProps {
   personalInfo: BiodataPersonalInfo;
@@ -17,21 +18,20 @@ export default function BiodataPersonalForm({
     });
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 4 * 1024 * 1024) {
-      alert('Please select an image smaller than 4MB.');
+    if (file.size > 8 * 1024 * 1024) {
+      alert('Please select an image smaller than 8MB.');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const result = event.target?.result as string;
-      if (result) {
-        handleChangeField('photoUrl', result);
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const optimized = await compressAndResizeImage(file, 500, 0.85);
+      handleChangeField('photoUrl', optimized);
+    } catch (err: any) {
+      console.error('Image compression failed:', err);
+      alert('Failed to process image. Please try a different photo.');
+    }
   };
 
   const handleRemovePhoto = () => {

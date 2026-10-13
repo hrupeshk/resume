@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ResumePersonalInfo, DocumentCategory } from '../../lib/schema';
+import { compressAndResizeImage } from '../../lib/imageUtils';
 
 interface PersonalFormProps {
   personalInfo: ResumePersonalInfo;
@@ -175,21 +176,20 @@ export default function PersonalForm({
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
-                  if (file.size > 4 * 1024 * 1024) {
-                    alert('Please select an image smaller than 4MB.');
+                  if (file.size > 8 * 1024 * 1024) {
+                    alert('Please select an image smaller than 8MB.');
                     return;
                   }
-                  const reader = new FileReader();
-                  reader.onload = (event) => {
-                    const result = event.target?.result as string;
-                    if (result) {
-                      handleChangeField('photoUrl', result);
-                    }
-                  };
-                  reader.readAsDataURL(file);
+                  try {
+                    const optimized = await compressAndResizeImage(file, 500, 0.85);
+                    handleChangeField('photoUrl', optimized);
+                  } catch (err: any) {
+                    console.error('Image processing failed:', err);
+                    alert('Failed to process image. Please try a different photo.');
+                  }
                 }}
                 className="text-xs text-body file:mr-2 file:py-1 file:px-2.5 file:rounded-sm file:border-0 file:text-xs file:font-medium file:bg-primary file:text-on-primary hover:file:opacity-90 cursor-pointer"
               />
