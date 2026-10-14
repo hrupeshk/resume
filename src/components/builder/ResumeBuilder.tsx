@@ -24,6 +24,7 @@ import { getInitialDocument, createEmptyResume, createEmptyBiodata, getSampleDoc
 import { getNextTemplateId, getTemplateById } from '../../lib/templateRegistry';
 import { exportToPdf } from '../../lib/pdf';
 import { exportToPng } from '../../lib/imageExport';
+import { exportResumeToDocx } from '../../lib/docxExport';
 import { parseResumePdf } from '../../lib/pdfParser';
 import { compressAndResizeImage } from '../../lib/imageUtils';
 import { sanitizeImportedDocument } from '../../lib/jsonSecurity';
@@ -621,6 +622,25 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
     }
   };
 
+  // DOCX Word Export (Tech, Non-Tech, and Private Job Resumes only)
+  const handleExportDocx = async () => {
+    if (doc.category === 'marriage_biodata') {
+      alert('DOCX export is available for tech and non-tech resume categories only.');
+      return;
+    }
+    const fallback = doc.category === 'private_job_resume' ? 'Biodata_CV' : 'Resume';
+    const suffix = doc.category === 'private_job_resume' ? 'Job_CV' : 'Resume';
+    const nameSlug = (doc.personalInfo.fullName || fallback)
+      .trim()
+      .replace(/\s+/g, '_');
+    try {
+      await exportResumeToDocx(doc, `${nameSlug}_${suffix}.docx`);
+    } catch (err: any) {
+      console.error('DOCX export error:', err);
+      alert('Could not export DOCX document: ' + (err.message || 'Unknown error'));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col print:bg-white print:min-h-0 print:block">
       {/* Toast Notification for Undo Safeguard */}
@@ -1021,13 +1041,26 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                     </button>
                   </div>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={handleExportPdf}
-                    className="px-4 py-2 rounded-sm bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors shadow-xs cursor-pointer"
-                  >
-                    Download Resume PDF ✓
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleExportDocx}
+                      className="px-3.5 py-2 rounded-sm border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-800 text-xs font-semibold transition-colors shadow-2xs cursor-pointer flex items-center gap-1.5"
+                      title="Download editable Microsoft Word (.docx) file"
+                    >
+                      <svg className="w-3.5 h-3.5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+                      </svg>
+                      <span>Download Word (.docx)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleExportPdf}
+                      className="px-4 py-2 rounded-sm bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors shadow-xs cursor-pointer"
+                    >
+                      Download Resume PDF ✓
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -1061,6 +1094,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                 onPrint={handleExportPdf}
                 onOpenShare={() => setIsShareModalOpen(true)}
                 onExportPng={handleExportPng}
+                onExportDocx={doc.category !== 'marriage_biodata' ? handleExportDocx : undefined}
               />
             </div>
           )}

@@ -19,6 +19,7 @@ interface PreviewPaneProps {
   onPrint: () => void;
   onOpenShare?: () => void;
   onExportPng?: () => void;
+  onExportDocx?: () => void;
 }
 
 export type ZoomMode = 'fit-width' | 'custom';
@@ -31,6 +32,7 @@ export default function PreviewPane({
   onPrint,
   onOpenShare,
   onExportPng,
+  onExportDocx,
 }: PreviewPaneProps) {
   const [zoomMode, setZoomMode] = useState<ZoomMode>('fit-width');
   const [customZoom, setCustomZoom] = useState<number>(100);
@@ -303,27 +305,42 @@ export default function PreviewPane({
                 </button>
               </div>
             ) : (
-              <button
-                type="button"
-                onClick={onPrint}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-sm bg-primary text-on-primary text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs cursor-pointer"
-              >
-                <svg
-                  className="w-3.5 h-3.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
+              <div className="flex items-center gap-1.5">
+                {onExportDocx && (
+                  <button
+                    type="button"
+                    onClick={onExportDocx}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-800 text-xs font-semibold transition-colors shadow-2xs cursor-pointer"
+                    title="Download editable Microsoft Word (.docx) document"
+                  >
+                    <svg className="w-3.5 h-3.5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+                    </svg>
+                    <span>DOCX (Word)</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={onPrint}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-sm bg-primary text-on-primary text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs cursor-pointer"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                  />
-                </svg>
-                <span>Download PDF</span>
-              </button>
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
+                  </svg>
+                  <span>Download PDF</span>
+                </button>
+              </div>
             )}
           </div>
         </div>
