@@ -17,6 +17,8 @@ interface PreviewPaneProps {
   onCycleTemplate: () => void;
   onSelectTemplate: (templateId: string) => void;
   onPrint: () => void;
+  onOpenShare?: () => void;
+  onExportPng?: () => void;
 }
 
 export type ZoomMode = 'fit-width' | 'custom';
@@ -27,6 +29,8 @@ export default function PreviewPane({
   onCycleTemplate,
   onSelectTemplate,
   onPrint,
+  onOpenShare,
+  onExportPng,
 }: PreviewPaneProps) {
   const [zoomMode, setZoomMode] = useState<ZoomMode>('fit-width');
   const [customZoom, setCustomZoom] = useState<number>(100);
@@ -246,27 +250,81 @@ export default function PreviewPane({
               </span>
             </div>
 
-            <button
-              type="button"
-              onClick={onPrint}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-sm bg-primary text-on-primary text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs cursor-pointer"
-            >
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+            {isBiodataDocument(data) ? (
+              <div className="flex items-center gap-1.5">
+                {onOpenShare && (
+                  <button
+                    type="button"
+                    onClick={onOpenShare}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
+                    title="Share high-res biodata on WhatsApp or generate QR code"
+                  >
+                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.668-.699c.969.54 1.761.815 2.79.815 3.183 0 5.769-2.587 5.77-5.768.001-3.181-2.585-5.799-5.768-5.799zm8.567 5.769c-.002 4.743-3.858 8.598-8.599 8.598-1.503 0-2.912-.39-4.143-1.071l-4.596 1.205 1.229-4.482c-.752-1.285-1.189-2.776-1.19-4.25.002-4.742 3.859-8.599 8.6-8.599 4.742 0 8.599 3.857 8.599 8.599z" />
+                    </svg>
+                    <span>WhatsApp / Share</span>
+                  </button>
+                )}
+
+                {onExportPng && (
+                  <button
+                    type="button"
+                    onClick={onExportPng}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-800 text-xs font-semibold transition-colors shadow-2xs cursor-pointer"
+                    title="Download 2x high-resolution PNG image"
+                  >
+                    <svg className="w-3.5 h-3.5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>PNG</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={onPrint}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm bg-[#800020] hover:bg-[#66001a] text-white text-xs font-semibold transition-colors shadow-xs cursor-pointer"
+                  title="Download printable PDF document"
+                >
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
+                  </svg>
+                  <span>PDF</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={onPrint}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-sm bg-primary text-on-primary text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs cursor-pointer"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                />
-              </svg>
-              <span>Download PDF</span>
-            </button>
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                <span>Download PDF</span>
+              </button>
+            )}
           </div>
         </div>
 

@@ -21,8 +21,9 @@ import type {
 import { isBiodataDocument, isResumeDocument } from '../../lib/schema';
 import { loadSavedDocument, saveDocument, clearSavedDocument } from '../../lib/storage';
 import { getInitialDocument, createEmptyResume, createEmptyBiodata, getSampleDocument } from '../../lib/defaults';
-import { getNextTemplateId } from '../../lib/templateRegistry';
+import { getNextTemplateId, getTemplateById } from '../../lib/templateRegistry';
 import { exportToPdf } from '../../lib/pdf';
+import { exportToPng } from '../../lib/imageExport';
 import { parseResumePdf } from '../../lib/pdfParser';
 import { compressAndResizeImage } from '../../lib/imageUtils';
 import { sanitizeImportedDocument } from '../../lib/jsonSecurity';
@@ -37,6 +38,7 @@ import BiodataEducationOccupationForm from '../forms/biodata/BiodataEducationOcc
 import BiodataFamilyForm from '../forms/biodata/BiodataFamilyForm';
 import BiodataHoroscopePreferencesForm from '../forms/biodata/BiodataHoroscopePreferencesForm';
 import PreviewPane from '../preview/PreviewPane';
+import BiodataShareModal from '../modals/BiodataShareModal';
 
 interface ResumeBuilderProps {
   category: DocumentCategory;
@@ -89,6 +91,7 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
   const lastShortcutTimeRef = useRef<number>(0);
   const [undoBackup, setUndoBackup] = useState<DocumentData | null>(null);
   const undoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
 
   // Universal keyboard shortcut Alt+P (Left Alt or Right Alt / AltGr), Mac Option+P, or Ctrl+\
   // capture: true prevents Edge and Chrome from consuming Alt+P before our app receives it
@@ -602,6 +605,22 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
     exportToPdf(`${nameSlug}_${suffix}.pdf`);
   };
 
+  // High-Resolution PNG Image Export
+  const handleExportPng = async () => {
+    const isBio = doc.category === 'marriage_biodata';
+    const fallback = isBio ? 'Biodata' : 'Resume';
+    const suffix = isBio ? 'Marriage_Biodata' : 'Resume';
+    const nameSlug = (doc.personalInfo.fullName || fallback)
+      .trim()
+      .replace(/\s+/g, '_');
+    try {
+      await exportToPng(`${nameSlug}_${suffix}.png`);
+    } catch (err: any) {
+      console.error('PNG export error:', err);
+      alert('Could not export PNG image: ' + (err.message || 'Unknown error'));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col print:bg-white print:min-h-0 print:block">
       {/* Toast Notification for Undo Safeguard */}
@@ -782,6 +801,20 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
             />
             {saveStatus === 'saved' ? 'Autosaved' : 'Saving…'}
           </span>
+
+          {category === 'marriage_biodata' && (
+            <button
+              type="button"
+              onClick={() => setIsShareModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold transition-colors cursor-pointer shadow-2xs"
+              title="Share high-resolution biodata on WhatsApp, download PNG image, or scan QR code"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.668-.699c.969.54 1.761.815 2.79.815 3.183 0 5.769-2.587 5.77-5.768.001-3.181-2.585-5.799-5.768-5.799zm8.567 5.769c-.002 4.743-3.858 8.598-8.599 8.598-1.503 0-2.912-.39-4.143-1.071l-4.596 1.205 1.229-4.482c-.752-1.285-1.189-2.776-1.19-4.25.002-4.742 3.859-8.599 8.6-8.599 4.742 0 8.599 3.857 8.599 8.599z"/>
+              </svg>
+              <span>Share / WhatsApp</span>
+            </button>
+          )}
 
           <div className="h-4 w-px bg-hairline hidden sm:block" />
 
@@ -967,15 +1000,33 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                   >
                     Next Step →
                   </button>
+                ) : doc.category === 'marriage_biodata' ? (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsShareModalOpen(true)}
+                      className="px-3.5 py-2 rounded-sm bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold transition-colors shadow-xs cursor-pointer flex items-center gap-1.5"
+                    >
+                      <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.668-.699c.969.54 1.761.815 2.79.815 3.183 0 5.769-2.587 5.77-5.768.001-3.181-2.585-5.799-5.768-5.799zm8.567 5.769c-.002 4.743-3.858 8.598-8.599 8.598-1.503 0-2.912-.39-4.143-1.071l-4.596 1.205 1.229-4.482c-.752-1.285-1.189-2.776-1.19-4.25.002-4.742 3.859-8.599 8.6-8.599 4.742 0 8.599 3.857 8.599 8.599z"/>
+                      </svg>
+                      <span>Share / WhatsApp</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleExportPdf}
+                      className="px-3.5 py-2 rounded-sm bg-[#800020] hover:bg-[#66001a] text-white text-xs font-medium transition-colors shadow-xs cursor-pointer"
+                    >
+                      Download PDF ✓
+                    </button>
+                  </div>
                 ) : (
                   <button
                     type="button"
                     onClick={handleExportPdf}
                     className="px-4 py-2 rounded-sm bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors shadow-xs cursor-pointer"
                   >
-                    {doc.category === 'marriage_biodata'
-                      ? 'Download Biodata PDF ✓'
-                      : 'Download Resume PDF ✓'}
+                    Download Resume PDF ✓
                   </button>
                 )}
               </div>
@@ -1008,11 +1059,23 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
                 onCycleTemplate={handleCycleTemplate}
                 onSelectTemplate={handleSelectTemplate}
                 onPrint={handleExportPdf}
+                onOpenShare={() => setIsShareModalOpen(true)}
+                onExportPng={handleExportPng}
               />
             </div>
           )}
         </div>
       </main>
+
+      {/* Marriage Biodata Export & Share Modal */}
+      {isBiodataDocument(doc) && (
+        <BiodataShareModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          doc={doc}
+          templateName={getTemplateById(doc.category, doc.templateId)?.name}
+        />
+      )}
     </div>
   );
 }
