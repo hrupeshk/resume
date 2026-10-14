@@ -133,10 +133,9 @@ export default function KesarMandapCrimsonBiodata({
 
   return (
     <div
-      className="kesar-mandap-crimson-biodata w-full h-full bg-[#fffdf9] text-[#2c1316] relative box-border font-serif flex flex-col justify-between"
+      className={`kesar-mandap-crimson-biodata w-full h-full bg-[#fffdf9] text-[#2c1316] relative box-border font-serif ${config.outerPadding} flex flex-col justify-between`}
       style={{
         fontFamily: "'Playfair Display', Georgia, serif",
-        padding: config.outerPadding,
         // @ts-ignore
         '--fs': scale,
       }}

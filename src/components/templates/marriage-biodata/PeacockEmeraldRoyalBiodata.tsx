@@ -133,10 +133,9 @@ export default function PeacockEmeraldRoyalBiodata({
 
   return (
     <div
-      className="peacock-emerald-royal-biodata w-full h-full bg-[#fbf9f4] text-[#1a2620] relative box-border font-serif flex flex-col justify-between"
+      className={`peacock-emerald-royal-biodata w-full h-full bg-[#fbf9f4] text-[#1a2620] relative box-border font-serif ${config.outerPadding} flex flex-col justify-between`}
       style={{
         fontFamily: "'Playfair Display', Georgia, serif",
-        padding: config.outerPadding,
         // @ts-ignore
         '--fs': scale,
       }}

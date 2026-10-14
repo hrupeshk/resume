@@ -82,10 +82,13 @@ body {
     overflow: visible !important;
   }
 
-  /* Hide all UI chrome, action bars, and measurement sandbox completely from print */
+  /* Hide all UI chrome, action bars, modals, dialogs, and measurement sandbox completely from print */
   #builder-header,
   #builder-editor-column,
   #resume-measure-sandbox,
+  [role="dialog"],
+  [aria-modal="true"],
+  .modal,
   .no-print,
   .screen-only,
   button,
