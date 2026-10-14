@@ -3,6 +3,7 @@ import type { BiodataDocument } from '../../lib/schema';
 import {
   exportToPng,
   shareBiodataToWhatsApp,
+  shareMatrimonialSummaryToWhatsApp,
   generateMatrimonialTextSummary,
 } from '../../lib/imageExport';
 import { exportToPdf } from '../../lib/pdf';
@@ -101,6 +102,12 @@ export default function BiodataShareModal({
     } catch (err) {
       console.error('Clipboard copy failed:', err);
     }
+  };
+
+  const handleWhatsAppTextShare = () => {
+    shareMatrimonialSummaryToWhatsApp(doc);
+    setStatusMessage('Opened WhatsApp with text summary');
+    setTimeout(() => setStatusMessage(null), 3500);
   };
 
   const handleCopyLink = async () => {
@@ -227,7 +234,7 @@ export default function BiodataShareModal({
                   <span>Instant WhatsApp Sharing</span>
                 </div>
                 <p className="text-xs text-neutral-700 leading-relaxed">
-                  Share this biodata directly with family, relatives, and matrimonial groups. On smartphones, this attaches the high-definition image to your WhatsApp share sheet. On PC/Mac, it opens WhatsApp Web and downloads the image.
+                  Share this biodata image directly with family, relatives, and matrimonial groups. On smartphones, this sends the high-definition image directly via WhatsApp without redundant text. On PC/Mac, it opens WhatsApp Web and downloads the image.
                 </p>
               </div>
 
@@ -346,15 +353,28 @@ export default function BiodataShareModal({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-neutral-700">
-                  Preformatted WhatsApp Message Text:
+                  Preformatted Text Summary:
                 </span>
-                <button
-                  type="button"
-                  onClick={handleCopySummary}
-                  className="px-2.5 py-1 rounded bg-[#800020] text-white text-xs font-semibold hover:bg-[#66001a] transition-colors cursor-pointer flex items-center gap-1.5"
-                >
-                  <span>{copiedSummary ? '✓ Copied!' : 'Copy Summary'}</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleWhatsAppTextShare}
+                    className="px-2.5 py-1 rounded bg-[#25D366] text-white text-xs font-semibold hover:bg-[#20ba59] transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                    title="Send this text summary directly on WhatsApp"
+                  >
+                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.668-.699c.969.54 1.761.815 2.79.815 3.183 0 5.769-2.587 5.77-5.768.001-3.181-2.585-5.799-5.768-5.799zm8.567 5.769c-.002 4.743-3.858 8.598-8.599 8.598-1.503 0-2.912-.39-4.143-1.071l-4.596 1.205 1.229-4.482c-.752-1.285-1.189-2.776-1.19-4.25.002-4.742 3.859-8.599 8.6-8.599 4.742 0 8.599 3.857 8.599 8.599z"/>
+                    </svg>
+                    <span>Send on WhatsApp</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCopySummary}
+                    className="px-2.5 py-1 rounded bg-[#800020] text-white text-xs font-semibold hover:bg-[#66001a] transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <span>{copiedSummary ? '✓ Copied!' : 'Copy Summary'}</span>
+                  </button>
+                </div>
               </div>
 
               <pre className="p-3 bg-neutral-900 text-neutral-100 rounded-md text-[11px] leading-relaxed font-mono whitespace-pre-wrap max-h-56 overflow-y-auto border border-neutral-700">
@@ -362,7 +382,7 @@ export default function BiodataShareModal({
               </pre>
 
               <p className="text-[11px] text-neutral-500">
-                You can copy and paste this concise message into WhatsApp chats along with the exported biodata image.
+                Ideal for sharing candidate details when the biodata image is not sent, or for quick copy-pasting into text messages.
               </p>
             </div>
           )}

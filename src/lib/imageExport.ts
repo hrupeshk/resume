@@ -222,13 +222,12 @@ export function generateMatrimonialTextSummary(doc: BiodataDocument): string {
 /**
  * Shares the biodata image directly via Web Share API if supported by the browser (mobile WhatsApp share),
  * or provides fallback URL for WhatsApp Web / direct message.
+ * Shares only the biodata image without redundant text summary.
  */
 export async function shareBiodataToWhatsApp(
   doc: BiodataDocument,
   filename: string
 ): Promise<{ success: boolean; sharedDirectly: boolean; message: string }> {
-  const summaryText = generateMatrimonialTextSummary(doc);
-
   if (typeof navigator !== 'undefined' && 'share' in navigator) {
     try {
       const blob = await captureElementToBlob();
@@ -240,12 +239,11 @@ export async function shareBiodataToWhatsApp(
         await navigator.share({
           files: [file],
           title: `${doc.personalInfo.fullName || 'Candidate'} - Marriage Biodata`,
-          text: summaryText,
         });
         return {
           success: true,
           sharedDirectly: true,
-          message: 'Shared successfully via native share sheet!',
+          message: 'Shared biodata image successfully!',
         };
       }
     } catch (err: any) {
@@ -261,11 +259,7 @@ export async function shareBiodataToWhatsApp(
   }
 
   // Desktop or non-supported browser fallback:
-  // Open WhatsApp Web with summary text and auto-download the image
-  const encodedText = encodeURIComponent(summaryText);
-  const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
-
-  // Also auto-trigger image download so the user can easily attach it in WhatsApp Web
+  // Auto-download the high-res image and open WhatsApp Web
   try {
     await exportToPng(filename);
   } catch (err) {
@@ -273,12 +267,27 @@ export async function shareBiodataToWhatsApp(
   }
 
   if (typeof window !== 'undefined') {
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const whatsappUrl = isMobile ? 'https://api.whatsapp.com/send' : 'https://web.whatsapp.com/';
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   }
 
   return {
     success: true,
     sharedDirectly: false,
-    message: 'Opened WhatsApp with matrimonial summary and downloaded high-resolution image to your device.',
+    message: 'Downloaded biodata image and opened WhatsApp. You can now attach the image to your chat.',
   };
+}
+
+/**
+ * Opens WhatsApp with the preformatted matrimonial text summary.
+ * Useful when the user wants to send candidate details via text when the biodata image is not sent.
+ */
+export function shareMatrimonialSummaryToWhatsApp(doc: BiodataDocument): void {
+  const summaryText = generateMatrimonialTextSummary(doc);
+  const encodedText = encodeURIComponent(summaryText);
+  const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
+  if (typeof window !== 'undefined') {
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  }
 }
