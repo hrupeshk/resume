@@ -1,8 +1,31 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const homepageFaqs = [
+  {
+    question: 'Is this resume and biodata builder truly 100% free with no watermark?',
+    answer: 'Yes, completely free forever. There are zero paywalls, no credit card requirements, no subscription traps, and zero watermarks on any exported PDF or Word (.docx) document.',
+  },
+  {
+    question: 'Do I need to sign up or create an account to download my document?',
+    answer: 'No. You can open any template, fill in your details, and download immediately with zero account creation or email verification required.',
+  },
+  {
+    question: 'What export formats are supported?',
+    answer: 'For career resumes (Tech, Non-Tech, and Private Job), you can download both selectable vector PDFs (100% ATS-compliant) and editable Microsoft Word (.docx) files. For Marriage Biodata, you can download print-ready PDFs and 2x high-resolution PNG image cards for instant WhatsApp sharing.',
+  },
+  {
+    question: 'How is my private data stored?',
+    answer: 'Your data is stored exclusively in your local web browser using HTML5 local storage. It never leaves your computer or device and is never uploaded to any remote server or third-party database.',
+  },
+];
 ---
 
-<Layout title="Free Resume & Indian Marriage Biodata Builder — 100% Free, No Login">
+<Layout
+  title="Free Resume & Indian Marriage Biodata Builder — 100% Free, No Login"
+  description="Craft high-impact ATS resumes for tech engineers, corporate leaders, and Indian private sector roles — or create beautiful traditional matrimonial biodata in minutes. Download instant print-ready PDFs and Word (.docx) without signing up."
+  faqSchema={homepageFaqs}
+>
   <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
     {/* Hero Headline */}
     <div class="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
@@ -19,7 +42,7 @@ import Layout from '../layouts/Layout.astro';
         Create Professional Resumes & Indian Biodata with Ease
       </h1>
       <p class="text-base sm:text-lg text-body leading-relaxed max-w-2xl mx-auto text-pretty">
-        Craft high-impact ATS resumes for tech engineers, corporate leaders, and Indian private sector roles — or create beautiful traditional matrimonial biodata in minutes. Download instant print-ready PDFs without signing up.
+        Craft high-impact ATS resumes for tech engineers, corporate leaders, and Indian private sector roles — or create beautiful traditional matrimonial biodata in minutes. Download instant print-ready PDFs and editable Word (.docx) files without signing up.
       </p>
     </div>
 
@@ -96,17 +119,25 @@ import Layout from '../layouts/Layout.astro';
           <div class="text-xs text-mute flex items-center gap-2">
             <span>✓ ATS Parsable</span>
             <span>•</span>
-            <span>✓ Multi-Page PDF</span>
+            <span>✓ Word DOCX & PDF</span>
             <span>•</span>
             <span>✓ Auto-Save</span>
           </div>
-          <a
-            href="/build/tech_resume"
-            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm bg-primary text-on-primary text-xs sm:text-sm font-semibold hover:opacity-90 transition-opacity shadow-xs"
-          >
-            <span>Start Building Resume</span>
-            <span aria-hidden="true">→</span>
-          </a>
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <a
+              href="/tech-resume"
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-sm border border-hairline bg-canvas hover:bg-neutral-100 text-ink text-xs font-medium transition-colors"
+            >
+              <span>Explore Formats</span>
+            </a>
+            <a
+              href="/build/tech_resume"
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2 rounded-sm bg-primary text-on-primary text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs"
+            >
+              <span>Build Resume</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </div>
       </div>
 
@@ -174,21 +205,29 @@ import Layout from '../layouts/Layout.astro';
             <span>•</span>
             <span>✓ Photo Frame</span>
             <span>•</span>
-            <span>✓ High-Res Print PDF</span>
+            <span>✓ WhatsApp Card</span>
           </div>
-          <a
-            href="/build/marriage_biodata"
-            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-sm border border-hairline bg-canvas hover:bg-neutral-100 text-ink text-xs sm:text-sm font-semibold transition-colors shadow-2xs"
-          >
-            <span>Start Building Biodata</span>
-            <span aria-hidden="true">→</span>
-          </a>
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <a
+              href="/marriage-biodata"
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-sm border border-hairline bg-canvas hover:bg-neutral-100 text-ink text-xs font-medium transition-colors"
+            >
+              <span>Explore Formats</span>
+            </a>
+            <a
+              href="/build/marriage_biodata"
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2 rounded-sm bg-[#800020] text-white text-xs font-semibold hover:bg-[#66001a] transition-colors shadow-xs"
+            >
+              <span>Build Biodata</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </div>
       </div>
     </div>
 
-    {/* Feature Comparison / Highlights Section */}
-    <div class="rounded-xl border border-hairline bg-canvas p-6 sm:p-8">
+    {/* Feature Highlights Grid */}
+    <div class="rounded-xl border border-hairline bg-canvas p-6 sm:p-8 mb-16">
       <div class="text-center max-w-xl mx-auto mb-8">
         <h3 class="text-lg font-semibold text-ink mb-2">
           Everything You Need to Succeed
@@ -200,32 +239,58 @@ import Layout from '../layouts/Layout.astro';
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="space-y-1.5">
-          <div class="text-base">⚡ Instant Split-Screen Preview</div>
+          <div class="text-base font-semibold text-ink">⚡ Live Synchronous Preview</div>
           <p class="text-xs text-mute leading-relaxed">
-            See your changes render in real-time as you type, with accurate page break indicators.
+            See your changes render in real-time as you type, with accurate page break indicators and 1-page auto-fit.
           </p>
         </div>
 
         <div class="space-y-1.5">
-          <div class="text-base">🔒 100% Private in Browser</div>
+          <div class="text-base font-semibold text-ink">📝 Word (.docx) & Vector PDF</div>
           <p class="text-xs text-mute leading-relaxed">
-            Your data is saved locally in your browser storage. Zero tracking and no server uploads.
+            Download editable Microsoft Word documents or high-precision vector PDFs with selectable text.
           </p>
         </div>
 
         <div class="space-y-1.5">
-          <div class="text-base">📥 Clean Selectable PDF</div>
+          <div class="text-base font-semibold text-ink">🔒 100% Private in Browser</div>
           <p class="text-xs text-mute leading-relaxed">
-            Export vector PDFs with selectable text, clickable hyperlinks, and true A4 dimensions.
+            Your data is saved locally in your browser storage. Zero tracking, no server uploads, and no data selling.
           </p>
         </div>
 
         <div class="space-y-1.5">
-          <div class="text-base">🎨 Instant Template Switching</div>
+          <div class="text-base font-semibold text-ink">🎨 Instant Template Switching</div>
           <p class="text-xs text-mute leading-relaxed">
-            Switch between modern and classic templates instantly with zero data loss guarantee.
+            Switch between modern and classic templates instantly with our zero data loss guarantee.
           </p>
         </div>
+      </div>
+    </div>
+
+    {/* Section: Frequently Asked Questions (FAQ) with FAQPage Schema */}
+    <div class="mb-12">
+      <div class="text-center max-w-xl mx-auto mb-10">
+        <span class="text-xs font-mono uppercase tracking-wider text-primary font-bold">Frequently Asked</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-ink mt-1 mb-2">
+          Common Questions & Answers
+        </h2>
+        <p class="text-xs sm:text-sm text-body">
+          Clear, transparent answers about our free document builder.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto space-y-4">
+        {homepageFaqs.map((faq) => (
+          <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated shadow-2xs">
+            <h3 class="text-sm sm:text-base font-bold text-ink mb-2">
+              {faq.question}
+            </h3>
+            <p class="text-xs sm:text-sm text-body leading-relaxed">
+              {faq.answer}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   </main>

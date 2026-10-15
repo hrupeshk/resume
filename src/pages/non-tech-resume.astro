@@ -1,0 +1,240 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = 'Free Corporate & Executive Resume Builder (MBA, Management, PM, Finance, HR) | ATS-Compliant';
+const pageDescription = 'Build executive leadership resumes with core competencies matrices, professional references, and quantified impact metrics. Harvard & Stanford MBA layouts. Free DOCX & PDF download.';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Corporate & MBA Resumes', url: '/non-tech-resume' },
+];
+
+const faqs = [
+  {
+    question: 'What makes an executive or MBA resume different from a general resume?',
+    answer: 'Executive and MBA resumes focus heavily on high-level business impact, strategic leadership, P&L management, cross-functional collaboration, and quantified financial outcomes ($ revenue increased, % cost saved, team scale). They also feature a structured Core Competencies Matrix and verified professional references.',
+  },
+  {
+    question: 'Does this builder support the Harvard and Stanford MBA resume format?',
+    answer: 'Yes! Our "Executive MBA" template is modeled directly on the prestigious Harvard and Stanford business school standard, ensuring that directors, PMs, consultants, and senior executives project executive gravity.',
+  },
+  {
+    question: 'Can I download an editable Microsoft Word (.docx) file?',
+    answer: 'Yes. You can export an editable Microsoft Word (.docx) document with proper paragraph headings, clean margins, and bullet structures, as well as a vector PDF for direct applications.',
+  },
+  {
+    question: 'Can I include professional references on my corporate resume?',
+    answer: 'Yes. Our corporate resume schema includes dedicated reference blocks where you can specify referee names, executive titles, companies, emails, phone numbers, and professional relationships.',
+  },
+  {
+    question: 'Is this resume builder truly free with no subscription or watermark?',
+    answer: 'Yes, 100% free forever. There is no trial period, no card required, no login wall, and zero watermarks on any generated PDF or Word document.',
+  },
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  faqSchema={faqs}
+  breadcrumbSchema={breadcrumbs}
+>
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+    {/* Breadcrumbs */}
+    <nav class="flex items-center gap-2 text-xs font-mono text-mute mb-8" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-ink transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-ink font-semibold">Corporate & MBA Resumes</span>
+    </nav>
+
+    {/* Hero Section */}
+    <div class="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-300 bg-neutral-100 text-xs font-mono text-neutral-800 mb-6 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-neutral-900 animate-pulse"></span>
+        <span>Executive Presence • Core Competencies • 100% Free PDF & DOCX</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-ink mb-6 text-balance">
+        Executive, MBA & Corporate Resume Builder
+      </h1>
+
+      <p class="text-base sm:text-lg text-body leading-relaxed max-w-2xl mx-auto text-pretty mb-8">
+        Engineered for Senior Managers, Directors, Management Consultants, Product Managers, and MBA Graduates. Showcase <strong>quantified business impact, strategic core competencies, and executive references</strong> with zero watermarks and no login required.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a
+          href="/build/non_tech_resume"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-sm bg-primary text-on-primary text-sm font-semibold hover:opacity-90 transition-opacity shadow-xs"
+        >
+          <span>Build Executive Resume Now</span>
+          <span aria-hidden="true">→</span>
+        </a>
+        <a
+          href="#templates"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-sm border border-hairline bg-canvas hover:bg-neutral-100 text-ink text-sm font-medium transition-colors"
+        >
+          <span>Explore Executive Templates</span>
+        </a>
+      </div>
+    </div>
+
+    {/* Executive Metrics Bar */}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">MBA Ready</div>
+        <div class="text-xs text-mute font-mono">Harvard / Stanford Standard</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">Matrix</div>
+        <div class="text-xs text-mute font-mono">Core Competencies Grid</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">Word & PDF</div>
+        <div class="text-xs text-mute font-mono">Editable .DOCX & Vector PDF</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">100% Free</div>
+        <div class="text-xs text-mute font-mono">Zero Subscription Fees</div>
+      </div>
+    </div>
+
+    {/* Section: Templates Showcase */}
+    <div id="templates" class="mb-20 scroll-mt-24">
+      <div class="text-center max-w-xl mx-auto mb-12">
+        <span class="text-xs font-mono uppercase tracking-wider text-primary font-bold">Executive Formats</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-ink mt-1 mb-3">
+          Proven Corporate & Leadership Templates
+        </h2>
+        <p class="text-sm text-body">
+          Select any template below to load the editor pre-configured for executive leadership.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Template 1: Executive MBA */}
+        <div class="p-6 rounded-xl border-2 border-hairline bg-canvas-elevated hover:border-ink/50 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-xs bg-indigo-100 text-indigo-800">
+                Leadership
+              </span>
+              <span class="text-xs font-mono text-mute">Ivy League</span>
+            </div>
+            <h3 class="text-lg font-bold text-ink mb-2">Executive Leadership (MBA)</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              Dignified Harvard/Stanford layout featuring a high-impact summary, 3-column core competencies matrix, quantified revenue impact bullets, and verified professional references.
+            </p>
+            <ul class="text-xs space-y-1.5 text-body mb-6">
+              <li>✓ Strategic Core Competencies Matrix</li>
+              <li>✓ Quantified P&L and ROI impact bullets</li>
+              <li>✓ Executive board & advisory references</li>
+            </ul>
+          </div>
+          <a
+            href="/build/non_tech_resume"
+            class="w-full text-center py-2 px-4 rounded-sm bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
+          >
+            Use Executive MBA Format →
+          </a>
+        </div>
+
+        {/* Template 2: Modern Professional */}
+        <div class="p-6 rounded-xl border-2 border-hairline bg-canvas-elevated hover:border-ink/50 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-xs bg-blue-100 text-blue-800">
+                Recommended
+              </span>
+              <span class="text-xs font-mono text-mute">2-Column</span>
+            </div>
+            <h3 class="text-lg font-bold text-ink mb-2">Modern Corporate Split</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              Versatile 2-column layout with clean key competency chips, career trajectory timeline, and customizable sidebar for marketing, product, and sales leaders.
+            </p>
+            <ul class="text-xs space-y-1.5 text-body mb-6">
+              <li>✓ Clear timeline career progression</li>
+              <li>✓ Structured managerial domain skills</li>
+              <li>✓ Prominent executive summary callout</li>
+            </ul>
+          </div>
+          <a
+            href="/build/non_tech_resume"
+            class="w-full text-center py-2 px-4 rounded-sm bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
+          >
+            Use Modern Corporate Format →
+          </a>
+        </div>
+
+        {/* Template 3: Corporate Minimal */}
+        <div class="p-6 rounded-xl border-2 border-hairline bg-canvas-elevated hover:border-ink/50 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-xs bg-neutral-100 text-neutral-800">
+                Minimalist
+              </span>
+              <span class="text-xs font-mono text-mute">1-Column</span>
+            </div>
+            <h3 class="text-lg font-bold text-ink mb-2">Corporate Minimal</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              Clean typography with subtle corporate blue accents and clear section borders. Ideal for finance, banking, legal, and operational management.
+            </p>
+            <ul class="text-xs space-y-1.5 text-body mb-6">
+              <li>✓ 100% single-page compact lining</li>
+              <li>✓ Traditional institutional elegance</li>
+              <li>✓ High contrast print & PDF fidelity</li>
+            </ul>
+          </div>
+          <a
+            href="/build/non_tech_resume"
+            class="w-full text-center py-2 px-4 rounded-sm bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
+          >
+            Use Corporate Minimal →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Section: Frequently Asked Questions (FAQ) */}
+    <div class="mb-20">
+      <div class="text-center max-w-xl mx-auto mb-10">
+        <span class="text-xs font-mono uppercase tracking-wider text-primary font-bold">Answers</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-ink mt-1 mb-2">
+          Frequently Asked Questions
+        </h2>
+        <p class="text-xs sm:text-sm text-body">
+          Guidelines on building corporate management and executive resumes.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto space-y-4">
+        {faqs.map((faq) => (
+          <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated shadow-2xs">
+            <h3 class="text-sm sm:text-base font-bold text-ink mb-2">
+              {faq.question}
+            </h3>
+            <p class="text-xs sm:text-sm text-body leading-relaxed">
+              {faq.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Bottom Call to Action */}
+    <div class="p-8 sm:p-12 rounded-2xl bg-neutral-900 text-white text-center max-w-4xl mx-auto shadow-lg">
+      <h2 class="text-2xl sm:text-4xl font-extrabold mb-4">
+        Build Your Executive Resume Now
+      </h2>
+      <p class="text-neutral-300 text-sm sm:text-base max-w-xl mx-auto mb-8">
+        No account required. Jump straight into the builder and export clean PDF & Word (.docx) documents in under 5 minutes.
+      </p>
+      <a
+        href="/build/non_tech_resume"
+        class="inline-flex items-center gap-2 px-8 py-3.5 rounded-sm bg-white text-neutral-950 font-bold text-sm hover:bg-neutral-100 transition-colors shadow-xs"
+      >
+        <span>Start Building Free →</span>
+      </a>
+    </div>
+  </main>
+</Layout>

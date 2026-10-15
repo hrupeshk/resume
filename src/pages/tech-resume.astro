@@ -1,0 +1,303 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = 'Free Tech Resume Builder (Software Engineer, Full-Stack, DevOps) | 100% Free, ATS-Friendly';
+const pageDescription = 'Build an ATS-optimized tech resume for Google, Amazon, and top startups. Includes Jake’s FAANG standard and Novorésumé 2-column layouts. Free PDF & DOCX download, zero login.';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Tech & IT Resumes', url: '/tech-resume' },
+];
+
+const faqs = [
+  {
+    question: 'Why are single-column resumes like Jake’s FAANG standard recommended for software engineers?',
+    answer: 'Single-column resumes have a near 100% parsing success rate across legacy and modern Applicant Tracking Systems (Workday, Greenhouse, Lever, Taleo). They eliminate multi-column reading order confusion and ensure that compilers and recruiters read your experience, technical skills, and projects in exact chronological priority.',
+  },
+  {
+    question: 'Is this tech resume builder genuinely 100% free with no watermark?',
+    answer: 'Yes, completely free forever. Unlike other platforms that ask for payment at the final step, our tool requires zero payment, no credit card, and never places a watermark on your exported PDF or DOCX file.',
+  },
+  {
+    question: 'Can I download both PDF and editable Microsoft Word (.docx) files?',
+    answer: 'Yes! You can download a high-precision vector PDF with copyable text and clickable hyperlinks for job applications, or an editable Microsoft Word (.docx) file to customize on your computer.',
+  },
+  {
+    question: 'Does the tech resume template support GitHub, LeetCode, and project live links?',
+    answer: 'Yes. All project cards and header social links support clickable hyperlinks in both PDF and DOCX exports, allowing engineering managers to inspect your repositories, live demos, and coding profiles with one click.',
+  },
+  {
+    question: 'Is my personal data and company project info private?',
+    answer: '100% private. All rendering, editing, and file generation happens entirely in your local browser engine. Your resume drafts are saved only to your browser’s local storage and are never uploaded to any remote server or sold to third-party recruiters.',
+  },
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  faqSchema={faqs}
+  breadcrumbSchema={breadcrumbs}
+>
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+    {/* Breadcrumbs */}
+    <nav class="flex items-center gap-2 text-xs font-mono text-mute mb-8" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-ink transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-ink font-semibold">Tech & IT Resumes</span>
+    </nav>
+
+    {/* Hero Section */}
+    <div class="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-300 bg-emerald-50 text-xs font-mono text-emerald-800 mb-6 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>ATS Gold Certified • FAANG Tested • 100% Free Forever</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-ink mb-6 text-balance">
+        The Free Tech Resume Builder That Actually Passes ATS
+      </h1>
+
+      <p class="text-base sm:text-lg text-body leading-relaxed max-w-2xl mx-auto text-pretty mb-8">
+        Built specifically for Software Engineers, Full-Stack Developers, DevOps, and Data Scientists. Stop losing interviews to broken parsers — build a recruiter-approved resume in minutes with <strong>zero paywalls, no login, and instant PDF & DOCX export</strong>.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a
+          href="/build/tech_resume"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-sm bg-primary text-on-primary text-sm font-semibold hover:opacity-90 transition-opacity shadow-xs"
+        >
+          <span>Create My Tech Resume Now</span>
+          <span aria-hidden="true">→</span>
+        </a>
+        <a
+          href="#templates"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-sm border border-hairline bg-canvas hover:bg-neutral-100 text-ink text-sm font-medium transition-colors"
+        >
+          <span>Explore Templates</span>
+        </a>
+      </div>
+    </div>
+
+    {/* Live Metric / Trust Badges */}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">100%</div>
+        <div class="text-xs text-mute font-mono">ATS Parse Rate</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">0 ₹ / $0</div>
+        <div class="text-xs text-mute font-mono">No Hidden Paywall</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">PDF + DOCX</div>
+        <div class="text-xs text-mute font-mono">Vector & Word Formats</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">0s Login</div>
+        <div class="text-xs text-mute font-mono">Instant Browser Access</div>
+      </div>
+    </div>
+
+    {/* Section: Templates Showcase */}
+    <div id="templates" class="mb-20 scroll-mt-24">
+      <div class="text-center max-w-xl mx-auto mb-12">
+        <span class="text-xs font-mono uppercase tracking-wider text-primary font-bold">Standard Formats</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-ink mt-1 mb-3">
+          Proven Engineering Templates
+        </h2>
+        <p class="text-sm text-body">
+          Switch between any template with a single click. Your typed data is never lost or truncated.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Template Card 1: FAANG Classic */}
+        <div class="p-6 rounded-xl border-2 border-hairline bg-canvas-elevated hover:border-ink/50 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-xs bg-emerald-100 text-emerald-800">
+                Overleaf Standard
+              </span>
+              <span class="text-xs font-mono text-mute">1-Column</span>
+            </div>
+            <h3 class="text-lg font-bold text-ink mb-2">FAANG Classic (Jake’s)</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              The iconic single-column standard trusted by engineers at Google, Meta, Amazon, and Microsoft. Optimized for heavy project bullets, tech stacks, and algorithmic clarity.
+            </p>
+            <ul class="text-xs space-y-1.5 text-body mb-6">
+              <li>✓ 100% ATS readability score</li>
+              <li>✓ Bold lead-in bullet points</li>
+              <li>✓ Clickable GitHub & Demo links</li>
+            </ul>
+          </div>
+          <a
+            href="/build/tech_resume"
+            class="w-full text-center py-2 px-4 rounded-sm bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
+          >
+            Use FAANG Classic Template →
+          </a>
+        </div>
+
+        {/* Template Card 2: Novoresume Modern */}
+        <div class="p-6 rounded-xl border-2 border-hairline bg-canvas-elevated hover:border-ink/50 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-xs bg-blue-100 text-blue-800">
+                Most Popular
+              </span>
+              <span class="text-xs font-mono text-mute">2-Column</span>
+            </div>
+            <h3 class="text-lg font-bold text-ink mb-2">Novorésumé Modern</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              Sleek 2-column layout with dark skill chip badges, tech stack highlights, and an adjustable sidebar split ratio for modern startups and scale-ups.
+            </p>
+            <ul class="text-xs space-y-1.5 text-body mb-6">
+              <li>✓ Interactive column width slider</li>
+              <li>✓ Structured project technology pills</li>
+              <li>✓ Compact single-page fit algorithm</li>
+            </ul>
+          </div>
+          <a
+            href="/build/tech_resume"
+            class="w-full text-center py-2 px-4 rounded-sm bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
+          >
+            Use Novorésumé Modern →
+          </a>
+        </div>
+
+        {/* Template Card 3: Flow Developer */}
+        <div class="p-6 rounded-xl border-2 border-hairline bg-canvas-elevated hover:border-ink/50 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-xs bg-sky-100 text-sky-800">
+                Lead / Senior
+              </span>
+              <span class="text-xs font-mono text-mute">Hybrid</span>
+            </div>
+            <h3 class="text-lg font-bold text-ink mb-2">Flow Developer</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              Tailored for Tech Leads and Senior Developers. Features prominent architectural impact summaries, leadership callouts, and clean category spacing.
+            </p>
+            <ul class="text-xs space-y-1.5 text-body mb-6">
+              <li>✓ Architectural impact callouts</li>
+              <li>✓ Core languages vs tooling matrix</li>
+              <li>✓ Multi-page overflow protection</li>
+            </ul>
+          </div>
+          <a
+            href="/build/tech_resume"
+            class="w-full text-center py-2 px-4 rounded-sm bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
+          >
+            Use Flow Developer →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Section: Competitive Comparison Table (High-Converting SEO Element) */}
+    <div class="mb-20 rounded-xl border border-hairline bg-canvas p-6 sm:p-8">
+      <div class="text-center max-w-xl mx-auto mb-8">
+        <h2 class="text-2xl font-bold text-ink mb-2">
+          How We Compare to Competitors
+        </h2>
+        <p class="text-xs sm:text-sm text-body">
+          We built this tool specifically to solve the frustration of fake "free" resume builders.
+        </p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs sm:text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-hairline bg-neutral-100/70">
+              <th class="p-3 font-semibold text-ink">Feature</th>
+              <th class="p-3 font-bold text-blue-700 bg-blue-50/50">Resume.com (Us)</th>
+              <th class="p-3 font-medium text-mute">Zety / Novoresume</th>
+              <th class="p-3 font-medium text-mute">Canva</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-hairline">
+            <tr>
+              <td class="p-3 font-medium text-ink">Free PDF Export</td>
+              <td class="p-3 font-bold text-emerald-600 bg-blue-50/30">✓ 100% Free Always</td>
+              <td class="p-3 text-red-500">✕ $2.99 – $24.99 Paywall</td>
+              <td class="p-3 text-amber-600">⚠ Free with rasterized text</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-medium text-ink">Editable Word .DOCX Export</td>
+              <td class="p-3 font-bold text-emerald-600 bg-blue-50/30">✓ Included Free</td>
+              <td class="p-3 text-red-500">✕ Premium Only</td>
+              <td class="p-3 text-red-500">✕ Not Supported</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-medium text-ink">Login or Account Required</td>
+              <td class="p-3 font-bold text-emerald-600 bg-blue-50/30">✓ No Login Required</td>
+              <td class="p-3 text-red-500">✕ Mandatory Signup</td>
+              <td class="p-3 text-red-500">✕ Mandatory Signup</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-medium text-ink">Watermark on Resume</td>
+              <td class="p-3 font-bold text-emerald-600 bg-blue-50/30">✓ Zero Watermarks</td>
+              <td class="p-3 text-red-500">✕ Watermark unless paid</td>
+              <td class="p-3 text-mute">—</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-medium text-ink">ATS Text Selectability</td>
+              <td class="p-3 font-bold text-emerald-600 bg-blue-50/30">✓ 100% Vector Selectable</td>
+              <td class="p-3 text-emerald-600">✓ Vector</td>
+              <td class="p-3 text-red-500">✕ Often flattened image</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-medium text-ink">Unlimited Resumes</td>
+              <td class="p-3 font-bold text-emerald-600 bg-blue-50/30">✓ Unlimited Offline/Local</td>
+              <td class="p-3 text-red-500">✕ 1 Resume Cap</td>
+              <td class="p-3 text-emerald-600">✓ Unlimited</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Section: Frequently Asked Questions (FAQ) */}
+    <div class="mb-20">
+      <div class="text-center max-w-xl mx-auto mb-10">
+        <span class="text-xs font-mono uppercase tracking-wider text-primary font-bold">Answers</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-ink mt-1 mb-2">
+          Frequently Asked Questions
+        </h2>
+        <p class="text-xs sm:text-sm text-body">
+          Everything you need to know about building a tech resume with our tool.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto space-y-4">
+        {faqs.map((faq) => (
+          <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated shadow-2xs">
+            <h3 class="text-sm sm:text-base font-bold text-ink mb-2">
+              {faq.question}
+            </h3>
+            <p class="text-xs sm:text-sm text-body leading-relaxed">
+              {faq.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Bottom Call to Action */}
+    <div class="p-8 sm:p-12 rounded-2xl bg-neutral-900 text-white text-center max-w-4xl mx-auto shadow-lg">
+      <h2 class="text-2xl sm:text-4xl font-extrabold mb-4">
+        Ready to Build Your Tech Resume?
+      </h2>
+      <p class="text-neutral-300 text-sm sm:text-base max-w-xl mx-auto mb-8">
+        No account required. Jump straight into the builder and export clean PDF & Word documents in under 5 minutes.
+      </p>
+      <a
+        href="/build/tech_resume"
+        class="inline-flex items-center gap-2 px-8 py-3.5 rounded-sm bg-white text-neutral-950 font-bold text-sm hover:bg-neutral-100 transition-colors shadow-xs"
+      >
+        <span>Start Building Free →</span>
+      </a>
+    </div>
+  </main>
+</Layout>

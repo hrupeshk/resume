@@ -1,0 +1,247 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = 'Free Indian Marriage Biodata Maker with Photo & Kundali | Traditional Maroon & Gold Formats';
+const pageDescription = 'Create elegant Hindu, Jain, and Indian matrimonial biodata profiles with photo, Ganesha invocations, Kundali horoscope details, and family background. 100% free PDF & WhatsApp image card download.';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Marriage Biodata', url: '/marriage-biodata' },
+];
+
+const faqs = [
+  {
+    question: 'How do I create a traditional Indian marriage biodata for free?',
+    answer: 'Simply choose one of our 4 traditional templates (Royal Maroon, Ivory Gold, Mayur Emerald, or Kesar Mandap), enter your personal, education, career, family, and horoscope details, upload a photo, and download your high-resolution biodata in PDF or PNG image format for WhatsApp sharing. No signup or payment is required.',
+  },
+  {
+    question: 'Can I include Kundali and Horoscope details in the biodata?',
+    answer: 'Yes! Our biodata formats include dedicated sections for Rashi, Nakshatra, Gotra, Manglik status (Non-Manglik, Manglik, Anshik/Partial), time and place of birth, and Kuldevta.',
+  },
+  {
+    question: 'Can I share the marriage biodata directly on WhatsApp as an image?',
+    answer: 'Yes. In addition to high-precision printable PDFs, our builder provides a direct "Share on WhatsApp" tool that generates a crystal-clear 2x high-resolution PNG image card that looks stunning on mobile phones.',
+  },
+  {
+    question: 'Can I choose different sacred invocations like Ganesh, Radha Krishna, or Tirupati Balaji?',
+    answer: 'Yes. You can select sacred Devanagari invocations including "॥ श्री गणेशाय नमः ॥", "॥ श्री राधा-कृष्णाभ्यां नमः ॥", "॥ ॐ ॥", or leave it neutral according to your family customs.',
+  },
+  {
+    question: 'Is my personal and family information kept private?',
+    answer: 'Yes, completely private. The entire biodata builder runs locally in your web browser. Your family details, contact numbers, and uploaded photographs are never stored on any remote cloud server or sold to matrimonial agencies.',
+  },
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  faqSchema={faqs}
+  breadcrumbSchema={breadcrumbs}
+>
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+    {/* Breadcrumbs */}
+    <nav class="flex items-center gap-2 text-xs font-mono text-mute mb-8" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-ink transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-ink font-semibold">Marriage Biodata</span>
+    </nav>
+
+    {/* Hero Section */}
+    <div class="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rose-300 bg-rose-50 text-xs font-mono text-rose-900 mb-6 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse"></span>
+        <span>Auspicious Vedic Layouts • High-Res Photo • 100% Free WhatsApp Share</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-ink mb-6 text-balance">
+        Traditional Indian Marriage Biodata Maker
+      </h1>
+
+      <p class="text-base sm:text-lg text-body leading-relaxed max-w-2xl mx-auto text-pretty mb-8">
+        Craft dignified, culturally resonant matrimonial biodata for Indian families. Features <strong>sacred Devanagari invocations, Kundali horoscope details, family heritage, and passport photo placement</strong> — ready for instant WhatsApp image sharing and print PDF export with zero fees.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a
+          href="/build/marriage_biodata"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-sm bg-[#800020] text-white text-sm font-semibold hover:bg-[#66001a] transition-colors shadow-xs"
+        >
+          <span>Create Matrimonial Biodata Now</span>
+          <span aria-hidden="true">→</span>
+        </a>
+        <a
+          href="#templates"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-sm border border-hairline bg-canvas hover:bg-neutral-100 text-ink text-sm font-medium transition-colors"
+        >
+          <span>View Traditional Templates</span>
+        </a>
+      </div>
+    </div>
+
+    {/* Cultural Highlights Bar */}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#800020] mb-1">🕉️ Invocations</div>
+        <div class="text-xs text-mute font-mono">Devanagari Sacred Shlokas</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#800020] mb-1">⭐ Kundali</div>
+        <div class="text-xs text-mute font-mono">Gotra, Rashi & Manglik</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#800020] mb-1">📱 WhatsApp</div>
+        <div class="text-xs text-mute font-mono">2x High-Res PNG Card</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#800020] mb-1">100% Free</div>
+        <div class="text-xs text-mute font-mono">No Watermarks Ever</div>
+      </div>
+    </div>
+
+    {/* Section: Templates Showcase */}
+    <div id="templates" class="mb-20 scroll-mt-24">
+      <div class="text-center max-w-xl mx-auto mb-12">
+        <span class="text-xs font-mono uppercase tracking-wider text-[#800020] font-bold">Traditional Formats</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-ink mt-1 mb-3">
+          4 Royal Matrimonial Templates
+        </h2>
+        <p class="text-sm text-body">
+          Each template is designed with classical Indian symmetry, ornate corner motifs, and authentic cultural typography.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Template 1: Royal Maroon */}
+        <div class="p-5 rounded-xl border-2 border-rose-200 bg-rose-50/20 hover:border-[#800020] transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-xs bg-rose-100 text-rose-900">
+                Classic
+              </span>
+              <span class="text-xs font-mono text-mute">Maroon</span>
+            </div>
+            <h3 class="text-base font-bold text-ink mb-1">Royal Maroon & Gold</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              Traditional Vedic layout with ornate double borders, Ganesh invocation, gold accents, and centered photo placement.
+            </p>
+          </div>
+          <a
+            href="/build/marriage_biodata"
+            class="w-full text-center py-2 px-3 rounded-sm bg-[#800020] text-white text-xs font-semibold hover:bg-[#66001a] transition-colors"
+          >
+            Use Maroon Template →
+          </a>
+        </div>
+
+        {/* Template 2: Ivory & Gold */}
+        <div class="p-5 rounded-xl border-2 border-amber-200 bg-amber-50/20 hover:border-amber-600 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-xs bg-amber-100 text-amber-900">
+                Popular
+              </span>
+              <span class="text-xs font-mono text-mute">Champagne</span>
+            </div>
+            <h3 class="text-base font-bold text-ink mb-1">Ivory & Champagne Gold</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              Sophisticated modern-traditional twin-column structure with astro highlights, floral filigrees, and royal champagne trim.
+            </p>
+          </div>
+          <a
+            href="/build/marriage_biodata"
+            class="w-full text-center py-2 px-3 rounded-sm bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
+          >
+            Use Ivory Gold Template →
+          </a>
+        </div>
+
+        {/* Template 3: Peacock Emerald */}
+        <div class="p-5 rounded-xl border-2 border-emerald-200 bg-emerald-50/20 hover:border-emerald-600 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-xs bg-emerald-100 text-emerald-900">
+                Heritage
+              </span>
+              <span class="text-xs font-mono text-mute">Emerald</span>
+            </div>
+            <h3 class="text-base font-bold text-ink mb-1">Mayur Emerald & Gold</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              Regal peacock emerald aesthetic with Vedic Kundali box, sacred invocations, and antique gold corner filigrees.
+            </p>
+          </div>
+          <a
+            href="/build/marriage_biodata"
+            class="w-full text-center py-2 px-3 rounded-sm bg-emerald-800 text-white text-xs font-semibold hover:bg-emerald-900 transition-colors"
+          >
+            Use Mayur Emerald →
+          </a>
+        </div>
+
+        {/* Template 4: Kesar Mandap */}
+        <div class="p-5 rounded-xl border-2 border-orange-200 bg-orange-50/20 hover:border-orange-600 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-xs bg-orange-100 text-orange-900">
+                Auspicious
+              </span>
+              <span class="text-xs font-mono text-mute">Sindoor</span>
+            </div>
+            <h3 class="text-base font-bold text-ink mb-1">Kesar Mandap & Crimson</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              Grand temple mandap & Jharokha archway with Vivaha Mangalashtakam shloka and warm sandalwood parchment tones.
+            </p>
+          </div>
+          <a
+            href="/build/marriage_biodata"
+            class="w-full text-center py-2 px-3 rounded-sm bg-amber-800 text-white text-xs font-semibold hover:bg-amber-900 transition-colors"
+          >
+            Use Kesar Mandap →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Section: Frequently Asked Questions (FAQ) */}
+    <div class="mb-20">
+      <div class="text-center max-w-xl mx-auto mb-10">
+        <span class="text-xs font-mono uppercase tracking-wider text-[#800020] font-bold">Answers</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-ink mt-1 mb-2">
+          Frequently Asked Questions
+        </h2>
+        <p class="text-xs sm:text-sm text-body">
+          Everything you need to know about creating an Indian marriage biodata.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto space-y-4">
+        {faqs.map((faq) => (
+          <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated shadow-2xs">
+            <h3 class="text-sm sm:text-base font-bold text-ink mb-2">
+              {faq.question}
+            </h3>
+            <p class="text-xs sm:text-sm text-body leading-relaxed">
+              {faq.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Bottom Call to Action */}
+    <div class="p-8 sm:p-12 rounded-2xl bg-[#800020] text-white text-center max-w-4xl mx-auto shadow-lg">
+      <h2 class="text-2xl sm:text-4xl font-extrabold mb-4">
+        Create Your Marriage Biodata in Minutes
+      </h2>
+      <p class="text-rose-100 text-sm sm:text-base max-w-xl mx-auto mb-8">
+        100% free with no login required. Download high-resolution PNG image cards for WhatsApp sharing and print-ready PDFs.
+      </p>
+      <a
+        href="/build/marriage_biodata"
+        class="inline-flex items-center gap-2 px-8 py-3.5 rounded-sm bg-white text-[#800020] font-bold text-sm hover:bg-neutral-100 transition-colors shadow-xs"
+      >
+        <span>Build Marriage Biodata Now →</span>
+      </a>
+    </div>
+  </main>
+</Layout>

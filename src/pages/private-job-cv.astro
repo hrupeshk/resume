@@ -1,0 +1,240 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = 'Free Indian Private Job Resume Builder with Photo & Declaration | Freshers & Experienced CV';
+const pageDescription = 'Create a professional private sector resume for banking, sales, office admin, hotel, and operations roles. Includes passport photo upload, father\'s name, and formal declaration. 100% free.';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Private Job CV', url: '/private-job-cv' },
+];
+
+const faqs = [
+  {
+    question: 'Why do Indian private sector resumes require Father\'s Name, DOB, and a Declaration?',
+    answer: 'Most private limited companies, banks, manufacturing plants, and service firms in India conduct statutory background verification (BGV), PF/ESI registration, and identity KYC. Including Father\'s name, Date of Birth, and a signed declaration speeds up verification and shows formal professionalism.',
+  },
+  {
+    question: 'Can I upload a passport-size photo to my resume?',
+    answer: 'Yes! Our private job templates include an automatic photo upload tool with circular and rectangular frames. Your photo renders cleanly in both PDF and Word (.docx) downloads.',
+  },
+  {
+    question: 'Is this format suitable for freshers applying to private companies?',
+    answer: 'Absolutely. For freshers, you can easily prioritize your educational qualifications, college training, academic projects, and computer skills, while experienced candidates can highlight their work achievements and operational expertise.',
+  },
+  {
+    question: 'Can I download an editable Microsoft Word (.docx) file?',
+    answer: 'Yes. You can download an editable Microsoft Word (.docx) file or a print-ready vector PDF with one click. There is no watermark and no payment required.',
+  },
+  {
+    question: 'Can I share my completed CV directly on WhatsApp?',
+    answer: 'Yes. Once you complete your resume, you can download it to your phone or computer and share it directly on WhatsApp, email, or job portal applications like Naukri, Indeed, or Apna.',
+  },
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  faqSchema={faqs}
+  breadcrumbSchema={breadcrumbs}
+>
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+    {/* Breadcrumbs */}
+    <nav class="flex items-center gap-2 text-xs font-mono text-mute mb-8" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-ink transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-ink font-semibold">Private Job CV</span>
+    </nav>
+
+    {/* Hero Section */}
+    <div class="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-300 bg-blue-50 text-xs font-mono text-blue-900 mb-6 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+        <span>Standard Indian Format • Photo & Declaration • 100% Free</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-ink mb-6 text-balance">
+        Indian Private Job CV & Biodata Maker
+      </h1>
+
+      <p class="text-base sm:text-lg text-body leading-relaxed max-w-2xl mx-auto text-pretty mb-8">
+        Designed specifically for Indian private enterprises, banks, BPOs, retail, and corporate jobs. Includes <strong>passport photo placement, father’s name, permanent address, and formal closing declaration</strong> — completely free with instant PDF & Word (.docx) download.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a
+          href="/build/private_job_resume"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-sm bg-primary text-on-primary text-sm font-semibold hover:opacity-90 transition-opacity shadow-xs"
+        >
+          <span>Create Private Job CV Now</span>
+          <span aria-hidden="true">→</span>
+        </a>
+        <a
+          href="#templates"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-sm border border-hairline bg-canvas hover:bg-neutral-100 text-ink text-sm font-medium transition-colors"
+        >
+          <span>View CV Formats</span>
+        </a>
+      </div>
+    </div>
+
+    {/* Metric / Highlights Bar */}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">📸 Photo</div>
+        <div class="text-xs text-mute font-mono">Passport Frame Included</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">✍️ Declaration</div>
+        <div class="text-xs text-mute font-mono">Formal Signature Block</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">Word & PDF</div>
+        <div class="text-xs text-mute font-mono">Editable .DOCX & Vector PDF</div>
+      </div>
+      <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated text-center">
+        <div class="text-2xl sm:text-3xl font-extrabold text-ink mb-1">100% Free</div>
+        <div class="text-xs text-mute font-mono">Zero Login or Charges</div>
+      </div>
+    </div>
+
+    {/* Section: Templates Showcase */}
+    <div id="templates" class="mb-20 scroll-mt-24">
+      <div class="text-center max-w-xl mx-auto mb-12">
+        <span class="text-xs font-mono uppercase tracking-wider text-primary font-bold">Approved Formats</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-ink mt-1 mb-3">
+          Industry-Standard Private Job Templates
+        </h2>
+        <p class="text-sm text-body">
+          Select any template below to start filling your details directly.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Template 1: Classic Indian Private Job */}
+        <div class="p-6 rounded-xl border-2 border-hairline bg-canvas-elevated hover:border-ink/50 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-xs bg-emerald-100 text-emerald-800">
+                Most Popular
+              </span>
+              <span class="text-xs font-mono text-mute">Standard</span>
+            </div>
+            <h3 class="text-lg font-bold text-ink mb-2">Classic Indian Private Job CV</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              The standard CV format recognized by Indian recruiters across banking, IT back-office, BPO, logistics, and sales. Features candidate photo, personal particulars, education grid, and declaration.
+            </p>
+            <ul class="text-xs space-y-1.5 text-body mb-6">
+              <li>✓ Circular or rectangular photo frame</li>
+              <li>✓ Father's name, DOB & languages known</li>
+              <li>✓ Clean education & experience tables</li>
+            </ul>
+          </div>
+          <a
+            href="/build/private_job_resume"
+            class="w-full text-center py-2 px-4 rounded-sm bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
+          >
+            Use Classic Format →
+          </a>
+        </div>
+
+        {/* Template 2: Hotel & Hospitality Service */}
+        <div class="p-6 rounded-xl border-2 border-hairline bg-canvas-elevated hover:border-ink/50 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-xs bg-teal-100 text-teal-800">
+                Service Sector
+              </span>
+              <span class="text-xs font-mono text-mute">2-Column</span>
+            </div>
+            <h3 class="text-lg font-bold text-ink mb-2">Hotel & Hospitality Service CV</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              Tailored for front office, food & beverage, hospitality management, customer support, and aviation cabin crew. Clean navy-slate accents with personal profile details.
+            </p>
+            <ul class="text-xs space-y-1.5 text-body mb-6">
+              <li>✓ Professional photo header presentation</li>
+              <li>✓ Customer service & languages highlight</li>
+              <li>✓ Prominent contact & references area</li>
+            </ul>
+          </div>
+          <a
+            href="/build/private_job_resume"
+            class="w-full text-center py-2 px-4 rounded-sm bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
+          >
+            Use Hospitality Format →
+          </a>
+        </div>
+
+        {/* Template 3: Commercial Operations */}
+        <div class="p-6 rounded-xl border-2 border-hairline bg-canvas-elevated hover:border-ink/50 transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-xs bg-neutral-100 text-neutral-800">
+                Operations
+              </span>
+              <span class="text-xs font-mono text-mute">1-Column</span>
+            </div>
+            <h3 class="text-lg font-bold text-ink mb-2">Commercial & Operations Standard</h3>
+            <p class="text-xs text-mute leading-relaxed mb-4">
+              High-contrast, straightforward layout ideal for warehouse managers, billing executives, store operators, accountants, and office supervisors.
+            </p>
+            <ul class="text-xs space-y-1.5 text-body mb-6">
+              <li>✓ Clean chronological work history</li>
+              <li>✓ Clear educational certification table</li>
+              <li>✓ Verified professional references</li>
+            </ul>
+          </div>
+          <a
+            href="/build/private_job_resume"
+            class="w-full text-center py-2 px-4 rounded-sm bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
+          >
+            Use Operations Format →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Section: Frequently Asked Questions (FAQ) */}
+    <div class="mb-20">
+      <div class="text-center max-w-xl mx-auto mb-10">
+        <span class="text-xs font-mono uppercase tracking-wider text-primary font-bold">Answers</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-ink mt-1 mb-2">
+          Frequently Asked Questions
+        </h2>
+        <p class="text-xs sm:text-sm text-body">
+          Common queries about creating private job CVs and resumes in India.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto space-y-4">
+        {faqs.map((faq) => (
+          <div class="p-5 rounded-lg border border-hairline bg-canvas-elevated shadow-2xs">
+            <h3 class="text-sm sm:text-base font-bold text-ink mb-2">
+              {faq.question}
+            </h3>
+            <p class="text-xs sm:text-sm text-body leading-relaxed">
+              {faq.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Bottom Call to Action */}
+    <div class="p-8 sm:p-12 rounded-2xl bg-neutral-900 text-white text-center max-w-4xl mx-auto shadow-lg">
+      <h2 class="text-2xl sm:text-4xl font-extrabold mb-4">
+        Ready to Create Your Private Job CV?
+      </h2>
+      <p class="text-neutral-300 text-sm sm:text-base max-w-xl mx-auto mb-8">
+        100% free with no login required. Fill your details, upload your photo, and download in PDF & Word (.docx) format instantly.
+      </p>
+      <a
+        href="/build/private_job_resume"
+        class="inline-flex items-center gap-2 px-8 py-3.5 rounded-sm bg-white text-neutral-950 font-bold text-sm hover:bg-neutral-100 transition-colors shadow-xs"
+      >
+        <span>Build Private Job CV Now →</span>
+      </a>
+    </div>
+  </main>
+</Layout>

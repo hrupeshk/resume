@@ -36,6 +36,6 @@ const pageMeta = metadata[category] || {
 };
 ---
 
-<Layout title={pageMeta.title} description={pageMeta.description}>
+<Layout title={pageMeta.title} description={pageMeta.description} hideNavFooter={true}>
   <ResumeBuilder client:load category={category} />
 </Layout>

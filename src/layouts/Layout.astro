@@ -1,21 +1,40 @@
 ---
 import '../styles/global.css';
+import SiteHeader from '../components/navigation/SiteHeader.astro';
+import SiteFooter from '../components/navigation/SiteFooter.astro';
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
 
 interface Props {
   title?: string;
   description?: string;
+  hideNavFooter?: boolean;
+  faqSchema?: FaqItem[];
+  breadcrumbSchema?: BreadcrumbItem[];
 }
 
 const {
   title = 'Free Resume & Biodata Builder — Unlimited, No Watermark, No Login',
   description = 'Build professional tech resumes and Indian marriage biodata for free. No login required, unlimited downloads, ATS-friendly templates, and instant template switching.',
+  hideNavFooter = false,
+  faqSchema,
+  breadcrumbSchema,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://resume.com');
 const siteTitle = 'Free Resume & Biodata Builder';
 const ogImage = new URL('/favicon.svg', Astro.site || 'https://resume.com').href;
 
-const schemaData = {
+// Base WebApplication Schema
+const schemaData: any = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: siteTitle,
@@ -33,10 +52,37 @@ const schemaData = {
     'No Login or Signup Required',
     'Zero Watermarks',
     'ATS-Compliant PDF Export',
-    'FAANG and Executive MBA Templates',
-    'Indian Marriage Biodata Formats',
+    'Microsoft Word DOCX Download',
+    'FAANG Classic and Novoresume Templates',
+    'Indian Marriage Biodata Formats with Kundali & Photo',
   ],
 };
+
+// FAQPage Schema for Google Rich Snippets
+const faqSchemaData = faqSchema && faqSchema.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqSchema.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+} : null;
+
+// BreadcrumbList Schema for Google Search Hierarchy
+const breadcrumbSchemaData = breadcrumbSchema && breadcrumbSchema.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbSchema.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    item: new URL(item.url, Astro.site || 'https://resume.com').href,
+  })),
+} : null;
 ---
 
 <!doctype html>
@@ -68,6 +114,12 @@ const schemaData = {
 
     <!-- Schema.org JSON-LD Structured Data -->
     <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+    {faqSchemaData && (
+      <script type="application/ld+json" set:html={JSON.stringify(faqSchemaData)} />
+    )}
+    {breadcrumbSchemaData && (
+      <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchemaData)} />
+    )}
 
     <!-- Geist and Geist Mono font CDN -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
@@ -78,7 +130,11 @@ const schemaData = {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@500;600;700;800&family=Dancing+Script:wght@600;700&family=Noto+Serif+Devanagari:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   </head>
-  <body class="min-h-screen bg-canvas text-ink antialiased">
-    <slot />
+  <body class="min-h-screen bg-canvas text-ink antialiased flex flex-col">
+    {!hideNavFooter && <SiteHeader activePath={Astro.url.pathname} />}
+    <div class="flex-1">
+      <slot />
+    </div>
+    {!hideNavFooter && <SiteFooter />}
   </body>
 </html>
