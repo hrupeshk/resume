@@ -43,6 +43,7 @@ import BiodataShareModal from '../modals/BiodataShareModal';
 
 interface ResumeBuilderProps {
   category: DocumentCategory;
+  initialTemplateId?: string;
 }
 
 const categoryLabels: Record<string, string> = {
@@ -52,7 +53,7 @@ const categoryLabels: Record<string, string> = {
   marriage_biodata: 'Marriage Biodata',
 };
 
-export default function ResumeBuilder({ category }: ResumeBuilderProps) {
+export default function ResumeBuilder({ category, initialTemplateId }: ResumeBuilderProps) {
   const isBio = category === 'marriage_biodata';
 
   const builderSteps: StepItem[] = isBio
@@ -76,11 +77,40 @@ export default function ResumeBuilder({ category }: ResumeBuilderProps) {
   // Initialize state from localStorage if available, or fall back to default
   const [doc, setDoc] = useState<DocumentData>(() => {
     const saved = loadSavedDocument(category);
-    if (saved && saved.category === category) {
-      return saved;
+    const initialDoc = saved && saved.category === category ? saved : getInitialDocument(category);
+
+    // Check for explicit template parameter from prop or URL query parameter
+    let targetTemplateId = initialTemplateId;
+    if (typeof window !== 'undefined' && !targetTemplateId) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlTemplate = urlParams.get('template');
+      if (urlTemplate) {
+        targetTemplateId = urlTemplate;
+      }
     }
-    return getInitialDocument(category);
+
+    if (targetTemplateId && getTemplateById(category, targetTemplateId)) {
+      return { ...initialDoc, templateId: targetTemplateId };
+    }
+    return initialDoc;
   });
+
+  // Synchronize template if URL query parameter ?template=... or initialTemplateId is provided
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedTemplate = initialTemplateId || urlParams.get('template');
+    if (requestedTemplate && getTemplateById(category, requestedTemplate)) {
+      setDoc((prev) => {
+        if (prev.templateId !== requestedTemplate) {
+          const updated = { ...prev, templateId: requestedTemplate };
+          saveDocument(updated);
+          return updated;
+        }
+        return prev;
+      });
+    }
+  }, [category, initialTemplateId]);
 
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving'>('saved');

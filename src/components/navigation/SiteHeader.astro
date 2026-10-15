@@ -11,6 +11,24 @@ const navLinks = [
   { href: '/marriage-biodata', label: 'Marriage Biodata', badge: 'Traditional' },
   { href: '/non-tech-resume', label: 'Corporate & MBA' },
 ];
+
+// Dynamically route the "Build Now" button to match the current category page
+let builderHref = '/build/tech_resume';
+let buttonLabel = 'Build Resume Now';
+
+if (activePath.includes('private-job') || activePath.includes('private_job_resume')) {
+  builderHref = '/build/private_job_resume';
+  buttonLabel = 'Build Private Job CV';
+} else if (activePath.includes('marriage-biodata') || activePath.includes('marriage_biodata')) {
+  builderHref = '/build/marriage_biodata';
+  buttonLabel = 'Build Biodata Now';
+} else if (activePath.includes('non-tech-resume') || activePath.includes('non_tech_resume')) {
+  builderHref = '/build/non_tech_resume';
+  buttonLabel = 'Build Executive Resume';
+} else if (activePath.includes('tech-resume') || activePath.includes('tech_resume')) {
+  builderHref = '/build/tech_resume';
+  buttonLabel = 'Build Tech Resume';
+}
 ---
 
 <header class="sticky top-0 z-40 w-full border-b border-hairline bg-canvas/80 backdrop-blur-md transition-colors">
@@ -68,10 +86,10 @@ const navLinks = [
       </div>
 
       <a
-        href="/build/tech_resume"
+        href={builderHref}
         class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-sm bg-primary text-on-primary text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs cursor-pointer"
       >
-        <span>Build Resume Now</span>
+        <span>{buttonLabel}</span>
         <span aria-hidden="true">→</span>
       </a>
     </div>

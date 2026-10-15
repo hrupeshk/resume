@@ -34,8 +34,9 @@ const pageMeta = metadata[category] || {
   title: 'Free Resume & Biodata Builder — 100% Free, No Login',
   description: 'Build professional resumes and Indian marriage biodata for free. No login required, unlimited downloads.',
 };
+const initialTemplateId = Astro.url.searchParams.get('template') || undefined;
 ---
 
 <Layout title={pageMeta.title} description={pageMeta.description} hideNavFooter={true}>
-  <ResumeBuilder client:load category={category} />
+  <ResumeBuilder client:load category={category} initialTemplateId={initialTemplateId} />
 </Layout>
