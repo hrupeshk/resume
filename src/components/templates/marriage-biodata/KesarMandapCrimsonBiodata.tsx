@@ -1,19 +1,26 @@
 import React from 'react';
 import type { BiodataDocument } from '../../../lib/schema';
+import { t, translateValue, getScriptFontFamily, isRTL } from '../../../lib/translations';
 
 interface KesarMandapCrimsonBiodataProps {
   data: BiodataDocument;
   spacingDensity?: 'compact' | 'balanced' | 'spacious';
   fontSizeScale?: number;
+  language?: string;
 }
 
 export default function KesarMandapCrimsonBiodata({
   data,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
+  language,
 }: KesarMandapCrimsonBiodataProps) {
   const { personalInfo, sections } = data;
   const { education, occupation, family, horoscope, contact, partnerPreferences, achievements, hobbies } = sections || {};
+
+  const lang = (data.language || language || 'en') as any;
+  const rtl = isRTL(lang);
+  const fontFamily = getScriptFontFamily(lang, 'serif');
 
   // Strict empty section omission guards
   const hasPersonalDetails = Boolean(
@@ -133,9 +140,11 @@ export default function KesarMandapCrimsonBiodata({
 
   return (
     <div
-      className={`kesar-mandap-crimson-biodata w-full h-full bg-[#fffdf9] text-[#2c1316] relative box-border font-serif ${config.outerPadding} flex flex-col justify-between`}
+      dir={rtl ? 'rtl' : 'ltr'}
+      data-lang={lang}
+      className={`kesar-mandap-crimson-biodata w-full h-full bg-[#fffdf9] text-[#2c1316] relative box-border font-serif ${config.outerPadding} flex flex-col justify-between indic-text`}
       style={{
-        fontFamily: "'Playfair Display', Georgia, serif",
+        fontFamily: fontFamily || "'Playfair Display', Georgia, serif",
         // @ts-ignore
         '--fs': scale,
       }}
@@ -235,7 +244,7 @@ export default function KesarMandapCrimsonBiodata({
                     className="text-lg sm:text-2xl font-bold text-[#821319] tracking-wide uppercase leading-tight"
                     style={{ fontFamily: "'Cinzel', serif" }}
                   >
-                    {personalInfo.fullName || 'Candidate Name'}
+                    {personalInfo.fullName || t('candidateNameFallback', lang)}
                   </h1>
 
                   {occupation?.designation ? (
@@ -246,7 +255,7 @@ export default function KesarMandapCrimsonBiodata({
                     <div className="flex items-center justify-center gap-2 mt-0.5">
                       <span className="h-[1px] w-6 bg-[#d97706]/60" />
                       <span className="text-[10px] uppercase tracking-[0.25em] text-[#b45309] font-semibold">
-                        पवित्र विवाह पत्रिका • Matrimonial Profile
+                        {t('sacredMatrimonialProfile', lang)}
                       </span>
                       <span className="h-[1px] w-6 bg-[#d97706]/60" />
                     </div>
@@ -266,7 +275,7 @@ export default function KesarMandapCrimsonBiodata({
                       <div className={`w-full ${config.photoMaxW} aspect-[4/5] rounded-xs p-1 border-2 border-[#d97706] bg-white shadow-2xs ring-2 ring-[#821319]/20`}>
                         <img
                           src={personalInfo.photoUrl}
-                          alt={personalInfo.fullName || 'Candidate'}
+                          alt={personalInfo.fullName || t('candidateNameFallback', lang)}
                           className="w-full h-full object-cover rounded-xs"
                         />
                       </div>
@@ -283,42 +292,42 @@ export default function KesarMandapCrimsonBiodata({
                             className={`${config.headingSize} font-bold tracking-wider text-[#821319] uppercase`}
                             style={{ fontFamily: "'Cinzel', serif" }}
                           >
-                            Kundali & Horoscope
+                            {t('kundaliHoroscope', lang)}
                           </h2>
                         </div>
                         <span className="text-[9px] uppercase px-1 py-0.2 rounded-xs bg-[#821319]/10 text-[#821319] font-bold">
-                          ग्रह-नक्षत्र
+                          {t('horoscopeDetails', lang)}
                         </span>
                       </div>
 
                       <div className="space-y-0.5 text-[10.5px]">
                         {horoscope.gothra && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#9a3412] text-[9.5px]">Gotra:</span>
+                            <span className="text-[#9a3412] text-[9.5px]">{t('gothra', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">{horoscope.gothra}</span>
                           </div>
                         )}
                         {horoscope.rashi && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#9a3412] text-[9.5px]">Rashi:</span>
+                            <span className="text-[#9a3412] text-[9.5px]">{t('rashi', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">{horoscope.rashi}</span>
                           </div>
                         )}
                         {horoscope.nakshatra && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#9a3412] text-[9.5px]">Nakshatra:</span>
+                            <span className="text-[#9a3412] text-[9.5px]">{t('nakshatra', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">{horoscope.nakshatra}</span>
                           </div>
                         )}
                         {horoscope.manglik && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#9a3412] text-[9.5px]">Manglik:</span>
-                            <span className="font-bold text-[#821319]">{horoscope.manglik}</span>
+                            <span className="text-[#9a3412] text-[9.5px]">{t('manglikStatus', lang)}:</span>
+                            <span className="font-bold text-[#821319]">{translateValue(horoscope.manglik, lang)}</span>
                           </div>
                         )}
                         {horoscope.kuldevta && (
                           <div className="pt-0.5 border-t border-[#f0c88b]/70">
-                            <span className="text-[#9a3412] block text-[9px]">Kuldevta / Devi:</span>
+                            <span className="text-[#9a3412] block text-[9px]">{t('kuldevta', lang)}:</span>
                             <span className="font-semibold text-[#821319] text-[10px]">{horoscope.kuldevta}</span>
                           </div>
                         )}
@@ -335,20 +344,20 @@ export default function KesarMandapCrimsonBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#821319] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Social & Community
+                          {t('socialCommunity', lang)}
                         </h2>
                       </div>
 
                       <div className="space-y-0.5 text-[10.5px]">
                         {personalInfo.religion && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#78350f] font-medium text-[9.5px]">Religion:</span>
-                            <span className="font-semibold text-[#2c1316]">{personalInfo.religion}</span>
+                            <span className="text-[#78350f] font-medium text-[9.5px]">{t('religion', lang)}:</span>
+                            <span className="font-semibold text-[#2c1316]">{translateValue(personalInfo.religion, lang)}</span>
                           </div>
                         )}
                         {personalInfo.caste && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#78350f] font-medium text-[9.5px]">Caste:</span>
+                            <span className="text-[#78350f] font-medium text-[9.5px]">{t('caste', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">
                               {personalInfo.caste}
                               {personalInfo.subCaste ? ` (${personalInfo.subCaste})` : ''}
@@ -357,13 +366,13 @@ export default function KesarMandapCrimsonBiodata({
                         )}
                         {personalInfo.motherTongue && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#78350f] font-medium text-[9.5px]">Mother Tongue:</span>
-                            <span className="font-semibold text-[#2c1316]">{personalInfo.motherTongue}</span>
+                            <span className="text-[#78350f] font-medium text-[9.5px]">{t('motherTongue', lang)}:</span>
+                            <span className="font-semibold text-[#2c1316]">{translateValue(personalInfo.motherTongue, lang)}</span>
                           </div>
                         )}
                         {personalInfo.languagesKnown && (
                           <div className="pt-0.5">
-                            <span className="text-[#78350f] block text-[9px]">Languages:</span>
+                            <span className="text-[#78350f] block text-[9px]">{t('languagesKnown', lang)}:</span>
                             <span className="font-medium text-[#2c1316] text-[10px]">{personalInfo.languagesKnown}</span>
                           </div>
                         )}
@@ -380,32 +389,32 @@ export default function KesarMandapCrimsonBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#821319] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Contact & Residence
+                          {t('contactResidence', lang)}
                         </h2>
                       </div>
 
                       <div className="space-y-0.5 text-[10.5px]">
                         {contact?.referencePhone && (
                           <div>
-                            <span className="text-[#9a3412] block text-[9px]">Contact Phone:</span>
+                            <span className="text-[#9a3412] block text-[9px]">{t('contactPhone', lang)}:</span>
                             <span className="font-bold text-[#821319]">{contact.referencePhone}</span>
                           </div>
                         )}
                         {personalInfo.phone && !contact?.referencePhone?.includes(personalInfo.phone) && (
                           <div>
-                            <span className="text-[#9a3412] block text-[9px]">Direct Phone:</span>
+                            <span className="text-[#9a3412] block text-[9px]">{t('candidatePhone', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">{personalInfo.phone}</span>
                           </div>
                         )}
                         {personalInfo.email && (
                           <div>
-                            <span className="text-[#9a3412] block text-[9px]">Email:</span>
+                            <span className="text-[#9a3412] block text-[9px]">{t('email', lang)}:</span>
                             <span className="font-semibold text-[#2c1316] break-all text-[10px]">{personalInfo.email}</span>
                           </div>
                         )}
                         {contact?.address && (
                           <div>
-                            <span className="text-[#9a3412] block text-[9px]">Residence:</span>
+                            <span className="text-[#9a3412] block text-[9px]">{t('address', lang)}:</span>
                             <span className="font-medium text-[#2c1316] leading-tight text-[10px]">{contact.address}</span>
                           </div>
                         )}
@@ -422,7 +431,7 @@ export default function KesarMandapCrimsonBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#821319] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Hobbies & Interests
+                          {t('hobbiesInterests', lang)}
                         </h2>
                       </div>
                       <div className="flex flex-wrap gap-1 pt-0.5">
@@ -451,50 +460,50 @@ export default function KesarMandapCrimsonBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#821319] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Personal & Physical Details
+                          {t('personalDetails', lang)}
                         </h2>
                       </div>
 
                       <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10.5px]">
                         {personalInfo.dateOfBirth && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">Date of Birth:</span>
+                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">{t('dateOfBirth', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">{personalInfo.dateOfBirth}</span>
                           </div>
                         )}
                         {personalInfo.timeOfBirth && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">Time of Birth:</span>
+                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">{t('timeOfBirth', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">{personalInfo.timeOfBirth}</span>
                           </div>
                         )}
                         {personalInfo.placeOfBirth && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">Place of Birth:</span>
+                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">{t('placeOfBirth', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">{personalInfo.placeOfBirth}</span>
                           </div>
                         )}
                         {personalInfo.height && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">Height:</span>
+                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">{t('height', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">{personalInfo.height}</span>
                           </div>
                         )}
                         {personalInfo.complexion && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">Complexion:</span>
-                            <span className="font-semibold text-[#2c1316]">{personalInfo.complexion}</span>
+                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">{t('complexion', lang)}:</span>
+                            <span className="font-semibold text-[#2c1316]">{translateValue(personalInfo.complexion, lang)}</span>
                           </div>
                         )}
                         {personalInfo.diet && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">Diet:</span>
-                            <span className="font-semibold text-[#2c1316]">{personalInfo.diet}</span>
+                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">{t('diet', lang)}:</span>
+                            <span className="font-semibold text-[#2c1316]">{translateValue(personalInfo.diet, lang)}</span>
                           </div>
                         )}
                         {personalInfo.bloodGroup && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">Blood Group:</span>
+                            <span className="w-24 text-[#78350f] font-medium flex-shrink-0">{t('bloodGroup', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">{personalInfo.bloodGroup}</span>
                           </div>
                         )}
@@ -511,7 +520,7 @@ export default function KesarMandapCrimsonBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#821319] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Education & Profession
+                          {t('educationProfession', lang)}
                         </h2>
                       </div>
 
@@ -519,7 +528,7 @@ export default function KesarMandapCrimsonBiodata({
                         {hasEducation && (
                           <div>
                             <span className="text-[#9a3412] font-medium text-[9.5px] block uppercase tracking-wider mb-0.5">
-                              Academic Qualifications
+                              {t('academicQualifications', lang)}
                             </span>
                             <div className="space-y-0.5 pl-2 border-l-2 border-[#821319]/70">
                               {education
@@ -539,24 +548,24 @@ export default function KesarMandapCrimsonBiodata({
                         {hasOccupation && (
                           <div className="pt-1 border-t border-[#f3d0a2]/70">
                             <span className="text-[#9a3412] font-medium text-[9.5px] block uppercase tracking-wider mb-0.5">
-                              Professional Career
+                              {t('professionalCareer', lang)}
                             </span>
                             <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
                               {occupation.designation && (
                                 <div className="col-span-2 sm:col-span-1">
-                                  <span className="text-[#9a3412] block text-[9px]">Designation:</span>
+                                  <span className="text-[#9a3412] block text-[9px]">{t('designation', lang)}:</span>
                                   <span className="font-semibold text-[#2c1316]">{occupation.designation}</span>
                                 </div>
                               )}
                               {occupation.company && (
                                 <div className="col-span-2 sm:col-span-1">
-                                  <span className="text-[#9a3412] block text-[9px]">Organization:</span>
+                                  <span className="text-[#9a3412] block text-[9px]">{t('organization', lang)}:</span>
                                   <span className="font-semibold text-[#2c1316]">{occupation.company}</span>
                                 </div>
                               )}
                               {occupation.income && (
                                 <div className="col-span-2 pt-0.5">
-                                  <span className="text-[#9a3412] block text-[9px]">Annual Income:</span>
+                                  <span className="text-[#9a3412] block text-[9px]">{t('annualPackage', lang)}:</span>
                                   <span className="font-bold text-[#821319] bg-[#821319]/10 px-1.5 py-0.5 rounded-xs inline-block">
                                     {occupation.income}
                                   </span>
@@ -569,7 +578,7 @@ export default function KesarMandapCrimsonBiodata({
                         {hasAchievements && (
                           <div className="pt-1 border-t border-[#f3d0a2]/70">
                             <span className="text-[#9a3412] font-medium text-[9.5px] block uppercase tracking-wider mb-0.5">
-                              Accolades & Achievements
+                              {t('accoladesAchievements', lang)}
                             </span>
                             <div className="space-y-0.5 pl-2 border-l-2 border-[#d97706]">
                               {achievements
@@ -595,14 +604,14 @@ export default function KesarMandapCrimsonBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#821319] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Family Background
+                          {t('familyBackground', lang)}
                         </h2>
                       </div>
 
                       <div className="space-y-1 text-[11px]">
                         {family.fatherName && (
                           <div className="flex flex-wrap items-baseline gap-1">
-                            <span className="text-[#78350f] font-medium w-24 flex-shrink-0">Father:</span>
+                            <span className="text-[#78350f] font-medium w-24 flex-shrink-0">{t('father', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">
                               {family.fatherName}
                               {family.fatherOccupation && (
@@ -616,7 +625,7 @@ export default function KesarMandapCrimsonBiodata({
 
                         {family.motherName && (
                           <div className="flex flex-wrap items-baseline gap-1">
-                            <span className="text-[#78350f] font-medium w-24 flex-shrink-0">Mother:</span>
+                            <span className="text-[#78350f] font-medium w-24 flex-shrink-0">{t('mother', lang)}:</span>
                             <span className="font-semibold text-[#2c1316]">
                               {family.motherName}
                               {family.motherOccupation && (
@@ -630,7 +639,7 @@ export default function KesarMandapCrimsonBiodata({
 
                         {hasSiblings && (
                           <div className="pt-0.5">
-                            <span className="text-[#78350f] font-medium block text-[9.5px] mb-0.5">Siblings:</span>
+                            <span className="text-[#78350f] font-medium block text-[9.5px] mb-0.5">{t('siblings', lang)}:</span>
                             <div className="space-y-0.5 pl-2 border-l-2 border-[#821319]/70">
                               {family.siblings
                                 .filter((s) => s.name.trim() || s.relation.trim() || s.occupation.trim())
@@ -651,7 +660,7 @@ export default function KesarMandapCrimsonBiodata({
 
                         {hasRelatives && (
                           <div className="pt-0.5">
-                            <span className="text-[#78350f] font-medium block text-[9.5px] mb-0.5">Distinguished Relatives:</span>
+                            <span className="text-[#78350f] font-medium block text-[9.5px] mb-0.5">{t('distinguishedRelatives', lang)}:</span>
                             <div className="space-y-0.5 pl-2 border-l-2 border-[#d97706]">
                               {family.relatives
                                 .filter((r) => r.name.trim() || r.relation.trim() || r.occupation.trim())
@@ -672,7 +681,7 @@ export default function KesarMandapCrimsonBiodata({
 
                         {family.nativePlace && (
                           <div className="pt-0.5 flex items-baseline gap-1">
-                            <span className="text-[#78350f] font-medium w-24 flex-shrink-0">Native Place:</span>
+                            <span className="text-[#78350f] font-medium w-24 flex-shrink-0">{t('nativePlace', lang)}:</span>
                             <span className="font-semibold text-[#2c1316] text-[10.5px]">{family.nativePlace}</span>
                           </div>
                         )}
@@ -689,7 +698,7 @@ export default function KesarMandapCrimsonBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#821319] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Partner Expectations
+                          {t('partnerExpectations', lang)}
                         </h2>
                       </div>
                       <p className="text-[10.5px] text-[#3b191c] leading-relaxed italic bg-white/70 p-1.5 rounded-xs border border-[#f5dfc2]">
@@ -709,7 +718,7 @@ export default function KesarMandapCrimsonBiodata({
                   ॥ शुभम् भवतु ॥ कल्याणमस्तु ॥
                 </div>
                 <div className="text-[9px] uppercase tracking-[0.2em] text-[#b45309] mt-0.5">
-                  May All Auspicious Blessings Abide
+                  {t('mayAllBlessingsAbide', lang)}
                 </div>
               </div>
 

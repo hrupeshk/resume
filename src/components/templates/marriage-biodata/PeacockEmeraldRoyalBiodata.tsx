@@ -1,5 +1,6 @@
 import React from 'react';
 import type { BiodataDocument } from '../../../lib/schema';
+import { t, translateValue, getScriptFontFamily, isRTL } from '../../../lib/translations';
 
 interface PeacockEmeraldRoyalBiodataProps {
   data: BiodataDocument;
@@ -12,6 +13,7 @@ export default function PeacockEmeraldRoyalBiodata({
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: PeacockEmeraldRoyalBiodataProps) {
+  const lang = data.language || 'en';
   const { personalInfo, sections } = data;
   const { education, occupation, family, horoscope, contact, partnerPreferences, achievements, hobbies } = sections || {};
 
@@ -130,12 +132,16 @@ export default function PeacockEmeraldRoyalBiodata({
   }[spacingDensity];
 
   const scale = (fontSizeScale / 100) * config.fontSizeMultiplier;
+  const scriptFont = getScriptFontFamily(lang, 'serif');
+  const rtl = isRTL(lang);
 
   return (
     <div
+      data-lang={lang}
+      dir={rtl ? 'rtl' : 'ltr'}
       className={`peacock-emerald-royal-biodata w-full h-full bg-[#fbf9f4] text-[#1a2620] relative box-border font-serif ${config.outerPadding} flex flex-col justify-between`}
       style={{
-        fontFamily: "'Playfair Display', Georgia, serif",
+        fontFamily: scriptFont,
         // @ts-ignore
         '--fs': scale,
       }}
@@ -208,7 +214,7 @@ export default function PeacockEmeraldRoyalBiodata({
             {/* Main Content Body */}
             <div className="flex-1 flex flex-col justify-between relative z-10">
               
-              {/* Header: Sacred Vedic Invocation & Candidate Crown */}
+              {/* Header: Sacred Vedic Invocation & Candidate Crown (Sanskrit invocations preserved in Sanskrit) */}
               <div>
                 {/* Invocation Bar */}
                 <div className="text-center mb-1">
@@ -238,7 +244,7 @@ export default function PeacockEmeraldRoyalBiodata({
                     className="text-lg sm:text-2xl font-bold text-[#0c3b2e] tracking-wide uppercase leading-tight"
                     style={{ fontFamily: "'Cinzel', serif" }}
                   >
-                    {personalInfo.fullName || 'Candidate Name'}
+                    {personalInfo.fullName || t('candidateNameFallback', lang)}
                   </h1>
 
                   {occupation?.designation ? (
@@ -249,7 +255,7 @@ export default function PeacockEmeraldRoyalBiodata({
                     <div className="flex items-center justify-center gap-2 mt-0.5">
                       <span className="h-[1px] w-6 bg-[#c59b27]/60" />
                       <span className="text-[10px] uppercase tracking-[0.25em] text-[#916b1f] font-semibold">
-                        Royal Matrimonial Biodata
+                        {t('sacredMatrimonialProfile', lang)}
                       </span>
                       <span className="h-[1px] w-6 bg-[#c59b27]/60" />
                     </div>
@@ -269,7 +275,7 @@ export default function PeacockEmeraldRoyalBiodata({
                       <div className={`w-full ${config.photoMaxW} aspect-[4/5] rounded-xs p-1 border-2 border-[#c59b27] bg-white shadow-2xs ring-2 ring-[#0c3b2e]/15`}>
                         <img
                           src={personalInfo.photoUrl}
-                          alt={personalInfo.fullName || 'Candidate'}
+                          alt={personalInfo.fullName || t('candidateNameFallback', lang)}
                           className="w-full h-full object-cover rounded-xs"
                         />
                       </div>
@@ -286,7 +292,7 @@ export default function PeacockEmeraldRoyalBiodata({
                             className={`${config.headingSize} font-bold tracking-wider text-[#0c3b2e] uppercase`}
                             style={{ fontFamily: "'Cinzel', serif" }}
                           >
-                            Kundali / Horoscope
+                            {t('horoscopeDetails', lang)}
                           </h2>
                         </div>
                         <span className="text-[9px] uppercase px-1 py-0.2 rounded-xs bg-[#0c3b2e]/10 text-[#0c3b2e] font-semibold">
@@ -297,31 +303,31 @@ export default function PeacockEmeraldRoyalBiodata({
                       <div className="space-y-0.5 text-[10.5px]">
                         {horoscope.gothra && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#78644b] text-[9.5px]">Gotra:</span>
+                            <span className="text-[#78644b] text-[9.5px]">{t('gothra', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">{horoscope.gothra}</span>
                           </div>
                         )}
                         {horoscope.rashi && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#78644b] text-[9.5px]">Rashi:</span>
+                            <span className="text-[#78644b] text-[9.5px]">{t('rashi', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">{horoscope.rashi}</span>
                           </div>
                         )}
                         {horoscope.nakshatra && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#78644b] text-[9.5px]">Nakshatra:</span>
+                            <span className="text-[#78644b] text-[9.5px]">{t('nakshatra', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">{horoscope.nakshatra}</span>
                           </div>
                         )}
                         {horoscope.manglik && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#78644b] text-[9.5px]">Manglik:</span>
-                            <span className="font-bold text-[#800020]">{horoscope.manglik}</span>
+                            <span className="text-[#78644b] text-[9.5px]">{t('manglikStatus', lang)}:</span>
+                            <span className="font-bold text-[#800020]">{translateValue(horoscope.manglik, lang)}</span>
                           </div>
                         )}
                         {horoscope.kuldevta && (
                           <div className="pt-0.5 border-t border-[#e5d5b5]/70">
-                            <span className="text-[#78644b] block text-[9px]">Kuldevta / Devi:</span>
+                            <span className="text-[#78644b] block text-[9px]">{t('kuldevta', lang)}:</span>
                             <span className="font-semibold text-[#0c3b2e] text-[10px]">{horoscope.kuldevta}</span>
                           </div>
                         )}
@@ -338,20 +344,20 @@ export default function PeacockEmeraldRoyalBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#0c3b2e] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Social & Community
+                          {t('personalParticulars', lang)}
                         </h2>
                       </div>
 
                       <div className="space-y-0.5 text-[10.5px]">
                         {personalInfo.religion && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#6d5b43] font-medium text-[9.5px]">Religion:</span>
+                            <span className="text-[#6d5b43] font-medium text-[9.5px]">{t('religion', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">{personalInfo.religion}</span>
                           </div>
                         )}
                         {personalInfo.caste && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#6d5b43] font-medium text-[9.5px]">Caste:</span>
+                            <span className="text-[#6d5b43] font-medium text-[9.5px]">{t('caste', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">
                               {personalInfo.caste}
                               {personalInfo.subCaste ? ` (${personalInfo.subCaste})` : ''}
@@ -360,13 +366,13 @@ export default function PeacockEmeraldRoyalBiodata({
                         )}
                         {personalInfo.motherTongue && (
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[#6d5b43] font-medium text-[9.5px]">Mother Tongue:</span>
+                            <span className="text-[#6d5b43] font-medium text-[9.5px]">{t('motherTongue', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">{personalInfo.motherTongue}</span>
                           </div>
                         )}
                         {personalInfo.languagesKnown && (
                           <div className="pt-0.5">
-                            <span className="text-[#6d5b43] block text-[9px]">Languages:</span>
+                            <span className="text-[#6d5b43] block text-[9px]">{t('languages', lang)}:</span>
                             <span className="font-medium text-[#1a2620] text-[10px]">{personalInfo.languagesKnown}</span>
                           </div>
                         )}
@@ -383,32 +389,32 @@ export default function PeacockEmeraldRoyalBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#0c3b2e] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Contact Details
+                          {t('contactDetails', lang)}
                         </h2>
                       </div>
 
                       <div className="space-y-0.5 text-[10.5px]">
                         {contact?.referencePhone && (
                           <div>
-                            <span className="text-[#78644b] block text-[9px]">Contact Phone:</span>
+                            <span className="text-[#78644b] block text-[9px]">{t('contactPhone', lang)}:</span>
                             <span className="font-bold text-[#0c3b2e]">{contact.referencePhone}</span>
                           </div>
                         )}
                         {personalInfo.phone && !contact?.referencePhone?.includes(personalInfo.phone) && (
                           <div>
-                            <span className="text-[#78644b] block text-[9px]">Direct Phone:</span>
+                            <span className="text-[#78644b] block text-[9px]">{t('candidatePhone', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">{personalInfo.phone}</span>
                           </div>
                         )}
                         {personalInfo.email && (
                           <div>
-                            <span className="text-[#78644b] block text-[9px]">Email:</span>
+                            <span className="text-[#78644b] block text-[9px]">{t('email', lang)}:</span>
                             <span className="font-semibold text-[#1a2620] break-all text-[10px]">{personalInfo.email}</span>
                           </div>
                         )}
                         {contact?.address && (
                           <div>
-                            <span className="text-[#78644b] block text-[9px]">Residence:</span>
+                            <span className="text-[#78644b] block text-[9px]">{t('address', lang)}:</span>
                             <span className="font-medium text-[#1a2620] leading-tight text-[10px]">{contact.address}</span>
                           </div>
                         )}
@@ -425,7 +431,7 @@ export default function PeacockEmeraldRoyalBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#0c3b2e] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Interests & Hobbies
+                          {t('hobbiesInterests', lang)}
                         </h2>
                       </div>
                       <div className="flex flex-wrap gap-1 pt-0.5">
@@ -454,50 +460,50 @@ export default function PeacockEmeraldRoyalBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#0c3b2e] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Personal & Physical Details
+                          {t('personalDetails', lang)}
                         </h2>
                       </div>
 
                       <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10.5px]">
                         {personalInfo.dateOfBirth && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">Date of Birth:</span>
+                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">{t('dateOfBirth', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">{personalInfo.dateOfBirth}</span>
                           </div>
                         )}
                         {personalInfo.timeOfBirth && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">Time of Birth:</span>
+                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">{t('timeOfBirth', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">{personalInfo.timeOfBirth}</span>
                           </div>
                         )}
                         {personalInfo.placeOfBirth && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">Place of Birth:</span>
+                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">{t('placeOfBirth', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">{personalInfo.placeOfBirth}</span>
                           </div>
                         )}
                         {personalInfo.height && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">Height:</span>
+                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">{t('height', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">{personalInfo.height}</span>
                           </div>
                         )}
                         {personalInfo.complexion && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">Complexion:</span>
-                            <span className="font-semibold text-[#1a2620]">{personalInfo.complexion}</span>
+                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">{t('complexion', lang)}:</span>
+                            <span className="font-semibold text-[#1a2620]">{translateValue(personalInfo.complexion, lang)}</span>
                           </div>
                         )}
                         {personalInfo.diet && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">Diet:</span>
-                            <span className="font-semibold text-[#1a2620]">{personalInfo.diet}</span>
+                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">{t('diet', lang)}:</span>
+                            <span className="font-semibold text-[#1a2620]">{translateValue(personalInfo.diet, lang)}</span>
                           </div>
                         )}
                         {personalInfo.bloodGroup && (
                           <div className="flex items-baseline">
-                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">Blood Group:</span>
+                            <span className="w-24 text-[#6d5b43] font-medium flex-shrink-0">{t('bloodGroup', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">{personalInfo.bloodGroup}</span>
                           </div>
                         )}
@@ -514,7 +520,7 @@ export default function PeacockEmeraldRoyalBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#0c3b2e] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Education & Profession
+                          {t('educationProfession', lang)}
                         </h2>
                       </div>
 
@@ -522,7 +528,7 @@ export default function PeacockEmeraldRoyalBiodata({
                         {hasEducation && (
                           <div>
                             <span className="text-[#78644b] font-medium text-[9.5px] block uppercase tracking-wider mb-0.5">
-                              Academic Qualifications
+                              {t('academicQualifications', lang)}
                             </span>
                             <div className="space-y-0.5 pl-2 border-l-2 border-[#0c3b2e]/60">
                               {education
@@ -542,24 +548,24 @@ export default function PeacockEmeraldRoyalBiodata({
                         {hasOccupation && (
                           <div className="pt-1 border-t border-[#e2d5b8]/70">
                             <span className="text-[#78644b] font-medium text-[9.5px] block uppercase tracking-wider mb-0.5">
-                              Professional Standing
+                              {t('professionalStanding', lang)}
                             </span>
                             <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
                               {occupation.designation && (
                                 <div className="col-span-2 sm:col-span-1">
-                                  <span className="text-[#78644b] block text-[9px]">Designation:</span>
+                                  <span className="text-[#78644b] block text-[9px]">{t('designation', lang)}:</span>
                                   <span className="font-semibold text-[#1a2620]">{occupation.designation}</span>
                                 </div>
                               )}
                               {occupation.company && (
                                 <div className="col-span-2 sm:col-span-1">
-                                  <span className="text-[#78644b] block text-[9px]">Organization:</span>
+                                  <span className="text-[#78644b] block text-[9px]">{t('organization', lang)}:</span>
                                   <span className="font-semibold text-[#1a2620]">{occupation.company}</span>
                                 </div>
                               )}
                               {occupation.income && (
                                 <div className="col-span-2 pt-0.5">
-                                  <span className="text-[#78644b] block text-[9px]">Annual Income:</span>
+                                  <span className="text-[#78644b] block text-[9px]">{t('annualPackage', lang)}:</span>
                                   <span className="font-bold text-[#0c3b2e] bg-[#0c3b2e]/10 px-1.5 py-0.5 rounded-xs inline-block">
                                     {occupation.income}
                                   </span>
@@ -572,7 +578,7 @@ export default function PeacockEmeraldRoyalBiodata({
                         {hasAchievements && (
                           <div className="pt-1 border-t border-[#e2d5b8]/70">
                             <span className="text-[#78644b] font-medium text-[9.5px] block uppercase tracking-wider mb-0.5">
-                              Honors & Accomplishments
+                              {t('honorsAccomplishments', lang)}
                             </span>
                             <div className="space-y-0.5 pl-2 border-l-2 border-[#c59b27]">
                               {achievements
@@ -598,14 +604,14 @@ export default function PeacockEmeraldRoyalBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#0c3b2e] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Family Background
+                          {t('familyBackground', lang)}
                         </h2>
                       </div>
 
                       <div className="space-y-1 text-[11px]">
                         {family.fatherName && (
                           <div className="flex flex-wrap items-baseline gap-1">
-                            <span className="text-[#6d5b43] font-medium w-24 flex-shrink-0">Father:</span>
+                            <span className="text-[#6d5b43] font-medium w-24 flex-shrink-0">{t('father', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">
                               {family.fatherName}
                               {family.fatherOccupation && (
@@ -619,7 +625,7 @@ export default function PeacockEmeraldRoyalBiodata({
 
                         {family.motherName && (
                           <div className="flex flex-wrap items-baseline gap-1">
-                            <span className="text-[#6d5b43] font-medium w-24 flex-shrink-0">Mother:</span>
+                            <span className="text-[#6d5b43] font-medium w-24 flex-shrink-0">{t('mother', lang)}:</span>
                             <span className="font-semibold text-[#1a2620]">
                               {family.motherName}
                               {family.motherOccupation && (
@@ -633,7 +639,7 @@ export default function PeacockEmeraldRoyalBiodata({
 
                         {hasSiblings && (
                           <div className="pt-0.5">
-                            <span className="text-[#6d5b43] font-medium block text-[9.5px] mb-0.5">Siblings:</span>
+                            <span className="text-[#6d5b43] font-medium block text-[9.5px] mb-0.5">{t('siblings', lang)}:</span>
                             <div className="space-y-0.5 pl-2 border-l-2 border-[#0c3b2e]/60">
                               {family.siblings
                                 .filter((s) => s.name.trim() || s.relation.trim() || s.occupation.trim())
@@ -654,7 +660,7 @@ export default function PeacockEmeraldRoyalBiodata({
 
                         {hasRelatives && (
                           <div className="pt-0.5">
-                            <span className="text-[#6d5b43] font-medium block text-[9.5px] mb-0.5">Notable Relatives:</span>
+                            <span className="text-[#6d5b43] font-medium block text-[9.5px] mb-0.5">{t('notableRelatives', lang)}:</span>
                             <div className="space-y-0.5 pl-2 border-l-2 border-[#c59b27]">
                               {family.relatives
                                 .filter((r) => r.name.trim() || r.relation.trim() || r.occupation.trim())
@@ -675,7 +681,7 @@ export default function PeacockEmeraldRoyalBiodata({
 
                         {family.nativePlace && (
                           <div className="pt-0.5 flex items-baseline gap-1">
-                            <span className="text-[#6d5b43] font-medium w-24 flex-shrink-0">Native Place:</span>
+                            <span className="text-[#6d5b43] font-medium w-24 flex-shrink-0">{t('nativePlace', lang)}:</span>
                             <span className="font-semibold text-[#1a2620] text-[10.5px]">{family.nativePlace}</span>
                           </div>
                         )}
@@ -692,7 +698,7 @@ export default function PeacockEmeraldRoyalBiodata({
                           className={`${config.headingSize} font-bold tracking-wider text-[#0c3b2e] uppercase`}
                           style={{ fontFamily: "'Cinzel', serif" }}
                         >
-                          Partner Expectations
+                          {t('partnerExpectations', lang)}
                         </h2>
                       </div>
                       <p className="text-[10.5px] text-[#2c3d33] leading-relaxed italic bg-white/70 p-1.5 rounded-xs border border-[#ede2cd]">
@@ -712,7 +718,7 @@ export default function PeacockEmeraldRoyalBiodata({
                   ॥ परस्परं भावयन्तः श्रेयः परमवाप्स्यथ ॥
                 </div>
                 <div className="text-[9px] uppercase tracking-[0.2em] text-[#916b1f] mt-0.5">
-                  May Auspicious Harmony Prevail
+                  {t('mayHarmonyPrevail', lang)}
                 </div>
               </div>
 

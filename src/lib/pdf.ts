@@ -11,13 +11,36 @@ export function exportToPdf(filename?: string): void {
     document.title = filename;
   }
 
-  // Trigger browser print dialog (where user can Save as PDF)
-  window.print();
+  // Ensure DOM is strictly in light theme before printing so Chromium's print preview engine
+  // never paints a dark background tile or margin on any paper size
+  const wasDark = document.documentElement.classList.contains('dark');
+  if (wasDark) {
+    document.documentElement.classList.remove('dark');
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.style.colorScheme = 'light';
+  }
 
-  // Restore title
-  if (filename) {
-    setTimeout(() => {
+  const restoreTheme = () => {
+    if (wasDark) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.style.colorScheme = 'dark';
+    }
+    if (filename) {
       document.title = originalTitle;
-    }, 1000);
+    }
+    window.removeEventListener('afterprint', restoreTheme);
+  };
+
+  window.addEventListener('afterprint', restoreTheme);
+
+  try {
+    // Trigger browser print dialog (where user can Save as PDF)
+    window.print();
+  } finally {
+    // Fallback restoration in case afterprint fired immediately or browser blocked
+    setTimeout(() => {
+      restoreTheme();
+    }, 150);
   }
 }

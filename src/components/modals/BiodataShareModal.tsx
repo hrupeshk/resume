@@ -138,7 +138,7 @@ export default function BiodataShareModal({
       className="no-print print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/70 backdrop-blur-xs animate-in fade-in duration-200"
     >
       <div
-        className="bg-white rounded-lg shadow-2xl border border-neutral-200 w-full max-w-lg overflow-hidden flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200"
+        className="bg-white dark:bg-neutral-900 text-ink rounded-lg shadow-2xl border border-neutral-200 dark:border-neutral-800 w-full max-w-lg overflow-hidden flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200"
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-[#800020] to-[#5a0016] text-white px-5 py-4 flex items-center justify-between">
@@ -164,14 +164,14 @@ export default function BiodataShareModal({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-neutral-200 bg-neutral-50 text-xs font-medium">
+        <div className="flex border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 text-xs font-medium">
           <button
             type="button"
             onClick={() => setActiveTab('whatsapp')}
             className={`flex-1 py-2.5 px-3 text-center border-b-2 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === 'whatsapp'
-                ? 'border-[#25D366] text-[#128C7E] font-bold bg-white'
-                : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                ? 'border-[#25D366] text-[#128C7E] dark:text-emerald-400 font-bold bg-white dark:bg-neutral-900'
+                : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
             <span>💬</span>
@@ -182,8 +182,8 @@ export default function BiodataShareModal({
             onClick={() => setActiveTab('download')}
             className={`flex-1 py-2.5 px-3 text-center border-b-2 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === 'download'
-                ? 'border-[#800020] text-[#800020] font-bold bg-white'
-                : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                ? 'border-[#800020] text-[#800020] dark:text-rose-400 font-bold bg-white dark:bg-neutral-900'
+                : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
             <span>📥</span>
@@ -194,8 +194,8 @@ export default function BiodataShareModal({
             onClick={() => setActiveTab('summary')}
             className={`flex-1 py-2.5 px-3 text-center border-b-2 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === 'summary'
-                ? 'border-[#800020] text-[#800020] font-bold bg-white'
-                : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                ? 'border-[#800020] text-[#800020] dark:text-rose-400 font-bold bg-white dark:bg-neutral-900'
+                : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
             <span>📋</span>
@@ -206,8 +206,8 @@ export default function BiodataShareModal({
             onClick={() => setActiveTab('qrcode')}
             className={`flex-1 py-2.5 px-3 text-center border-b-2 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === 'qrcode'
-                ? 'border-[#800020] text-[#800020] font-bold bg-white'
-                : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                ? 'border-[#800020] text-[#800020] dark:text-rose-400 font-bold bg-white dark:bg-neutral-900'
+                : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
             <span>📱</span>
@@ -311,17 +311,17 @@ export default function BiodataShareModal({
                 </div>
 
                 {/* PDF Card */}
-                <div className="p-4 rounded-md border border-neutral-200 bg-neutral-50 flex flex-col justify-between space-y-3">
+                <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 flex flex-col justify-between space-y-3">
                   <div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-neutral-800 uppercase tracking-wide">
+                      <span className="text-xs font-bold text-neutral-800 dark:text-neutral-200 uppercase tracking-wide">
                         Standard PDF
                       </span>
-                      <span className="text-[10px] bg-neutral-200 text-neutral-700 font-bold px-1.5 py-0.5 rounded-xs font-mono">
+                      <span className="text-[10px] bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-bold px-1.5 py-0.5 rounded-xs font-mono">
                         Print Ready
                       </span>
                     </div>
-                    <p className="text-xs text-neutral-600 mt-2 leading-relaxed">
+                    <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-2 leading-relaxed">
                       Standard A4 print document with selectable text. Ideal for color printing on bond or parchment paper.
                     </p>
                   </div>
@@ -329,7 +329,7 @@ export default function BiodataShareModal({
                   <button
                     type="button"
                     onClick={handleDownloadPdf}
-                    className="w-full py-2.5 px-3 rounded-sm bg-neutral-900 hover:bg-neutral-800 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+                    className="w-full py-2.5 px-3 rounded-sm bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-neutral-950 font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -339,7 +339,7 @@ export default function BiodataShareModal({
                 </div>
               </div>
 
-              <div className="bg-neutral-100 p-3 rounded text-[11px] text-neutral-600 flex items-center gap-2">
+              <div className="bg-neutral-100 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-3 rounded text-[11px] text-neutral-600 dark:text-neutral-400 flex items-center gap-2">
                 <span>💡</span>
                 <span>
                   Tip: For WhatsApp, sending the <strong>PNG Image</strong> is easiest because relatives can view it directly in the chat without opening a PDF viewer!
@@ -352,7 +352,7 @@ export default function BiodataShareModal({
           {activeTab === 'summary' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-neutral-700">
+                <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
                   Preformatted Text Summary:
                 </span>
                 <div className="flex items-center gap-2">
@@ -390,7 +390,7 @@ export default function BiodataShareModal({
           {/* TAB 4: SMARTPHONE QR CODE & LINK */}
           {activeTab === 'qrcode' && (
             <div className="space-y-4 text-center">
-              <div className="flex flex-col items-center justify-center p-4 bg-neutral-50 rounded-md border border-neutral-200">
+              <div className="flex flex-col items-center justify-center p-4 bg-neutral-50 dark:bg-neutral-950 rounded-md border border-neutral-200 dark:border-neutral-800">
                 {qrCodeUrl ? (
                   <img
                     src={qrCodeUrl}
@@ -398,11 +398,11 @@ export default function BiodataShareModal({
                     className="w-40 h-40 border border-neutral-300 rounded shadow-xs p-1 bg-white"
                   />
                 ) : (
-                  <div className="w-40 h-40 flex items-center justify-center bg-neutral-200 rounded text-neutral-500 text-xs">
+                  <div className="w-40 h-40 flex items-center justify-center bg-neutral-200 dark:bg-neutral-800 rounded text-neutral-500 text-xs">
                     Generating QR…
                   </div>
                 )}
-                <span className="text-xs font-semibold text-neutral-800 mt-3">
+                <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 mt-3">
                   Scan with your phone camera
                 </span>
                 <p className="text-[11px] text-neutral-500 max-w-xs mt-1">
@@ -414,14 +414,14 @@ export default function BiodataShareModal({
                 <button
                   type="button"
                   onClick={handleCopyLink}
-                  className="px-3 py-1.5 rounded border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-700 text-xs font-medium transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-xs font-medium transition-colors cursor-pointer"
                 >
                   {copiedLink ? '✓ Link Copied' : '🔗 Copy Link'}
                 </button>
                 <button
                   type="button"
                   onClick={handleEmailShare}
-                  className="px-3 py-1.5 rounded border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-700 text-xs font-medium transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-xs font-medium transition-colors cursor-pointer"
                 >
                   ✉️ Share via Email
                 </button>
@@ -431,12 +431,12 @@ export default function BiodataShareModal({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-neutral-200 bg-neutral-50 px-5 py-3 flex items-center justify-between text-xs text-neutral-500">
+        <div className="border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 px-5 py-3 flex items-center justify-between text-xs text-neutral-500">
           <span>100% Free & Unlimited • No Login Required</span>
           <button
             type="button"
             onClick={onClose}
-            className="px-3 py-1.5 rounded border border-neutral-300 bg-white text-neutral-800 font-medium hover:bg-neutral-100 transition-colors cursor-pointer"
+            className="px-3 py-1.5 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 font-medium hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
           >
             Done
           </button>

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { BiodataDocument } from '../../../lib/schema';
+import { t, translateValue, getScriptFontFamily, isRTL } from '../../../lib/translations';
 
 interface TraditionalMaroonBiodataProps {
   data: BiodataDocument;
@@ -12,6 +13,7 @@ export default function TraditionalMaroonBiodata({
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: TraditionalMaroonBiodataProps) {
+  const lang = data.language || 'en';
   const { personalInfo, sections } = data;
   const { education, occupation, family, horoscope, contact, partnerPreferences, achievements, hobbies } = sections || {};
 
@@ -103,12 +105,16 @@ export default function TraditionalMaroonBiodata({
   }[spacingDensity];
 
   const scale = (fontSizeScale / 100) * config.fontSizeMultiplier;
+  const scriptFont = getScriptFontFamily(lang, 'serif');
+  const rtl = isRTL(lang);
 
   return (
     <div
+      data-lang={lang}
+      dir={rtl ? 'rtl' : 'ltr'}
       className="traditional-maroon-biodata w-full h-full bg-[#fdfbf7] text-[#2c1810] relative box-border font-serif p-3 sm:p-3.5 flex flex-col justify-between"
       style={{
-        fontFamily: "'Playfair Display', Georgia, serif",
+        fontFamily: scriptFont,
         // @ts-ignore
         '--fs': scale,
       }}
@@ -149,7 +155,7 @@ export default function TraditionalMaroonBiodata({
 
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col justify-between">
-            {/* Top Invocation & Candidate Header */}
+            {/* Top Invocation & Candidate Header (Sanskrit Invocations preserved verbatim in Sanskrit) */}
             <div>
               <div className="text-center mb-1.5">
                 <div
@@ -172,7 +178,7 @@ export default function TraditionalMaroonBiodata({
                     <div className="p-0.5 rounded-sm border-2 border-[#c59b27] bg-[#fff] shadow-2xs">
                       <img
                         src={personalInfo.photoUrl}
-                        alt={personalInfo.fullName || 'Candidate'}
+                        alt={personalInfo.fullName || t('candidateNameFallback', lang)}
                         className={`${config.photoSize} object-cover rounded-xs`}
                       />
                     </div>
@@ -183,10 +189,10 @@ export default function TraditionalMaroonBiodata({
                   className="text-lg sm:text-2xl font-bold text-[#800020] tracking-wide uppercase leading-tight"
                   style={{ fontFamily: "'Cinzel', 'Playfair Display', serif" }}
                 >
-                  {personalInfo.fullName || 'Candidate Name'}
+                  {personalInfo.fullName || t('candidateNameFallback', lang)}
                 </h1>
                 <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#b8860b] font-medium mt-0.5">
-                  Marriage Biodata
+                  {t('marriageBiodata', lang)}
                 </div>
               </div>
             </div>
@@ -201,62 +207,62 @@ export default function TraditionalMaroonBiodata({
                     className={`${config.headingSize} font-bold tracking-wider text-[#800020] uppercase`}
                     style={{ fontFamily: "'Cinzel', serif" }}
                   >
-                    Personal & Physical Details
+                    {t('personalDetails', lang)}
                   </h2>
                 </div>
 
                 <div className={`grid grid-cols-2 gap-x-5 ${config.gridGapY} text-xs`}>
                   {personalInfo.dateOfBirth && (
                     <div className="flex items-baseline">
-                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Date of Birth:</span>
+                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('dateOfBirth', lang)}:</span>
                       <span className="text-[#1a1a1a] font-semibold">{personalInfo.dateOfBirth}</span>
                     </div>
                   )}
                   {personalInfo.timeOfBirth && (
                     <div className="flex items-baseline">
-                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Time of Birth:</span>
+                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('timeOfBirth', lang)}:</span>
                       <span className="text-[#1a1a1a] font-semibold">{personalInfo.timeOfBirth}</span>
                     </div>
                   )}
                   {personalInfo.placeOfBirth && (
                     <div className="flex items-baseline">
-                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Place of Birth:</span>
+                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('placeOfBirth', lang)}:</span>
                       <span className="text-[#1a1a1a] font-semibold">{personalInfo.placeOfBirth}</span>
                     </div>
                   )}
                   {personalInfo.height && (
                     <div className="flex items-baseline">
-                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Height:</span>
+                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('height', lang)}:</span>
                       <span className="text-[#1a1a1a] font-semibold">{personalInfo.height}</span>
                     </div>
                   )}
                   {personalInfo.complexion && (
                     <div className="flex items-baseline">
-                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Complexion:</span>
-                      <span className="text-[#1a1a1a] font-semibold">{personalInfo.complexion}</span>
+                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('complexion', lang)}:</span>
+                      <span className="text-[#1a1a1a] font-semibold">{translateValue(personalInfo.complexion, lang)}</span>
                     </div>
                   )}
                   {personalInfo.diet && (
                     <div className="flex items-baseline">
-                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Diet:</span>
-                      <span className="text-[#1a1a1a] font-semibold">{personalInfo.diet}</span>
+                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('diet', lang)}:</span>
+                      <span className="text-[#1a1a1a] font-semibold">{translateValue(personalInfo.diet, lang)}</span>
                     </div>
                   )}
                   {personalInfo.bloodGroup && (
                     <div className="flex items-baseline">
-                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Blood Group:</span>
+                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('bloodGroup', lang)}:</span>
                       <span className="text-[#1a1a1a] font-semibold">{personalInfo.bloodGroup}</span>
                     </div>
                   )}
                   {personalInfo.religion && (
                     <div className="flex items-baseline">
-                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Religion:</span>
+                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('religion', lang)}:</span>
                       <span className="text-[#1a1a1a] font-semibold">{personalInfo.religion}</span>
                     </div>
                   )}
                   {personalInfo.caste && (
                     <div className="flex items-baseline">
-                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Caste:</span>
+                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('caste', lang)}:</span>
                       <span className="text-[#1a1a1a] font-semibold">
                         {personalInfo.caste}
                         {personalInfo.subCaste ? ` (${personalInfo.subCaste})` : ''}
@@ -265,13 +271,13 @@ export default function TraditionalMaroonBiodata({
                   )}
                   {personalInfo.motherTongue && (
                     <div className="flex items-baseline">
-                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Mother Tongue:</span>
+                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('motherTongue', lang)}:</span>
                       <span className="text-[#1a1a1a] font-semibold">{personalInfo.motherTongue}</span>
                     </div>
                   )}
                   {personalInfo.languagesKnown && (
                     <div className="flex items-baseline col-span-2">
-                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Languages:</span>
+                      <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('languages', lang)}:</span>
                       <span className="text-[#1a1a1a] font-semibold">{personalInfo.languagesKnown}</span>
                     </div>
                   )}
@@ -287,38 +293,38 @@ export default function TraditionalMaroonBiodata({
                       className={`${config.headingSize} font-bold tracking-wider text-[#800020] uppercase`}
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                      Horoscope / Astro Details
+                      {t('horoscopeDetails', lang)}
                     </h2>
                   </div>
 
                   <div className={`grid grid-cols-2 gap-x-5 ${config.gridGapY} text-xs bg-[#fbf7ee] ${config.boxPadding} rounded-sm border border-[#e8d8b5]`}>
                     {horoscope.gothra && (
                       <div className="flex items-baseline">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Gothra:</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('gothra', lang)}:</span>
                         <span className="text-[#1a1a1a] font-semibold">{horoscope.gothra}</span>
                       </div>
                     )}
                     {horoscope.rashi && (
                       <div className="flex items-baseline">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Rashi (Sign):</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('rashi', lang)}:</span>
                         <span className="text-[#1a1a1a] font-semibold">{horoscope.rashi}</span>
                       </div>
                     )}
                     {horoscope.nakshatra && (
                       <div className="flex items-baseline">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Nakshatra:</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('nakshatra', lang)}:</span>
                         <span className="text-[#1a1a1a] font-semibold">{horoscope.nakshatra}</span>
                       </div>
                     )}
                     {horoscope.manglik && (
                       <div className="flex items-baseline">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Manglik Status:</span>
-                        <span className="text-[#800020] font-semibold">{horoscope.manglik}</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('manglikStatus', lang)}:</span>
+                        <span className="text-[#800020] font-semibold">{translateValue(horoscope.manglik, lang)}</span>
                       </div>
                     )}
                     {horoscope.kuldevta && (
                       <div className="flex items-baseline col-span-2 pt-0.5">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Kuldevta / Devi:</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('kuldevta', lang)}:</span>
                         <span className="text-[#800020] font-semibold">{horoscope.kuldevta}</span>
                       </div>
                     )}
@@ -335,14 +341,14 @@ export default function TraditionalMaroonBiodata({
                       className={`${config.headingSize} font-bold tracking-wider text-[#800020] uppercase`}
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                      Education & Profession
+                      {t('educationProfession', lang)}
                     </h2>
                   </div>
 
                   <div className="space-y-1 text-xs">
                     {hasEducation && (
                       <div>
-                        <span className="text-[#7a5830] font-medium block mb-0.5">Qualifications:</span>
+                        <span className="text-[#7a5830] font-medium block mb-0.5">{t('qualifications', lang)}:</span>
                         <div className="space-y-0.5 pl-2.5 border-l-2 border-[#c59b27]">
                           {education
                             .filter((e) => e.degree.trim() || e.institution.trim())
@@ -362,19 +368,19 @@ export default function TraditionalMaroonBiodata({
                       <div className={`grid grid-cols-2 gap-x-5 ${config.gridGapY} pt-0.5`}>
                         {occupation.designation && (
                           <div className="flex items-baseline">
-                            <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Designation:</span>
+                            <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('designation', lang)}:</span>
                             <span className="text-[#1a1a1a] font-semibold">{occupation.designation}</span>
                           </div>
                         )}
                         {occupation.company && (
                           <div className="flex items-baseline">
-                            <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Organization:</span>
+                            <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('organization', lang)}:</span>
                             <span className="text-[#1a1a1a] font-semibold">{occupation.company}</span>
                           </div>
                         )}
                         {occupation.income && (
                           <div className="flex items-baseline col-span-2">
-                            <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Annual Package:</span>
+                            <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('annualPackage', lang)}:</span>
                             <span className="text-[#800020] font-semibold">{occupation.income}</span>
                           </div>
                         )}
@@ -383,7 +389,7 @@ export default function TraditionalMaroonBiodata({
 
                     {hasAchievements && (
                       <div className="pt-0.5">
-                        <span className="text-[#7a5830] font-medium block mb-0.5">Honors & Achievements:</span>
+                        <span className="text-[#7a5830] font-medium block mb-0.5">{t('honorsAchievements', lang)}:</span>
                         <div className="space-y-0.5 pl-2.5 border-l-2 border-[#c59b27]">
                           {achievements
                             .filter((a) => a.trim().length > 0)
@@ -408,14 +414,14 @@ export default function TraditionalMaroonBiodata({
                       className={`${config.headingSize} font-bold tracking-wider text-[#800020] uppercase`}
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                      Family Background
+                      {t('familyBackground', lang)}
                     </h2>
                   </div>
 
                   <div className="space-y-0.5 text-xs">
                     {family.fatherName && (
                       <div className="flex items-baseline">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Father&apos;s Name:</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('fatherName', lang)}:</span>
                         <span className="text-[#1a1a1a] font-semibold">
                           {family.fatherName}
                           {family.fatherOccupation && (
@@ -427,7 +433,7 @@ export default function TraditionalMaroonBiodata({
 
                     {family.motherName && (
                       <div className="flex items-baseline">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Mother&apos;s Name:</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('motherName', lang)}:</span>
                         <span className="text-[#1a1a1a] font-semibold">
                           {family.motherName}
                           {family.motherOccupation && (
@@ -439,7 +445,7 @@ export default function TraditionalMaroonBiodata({
 
                     {hasSiblings && (
                       <div>
-                        <span className="text-[#7a5830] font-medium block mb-0.5">Siblings:</span>
+                        <span className="text-[#7a5830] font-medium block mb-0.5">{t('siblings', lang)}:</span>
                         <div className="space-y-0.5 pl-2.5 border-l-2 border-[#c59b27]">
                           {family.siblings
                             .filter((s) => s.name.trim() || s.relation.trim() || s.occupation.trim())
@@ -460,7 +466,7 @@ export default function TraditionalMaroonBiodata({
 
                     {hasRelatives && (
                       <div>
-                        <span className="text-[#7a5830] font-medium block mb-0.5">Notable Relatives:</span>
+                        <span className="text-[#7a5830] font-medium block mb-0.5">{t('notableRelatives', lang)}:</span>
                         <div className="space-y-0.5 pl-2.5 border-l-2 border-[#c59b27]">
                           {family.relatives
                             .filter((r) => r.name.trim() || r.relation.trim() || r.occupation.trim())
@@ -481,7 +487,7 @@ export default function TraditionalMaroonBiodata({
 
                     {family.nativePlace && (
                       <div className="flex items-baseline pt-0.5">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Native Place:</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('nativePlace', lang)}:</span>
                         <span className="text-[#1a1a1a] font-semibold">{family.nativePlace}</span>
                       </div>
                     )}
@@ -498,7 +504,7 @@ export default function TraditionalMaroonBiodata({
                       className={`${config.headingSize} font-bold tracking-wider text-[#800020] uppercase`}
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                      Partner Expectations
+                      {t('partnerExpectations', lang)}
                     </h2>
                   </div>
                   <p className={`text-xs text-[#333] leading-relaxed italic bg-[#fbf7ee] ${config.boxPadding} rounded-sm border border-[#e8d8b5]`}>
@@ -516,7 +522,7 @@ export default function TraditionalMaroonBiodata({
                       className={`${config.headingSize} font-bold tracking-wider text-[#800020] uppercase`}
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                      Hobbies & Interests
+                      {t('hobbiesInterests', lang)}
                     </h2>
                   </div>
                   <div className="flex flex-wrap gap-1.5 text-xs">
@@ -541,32 +547,32 @@ export default function TraditionalMaroonBiodata({
                       className={`${config.headingSize} font-bold tracking-wider text-[#800020] uppercase`}
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                      Contact & Correspondence
+                      {t('contactDetails', lang)}
                     </h2>
                   </div>
 
                   <div className={`grid grid-cols-1 sm:grid-cols-2 gap-x-5 ${config.gridGapY} text-xs`}>
                     {contact?.address && (
                       <div className="sm:col-span-2 flex items-baseline">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Address:</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('address', lang)}:</span>
                         <span className="text-[#1a1a1a] font-semibold">{contact.address}</span>
                       </div>
                     )}
                     {contact?.referencePhone && (
                       <div className="flex items-baseline">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Contact Phone:</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('contactPhone', lang)}:</span>
                         <span className="text-[#800020] font-bold">{contact.referencePhone}</span>
                       </div>
                     )}
                     {personalInfo.phone && !contact?.referencePhone?.includes(personalInfo.phone) && (
                       <div className="flex items-baseline">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Candidate Phone:</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('candidatePhone', lang)}:</span>
                         <span className="text-[#1a1a1a] font-semibold">{personalInfo.phone}</span>
                       </div>
                     )}
                     {personalInfo.email && (
                       <div className="flex items-baseline">
-                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">Email:</span>
+                        <span className="w-26 text-[#7a5830] font-medium flex-shrink-0">{t('email', lang)}:</span>
                         <span className="text-[#1a1a1a] font-semibold">{personalInfo.email}</span>
                       </div>
                     )}
@@ -575,7 +581,7 @@ export default function TraditionalMaroonBiodata({
               )}
             </div>
 
-            {/* Auspicious Closing Shanti Blessing anchored at bottom inside border */}
+            {/* Auspicious Closing Shanti Blessing anchored at bottom inside border (Sanskrit shloka stays in Sanskrit) */}
             <div className="text-center pt-1.5 border-t border-[#c59b27]/40 mt-1">
               <div
                 className="text-[#800020] text-xs font-medium tracking-widest"

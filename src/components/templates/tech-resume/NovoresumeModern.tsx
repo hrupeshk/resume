@@ -1,6 +1,13 @@
 import React from 'react';
 import type { ResumeDocument } from '../../../lib/schema';
 import { compressAndResizeImage } from '../../../lib/imageUtils';
+import {
+  t,
+  translateValue,
+  getDefaultDeclarationText,
+  getScriptFontFamily,
+  isRTL,
+} from '../../../lib/translations';
 
 interface TemplateProps {
   data: ResumeDocument;
@@ -24,6 +31,19 @@ export default function NovoresumeModern({
   fontSizeScale = 100,
 }: TemplateProps) {
   const { personalInfo, summary, sections } = data;
+  const lang = data.language || 'en';
+  const rtl = isRTL(lang);
+  const scriptFont = getScriptFontFamily(lang, 'sans');
+
+  const hasPersonalDetails = Boolean(
+    personalInfo.fatherName?.trim() ||
+    personalInfo.dateOfBirth?.trim() ||
+    personalInfo.gender?.trim() ||
+    personalInfo.maritalStatus?.trim() ||
+    personalInfo.nationality?.trim() ||
+    personalInfo.permanentAddress?.trim() ||
+    personalInfo.languagesKnown?.trim()
+  );
 
   const validExperience = (sections.experience || []).filter(
     (e) => e.company.trim() || e.role.trim()
@@ -184,10 +204,10 @@ export default function NovoresumeModern({
     validVolunteer.length > 0 ||
     (!placeEducationOnLeft && validEducation.length > 0) ||
     validLanguages.length > 0 ||
-    validReferences.length > 0
+    validReferences.length > 0 ||
+    hasPersonalDetails
   );
 
-  // -------------------------------------------------------------------------
   // -------------------------------------------------------------------------
   // Reusable Section Renderers (Novorésumé Signature Styling)
   // -------------------------------------------------------------------------
@@ -195,7 +215,7 @@ export default function NovoresumeModern({
   const fs = (base: number) => `${(base * scale).toFixed(1)}px`;
 
   const renderSectionHeader = (title: string) => (
-    <div className={`flex items-center gap-2 ${config.sectionHeaderMargin} border-b border-[#f1f5f9]`}>
+    <div className={`flex items-center gap-2 ${config.sectionHeaderMargin} border-b border-[#cbd5e1]`}>
       <span
         className="w-2.5 h-3.5 bg-[#008c9e] rounded-[1px] inline-block flex-shrink-0"
         style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
@@ -213,7 +233,8 @@ export default function NovoresumeModern({
   const renderExperience = () =>
     validExperience.length > 0 && (
       <section data-section-type="experience">
-        {!data.continuingSections?.includes('experience') && renderSectionHeader('Work Experience')}
+        {!data.continuingSections?.includes('experience') &&
+          renderSectionHeader(t('workExperience', lang))}
         <div className={config.entryGap}>
           {validExperience.map((exp, idx) => {
             const bullets = (exp.bullets || []).filter((b) => b.trim().length > 0);
@@ -248,7 +269,7 @@ export default function NovoresumeModern({
                       className="font-semibold text-[#008c9e] italic block mb-0.5"
                       style={{ fontSize: fs(9.5) }}
                     >
-                      Responsibilities
+                      {t('responsibilities', lang)}
                     </span>
                     <ul
                       className="list-disc list-outside pl-5 space-y-0.5 text-[#475569] leading-relaxed"
@@ -270,7 +291,8 @@ export default function NovoresumeModern({
   const renderProjects = () =>
     validProjects.length > 0 && (
       <section data-section-type="projects">
-        {!data.continuingSections?.includes('projects') && renderSectionHeader('Personal Projects')}
+        {!data.continuingSections?.includes('projects') &&
+          renderSectionHeader(t('personalProjects', lang))}
         <div className={config.entryGap}>
           {validProjects.map((proj, idx) => {
             const rawLines = proj.description.includes('\n')
@@ -343,7 +365,8 @@ export default function NovoresumeModern({
   const renderSkills = () =>
     validSkills.length > 0 && (
       <section data-section-type="skills">
-        {!data.continuingSections?.includes('skills') && renderSectionHeader('Skills')}
+        {!data.continuingSections?.includes('skills') &&
+          renderSectionHeader(t('skills', lang))}
         <div className="flex flex-wrap gap-1.5">
           {validSkills.map((skill, idx) => (
             <span
@@ -370,7 +393,8 @@ export default function NovoresumeModern({
   const renderCertifications = () =>
     validCertifications.length > 0 && (
       <section data-section-type="certifications">
-        {!data.continuingSections?.includes('certifications') && renderSectionHeader('Certificates')}
+        {!data.continuingSections?.includes('certifications') &&
+          renderSectionHeader(t('certifications', lang))}
         <div className={config.entryGap}>
           {validCertifications.map((cert, idx) => (
             <div
@@ -406,7 +430,8 @@ export default function NovoresumeModern({
   const renderAwards = () =>
     validAwards.length > 0 && (
       <section data-section-type="awards">
-        {!data.continuingSections?.includes('awards') && renderSectionHeader('Key Honors & Awards')}
+        {!data.continuingSections?.includes('awards') &&
+          renderSectionHeader(t('awards', lang))}
         <div className={config.entryGap}>
           {validAwards.map((award, idx) => (
             <div
@@ -447,7 +472,8 @@ export default function NovoresumeModern({
   const renderVolunteer = () =>
     validVolunteer.length > 0 && (
       <section data-section-type="volunteer">
-        {!data.continuingSections?.includes('volunteer') && renderSectionHeader('Leadership & Community Engagements')}
+        {!data.continuingSections?.includes('volunteer') &&
+          renderSectionHeader(t('volunteer', lang))}
         <div className={config.entryGap}>
           {validVolunteer.map((v, idx) => (
             <div
@@ -496,7 +522,8 @@ export default function NovoresumeModern({
   const renderEducation = () =>
     validEducation.length > 0 && (
       <section data-section-type="education">
-        {!data.continuingSections?.includes('education') && renderSectionHeader('Education')}
+        {!data.continuingSections?.includes('education') &&
+          renderSectionHeader(t('education', lang))}
         <div className={config.entryGap}>
           {validEducation.map((edu, idx) => (
             <div
@@ -526,7 +553,7 @@ export default function NovoresumeModern({
               </div>
               {edu.grade && (
                 <div className="text-[#64748b]" style={{ fontSize: fs(9) }}>
-                  Grade: {edu.grade}
+                  {t('gradePercentage', lang)}: {edu.grade}
                 </div>
               )}
             </div>
@@ -538,22 +565,25 @@ export default function NovoresumeModern({
   const renderLanguages = () =>
     validLanguages.length > 0 && (
       <section data-section-type="languages">
-        {!data.continuingSections?.includes('languages') && renderSectionHeader('Languages')}
+        {!data.continuingSections?.includes('languages') &&
+          renderSectionHeader(t('languages', lang))}
         <div className="space-y-0.5">
-          {validLanguages.map((lang, idx) => (
+          {validLanguages.map((langItem, idx) => (
             <div
               key={idx}
               data-entry-item="true"
               className="leading-tight"
               style={{ fontSize: fs(10) }}
             >
-              <span className="font-bold text-[#1e293b] block">{lang.language}</span>
-              <span
-                className="text-[#0d9488] font-medium italic"
-                style={{ fontSize: fs(9.5) }}
-              >
-                {lang.proficiency}
-              </span>
+              <span className="font-bold text-[#1e293b] block">{langItem.language}</span>
+              {langItem.proficiency && (
+                <span
+                  className="text-[#0d9488] font-medium italic"
+                  style={{ fontSize: fs(9.5) }}
+                >
+                  {translateValue(langItem.proficiency, lang)}
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -563,7 +593,8 @@ export default function NovoresumeModern({
   const renderReferences = () =>
     validReferences.length > 0 && (
       <section data-section-type="references">
-        {!data.continuingSections?.includes('references') && renderSectionHeader('References')}
+        {!data.continuingSections?.includes('references') &&
+          renderSectionHeader(t('references', lang))}
         <div className={config.entryGap}>
           {validReferences.map((ref, idx) => (
             <div
@@ -597,11 +628,73 @@ export default function NovoresumeModern({
       </section>
     );
 
+  const renderPersonalDetails = () =>
+    hasPersonalDetails && (
+      <section data-section-type="personalDetails">
+        {!data.continuingSections?.includes('personalDetails' as any) &&
+          renderSectionHeader(t('personalDetailsCv', lang))}
+        <div
+          className="space-y-1 text-[#334155] bg-slate-50/80 p-2 rounded-[3px] border border-slate-200/60"
+          style={{ fontSize: fs(9.5) }}
+        >
+          {personalInfo.fatherName && (
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[#64748b] font-medium flex-shrink-0">{t('fatherName', lang)}:</span>
+              <span className="font-semibold text-[#1e293b]">{personalInfo.fatherName}</span>
+            </div>
+          )}
+          {personalInfo.dateOfBirth && (
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[#64748b] font-medium flex-shrink-0">{t('dateOfBirth', lang)}:</span>
+              <span className="font-semibold text-[#1e293b]">{personalInfo.dateOfBirth}</span>
+            </div>
+          )}
+          {personalInfo.gender && (
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[#64748b] font-medium flex-shrink-0">{t('gender', lang)}:</span>
+              <span className="font-semibold text-[#1e293b]">{translateValue(personalInfo.gender, lang)}</span>
+            </div>
+          )}
+          {personalInfo.maritalStatus && (
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[#64748b] font-medium flex-shrink-0">{t('maritalStatus', lang)}:</span>
+              <span className="font-semibold text-[#1e293b]">{translateValue(personalInfo.maritalStatus, lang)}</span>
+            </div>
+          )}
+          {personalInfo.nationality && (
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[#64748b] font-medium flex-shrink-0">{t('nationality', lang)}:</span>
+              <span className="font-semibold text-[#1e293b]">{translateValue(personalInfo.nationality, lang)}</span>
+            </div>
+          )}
+          {personalInfo.languagesKnown && (
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[#64748b] font-medium flex-shrink-0">{t('languagesKnown', lang)}:</span>
+              <span className="font-semibold text-[#1e293b]">{personalInfo.languagesKnown}</span>
+            </div>
+          )}
+          {personalInfo.permanentAddress && (
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[#64748b] font-medium flex-shrink-0">{t('permanentAddress', lang)}:</span>
+              <span className="font-semibold text-[#1e293b]">{personalInfo.permanentAddress}</span>
+            </div>
+          )}
+        </div>
+      </section>
+    );
+
   return (
     <article
-      className="single-page-resume bg-white text-[#1e293b] min-h-0 font-sans shadow-none leading-normal selection:bg-teal-100 flex flex-col w-full"
+      dir={rtl ? 'rtl' : 'ltr'}
+      data-lang={lang}
+      className={`single-page-resume bg-white text-[#1e293b] min-h-0 font-sans shadow-none leading-normal selection:bg-teal-100 flex flex-col w-full ${
+        lang !== 'en' ? 'indic-text' : ''
+      }`}
       style={{
-        fontFamily: 'var(--font-sans, "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
+        fontFamily:
+          lang !== 'en'
+            ? scriptFont
+            : 'var(--font-sans, "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)',
         boxSizing: 'border-box',
         padding: config.padding,
         width: '100%',
@@ -809,6 +902,7 @@ export default function NovoresumeModern({
             {renderVolunteer()}
             {!placeEducationOnLeft && renderEducation()}
             {renderLanguages()}
+            {renderPersonalDetails()}
             {renderReferences()}
           </div>
         ) : (
@@ -831,6 +925,7 @@ export default function NovoresumeModern({
                 {renderVolunteer()}
                 {!placeEducationOnLeft && renderEducation()}
                 {renderLanguages()}
+                {renderPersonalDetails()}
                 {renderReferences()}
               </div>
             )}
@@ -854,17 +949,17 @@ export default function NovoresumeModern({
               className="font-bold uppercase tracking-wider text-[#2e3842]"
               style={{ fontSize: fs(11) }}
             >
-              Declaration
+              {t('declaration', lang)}
             </h2>
           </div>
           <p className="text-[#475569] italic leading-relaxed mb-2 text-justify">
-            &ldquo;{sections.declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
+            &ldquo;{sections.declaration?.text || getDefaultDeclarationText(lang)}&rdquo;
           </p>
 
           <div className="flex justify-between items-end">
             <div className="space-y-0.5 text-[#334155]">
-              <div><strong>Place:</strong> {sections.declaration?.place || '_______________'}</div>
-              <div><strong>Date:</strong> {sections.declaration?.date || '_______________'}</div>
+              <div><strong>{t('place', lang)}</strong> {sections.declaration?.place || '_______________'}</div>
+              <div><strong>{t('date', lang)}</strong> {sections.declaration?.date || '_______________'}</div>
             </div>
 
             <div className="text-center">
@@ -885,7 +980,7 @@ export default function NovoresumeModern({
               )}
               <div className="w-32 border-b border-neutral-700 mb-0.5 mx-auto" />
               <span className="text-[10px] text-neutral-500 font-medium">
-                (Signature)
+                {t('signature', lang)}
               </span>
             </div>
           </div>

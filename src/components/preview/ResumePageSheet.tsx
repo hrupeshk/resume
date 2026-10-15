@@ -28,7 +28,7 @@ export default function ResumePageSheet({
   return (
     <div
       data-resume-sheet={pageNumber}
-      className={`resume-page-sheet-wrapper flex flex-col items-center mb-7 last:mb-0 print:!mb-0 print:!p-0 print:!block ${
+      className={`resume-page-sheet-wrapper flex flex-col items-center mb-7 last:mb-0 print:!mb-0 print:!p-0 print:!block print:!bg-white ${
         isLastPage ? 'print:!break-after-auto' : 'print:!break-after-page'
       }`}
     >
@@ -58,7 +58,7 @@ export default function ResumePageSheet({
           '--page-bottom-margin': noPadding ? '0px' : `${PAGE_BOTTOM_MARGIN_PX}px`,
           '--page-side-margin': noPadding ? '0px' : `${PAGE_SIDE_MARGIN_PX}px`,
         } as React.CSSProperties}
-        className="resume-page-sheet bg-white rounded-xs border border-neutral-300/80 shadow-md text-neutral-900 print:!rounded-none print:!border-none print:!shadow-none print:!w-[210mm] print:!h-[297mm] print:!min-h-[297mm] print:!max-h-[297mm] print:!overflow-hidden print:!box-border print:!m-0"
+        className="resume-page-sheet bg-white rounded-xs border border-neutral-300/80 shadow-md text-neutral-900 print:!bg-white print:!rounded-none print:!border-none print:!shadow-none print:!w-[210mm] print:!h-[297mm] print:!min-h-[297mm] print:!max-h-[297mm] print:!overflow-hidden print:!box-border print:!m-0"
       >
         {/* Printable Content Area with exact width */}
         <div

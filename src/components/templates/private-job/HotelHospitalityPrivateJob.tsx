@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ResumeDocument } from '../../../lib/schema';
+import { t, translateValue, getScriptFontFamily, isRTL, getDefaultDeclarationText } from '../../../lib/translations';
 
 interface HotelHospitalityPrivateJobProps {
   data: ResumeDocument;
@@ -7,6 +8,7 @@ interface HotelHospitalityPrivateJobProps {
   totalPages?: number;
   spacingDensity?: 'compact' | 'balanced' | 'spacious';
   fontSizeScale?: number;
+  language?: string;
 }
 
 export default function HotelHospitalityPrivateJob({
@@ -15,9 +17,19 @@ export default function HotelHospitalityPrivateJob({
   totalPages = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
+  language,
 }: HotelHospitalityPrivateJobProps) {
   const { personalInfo, summary, sections } = data;
   const { education, experience, skills, references, declaration } = sections || {};
+
+  const lang = (data.language || language || 'en') as any;
+  const rtl = isRTL(lang);
+  const fontFamily = getScriptFontFamily(lang, 'sans');
+
+  const defaultEnglishDeclaration = getDefaultDeclarationText('en');
+  const declarationText = !declaration?.text || declaration.text === defaultEnglishDeclaration
+    ? getDefaultDeclarationText(lang)
+    : declaration.text;
 
   const hasSummary = Boolean(summary && summary.trim().length > 0);
   const hasExperience = Boolean(
@@ -66,8 +78,11 @@ export default function HotelHospitalityPrivateJob({
 
   return (
     <article
-      className="hotel-hospitality-private-job w-full min-h-0 p-0 bg-white text-neutral-900 font-sans flex box-border overflow-hidden"
+      dir={rtl ? 'rtl' : 'ltr'}
+      data-lang={lang}
+      className="hotel-hospitality-private-job w-full min-h-0 p-0 bg-white text-neutral-900 font-sans flex box-border overflow-hidden indic-text"
       style={{
+        fontFamily: fontFamily || 'inherit',
         fontSize: `${12 * scale}px`,
         lineHeight: 1.45,
       }}
@@ -90,7 +105,7 @@ export default function HotelHospitalityPrivateJob({
               <div className="w-22 h-22 sm:w-26 sm:h-26 rounded-full ring-4 ring-white/20 border-2 border-white/60 overflow-hidden shadow-md bg-[#16385c] flex items-center justify-center p-0.5">
                 <img
                   src={personalInfo.photoUrl}
-                  alt={personalInfo.fullName || 'Candidate'}
+                  alt={personalInfo.fullName || t('candidateNameFallback', lang)}
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>
@@ -100,24 +115,24 @@ export default function HotelHospitalityPrivateJob({
           {/* Contact Details */}
           <div>
             <h3 className="text-[10.5px] font-bold uppercase tracking-wider text-amber-300 border-b border-white/15 pb-0.5 mb-1.5">
-              Contact Information
+              {t('contactDetails', lang)}
             </h3>
             <div className="space-y-1 text-[10.5px] text-slate-200">
               {personalInfo.phone && (
                 <div>
-                  <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">Mobile</span>
+                  <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">{t('mobile', lang)}</span>
                   <span className="font-medium text-white">{personalInfo.phone}</span>
                 </div>
               )}
               {personalInfo.email && (
                 <div>
-                  <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">Email</span>
+                  <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">{t('email', lang)}</span>
                   <span className="break-all font-medium text-white">{personalInfo.email}</span>
                 </div>
               )}
               {personalInfo.location && (
                 <div>
-                  <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">Current Location</span>
+                  <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">{t('location', lang)}</span>
                   <span className="font-medium text-white">{personalInfo.location}</span>
                 </div>
               )}
@@ -127,7 +142,7 @@ export default function HotelHospitalityPrivateJob({
                   .map((link, idx) => (
                     <div key={idx}>
                       <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">
-                        {link.label || 'Web Link'}
+                        {link.label || 'Link'}
                       </span>
                       <a
                         href={link.url}
@@ -146,48 +161,48 @@ export default function HotelHospitalityPrivateJob({
           {hasPersonalDetails && (
             <div>
               <h3 className="text-[10.5px] font-bold uppercase tracking-wider text-amber-300 border-b border-white/15 pb-0.5 mb-1.5">
-                Personal Particulars
+                {t('personalDetailsCv', lang)}
               </h3>
               <div className="space-y-1 text-[10.5px] text-slate-200">
                 {personalInfo.fatherName && (
                   <div>
-                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">Father&apos;s Name</span>
+                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">{t('fatherName', lang)}</span>
                     <span className="text-white font-medium">{personalInfo.fatherName}</span>
                   </div>
                 )}
                 {personalInfo.dateOfBirth && (
                   <div>
-                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">Date of Birth</span>
+                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">{t('dateOfBirth', lang)}</span>
                     <span className="text-white font-medium">{personalInfo.dateOfBirth}</span>
                   </div>
                 )}
                 {personalInfo.gender && (
                   <div>
-                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">Gender</span>
-                    <span className="text-white font-medium">{personalInfo.gender}</span>
+                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">{t('gender', lang)}</span>
+                    <span className="text-white font-medium">{translateValue(personalInfo.gender, lang)}</span>
                   </div>
                 )}
                 {personalInfo.maritalStatus && (
                   <div>
-                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">Marital Status</span>
-                    <span className="text-white font-medium">{personalInfo.maritalStatus}</span>
+                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">{t('maritalStatus', lang)}</span>
+                    <span className="text-white font-medium">{translateValue(personalInfo.maritalStatus, lang)}</span>
                   </div>
                 )}
                 {personalInfo.nationality && (
                   <div>
-                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">Nationality</span>
-                    <span className="text-white font-medium">{personalInfo.nationality}</span>
+                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">{t('nationality', lang)}</span>
+                    <span className="text-white font-medium">{translateValue(personalInfo.nationality, lang)}</span>
                   </div>
                 )}
                 {personalInfo.languagesKnown && (
                   <div>
-                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">Languages Known</span>
+                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">{t('languagesKnown', lang)}</span>
                     <span className="text-white font-medium">{personalInfo.languagesKnown}</span>
                   </div>
                 )}
                 {personalInfo.permanentAddress && (
                   <div>
-                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">Permanent Address</span>
+                    <span className="text-slate-400 block text-[8.5px] uppercase font-bold tracking-wider">{t('permanentAddress', lang)}</span>
                     <span className="leading-snug block text-slate-200 text-[10px]">{personalInfo.permanentAddress}</span>
                   </div>
                 )}
@@ -199,7 +214,7 @@ export default function HotelHospitalityPrivateJob({
           {hasSkills && (
             <div>
               <h3 className="text-[10.5px] font-bold uppercase tracking-wider text-amber-300 border-b border-white/15 pb-0.5 mb-1.5">
-                Core Hospitality Skills
+                {t('keySkills', lang)}
               </h3>
               <div className="space-y-0.5 text-[10.5px] text-slate-200">
                 {skills
@@ -223,7 +238,7 @@ export default function HotelHospitalityPrivateJob({
           {pageNumber === 1 && (
             <header className="border-b-2 border-neutral-900 pb-2">
               <h1 className="text-2xl font-black text-neutral-950 uppercase tracking-tight">
-                {personalInfo.fullName || 'Candidate Name'}
+                {personalInfo.fullName || t('candidateNameFallback', lang)}
               </h1>
               {personalInfo.title && (
                 <p className="text-xs font-bold text-neutral-700 uppercase tracking-wider mt-0.5">
@@ -237,7 +252,7 @@ export default function HotelHospitalityPrivateJob({
           {hasSummary && (
             <section data-section-type="summary" className={sp.sectionMb}>
               <h2 className={`text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b-2 border-neutral-800 pb-0.5 ${sp.headingMb}`}>
-                Professional Objective
+                {t('careerObjective', lang)}
               </h2>
               <p className="text-xs text-neutral-700 leading-relaxed text-justify">
                 {summary}
@@ -249,7 +264,7 @@ export default function HotelHospitalityPrivateJob({
           {hasExperience && (
             <section data-section-type="experience" className={sp.sectionMb}>
               <h2 className={`text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b-2 border-neutral-800 pb-0.5 ${sp.headingMb}`}>
-                Work Experience
+                {t('workExperience', lang)}
               </h2>
               <div className={sp.itemSpace}>
                 {experience
@@ -284,7 +299,7 @@ export default function HotelHospitalityPrivateJob({
           {hasEducation && (
             <section data-section-type="education" className={sp.sectionMb}>
               <h2 className={`text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b-2 border-neutral-800 pb-0.5 ${sp.headingMb}`}>
-                Education & Training
+                {t('educationalQualifications', lang)}
               </h2>
               <div className="space-y-1.5">
                 {education
@@ -314,7 +329,7 @@ export default function HotelHospitalityPrivateJob({
                         <span className="text-neutral-600 text-[10.5px]">{edu.institution}</span>
                         {edu.grade && (
                           <span className="text-neutral-800 font-medium text-[10px]">
-                            {edu.grade}
+                            {translateValue(edu.grade, lang)}
                           </span>
                         )}
                       </div>
@@ -328,7 +343,7 @@ export default function HotelHospitalityPrivateJob({
           {hasReferences && (
             <section data-section-type="references" className={sp.sectionMb}>
               <h2 className={`text-xs font-extrabold uppercase tracking-wider text-neutral-900 border-b-2 border-neutral-800 pb-0.5 ${sp.headingMb}`}>
-                Professional References
+                {t('references', lang)}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                 {references
@@ -339,7 +354,7 @@ export default function HotelHospitalityPrivateJob({
                       <div className="text-[10.5px] text-neutral-600">
                         {ref.role} {ref.company ? `(${ref.company})` : ''}
                       </div>
-                      {ref.phone && <div className="text-[10px] text-neutral-700">Mob: {ref.phone}</div>}
+                      {ref.phone && <div className="text-[10px] text-neutral-700">{t('mob', lang)} {ref.phone}</div>}
                     </div>
                   ))}
               </div>
@@ -351,12 +366,12 @@ export default function HotelHospitalityPrivateJob({
         {showDeclaration && (
           <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-2 text-[10.5px]">
             <p className="text-neutral-600 italic leading-relaxed mb-2 text-[11px]">
-              &ldquo;{declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
+              &ldquo;{declarationText}&rdquo;
             </p>
             <div className="flex justify-between items-end">
               <div className="space-y-0.5 text-neutral-700">
-                <div><strong>Place:</strong> {declaration?.place || '_________'}</div>
-                <div><strong>Date:</strong> {declaration?.date || '_________'}</div>
+                <div><strong>{t('place', lang)}</strong> {declaration?.place || '_________'}</div>
+                <div><strong>{t('date', lang)}</strong> {declaration?.date || '_________'}</div>
               </div>
 
               <div className="text-center">
@@ -377,7 +392,7 @@ export default function HotelHospitalityPrivateJob({
                 )}
                 <div className="w-32 border-b border-neutral-800 mb-0.5 mx-auto" />
                 <span className="text-[9.5px] text-neutral-500 font-medium">
-                  (Signature)
+                  {t('signature', lang)}
                 </span>
               </div>
             </div>

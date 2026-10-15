@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  {/* Primary Homepage */}
+  <!-- Primary Homepage -->
   <url>
     <loc>https://resume.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
-  {/* High-Impact SEO Category Landing Pages */}
+  <!-- High-Impact SEO Category Landing Pages -->
   <url>
     <loc>https://resume.com/tech-resume</loc>
     <changefreq>weekly</changefreq>
@@ -29,7 +29,7 @@
     <priority>0.9</priority>
   </url>
 
-  {/* Live Interactive Builder App Routes */}
+  <!-- Live Interactive Builder App Routes -->
   <url>
     <loc>https://resume.com/build/tech_resume</loc>
     <changefreq>weekly</changefreq>
@@ -51,7 +51,7 @@
     <priority>0.8</priority>
   </url>
 
-  {/* Trust & Policy Pages */}
+  <!-- Trust & Policy Pages -->
   <url>
     <loc>https://resume.com/about</loc>
     <changefreq>monthly</changefreq>

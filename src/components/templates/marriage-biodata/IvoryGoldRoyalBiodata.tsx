@@ -1,5 +1,6 @@
 import React from 'react';
 import type { BiodataDocument } from '../../../lib/schema';
+import { t, translateValue, getScriptFontFamily, isRTL } from '../../../lib/translations';
 
 interface IvoryGoldRoyalBiodataProps {
   data: BiodataDocument;
@@ -12,6 +13,7 @@ export default function IvoryGoldRoyalBiodata({
   spacingDensity = 'balanced',
   fontSizeScale = 100,
 }: IvoryGoldRoyalBiodataProps) {
+  const lang = data.language || 'en';
   const { personalInfo, sections } = data;
   const { education, occupation, family, horoscope, contact, partnerPreferences, achievements, hobbies } = sections || {};
 
@@ -110,12 +112,16 @@ export default function IvoryGoldRoyalBiodata({
   }[spacingDensity];
 
   const scale = (fontSizeScale / 100) * config.fontSizeMultiplier;
+  const scriptFont = getScriptFontFamily(lang, 'serif');
+  const rtl = isRTL(lang);
 
   return (
     <div
+      data-lang={lang}
+      dir={rtl ? 'rtl' : 'ltr'}
       className="ivory-gold-royal-biodata w-full h-full bg-[#fdfaf5] text-[#1c1917] relative box-border font-serif p-3 sm:p-3.5 flex flex-col justify-between"
       style={{
-        fontFamily: "'Playfair Display', Georgia, serif",
+        fontFamily: scriptFont,
         // @ts-ignore
         '--fs': scale,
       }}
@@ -131,7 +137,7 @@ export default function IvoryGoldRoyalBiodata({
         {/* Content Wrapper */}
         <div className="flex-1 flex flex-col justify-between">
           <div>
-            {/* Top Auspicious Invocation Banner (shubh removed) */}
+            {/* Top Auspicious Invocation Banner (Sanskrit Invocation preserved verbatim in Sanskrit) */}
             <div className="text-center mb-1.5 pb-1 border-b border-[#e5d5b5]">
               <div
                 className="text-[#966b1e] text-xs sm:text-sm font-semibold tracking-widest uppercase"
@@ -140,7 +146,7 @@ export default function IvoryGoldRoyalBiodata({
                 ॥ ॐ श्री गणेशाय नमः ॥
               </div>
               <div className="text-[9.5px] tracking-[0.25em] uppercase text-[#a37d36] font-medium mt-0.5">
-                Matrimonial Profile
+                {t('matrimonialProfile', lang)}
               </div>
             </div>
 
@@ -150,7 +156,7 @@ export default function IvoryGoldRoyalBiodata({
                 className="text-lg sm:text-2xl font-bold text-[#1c1917] tracking-wider uppercase leading-tight"
                 style={{ fontFamily: "'Cinzel', serif" }}
               >
-                {personalInfo.fullName || 'Candidate Name'}
+                {personalInfo.fullName || t('candidateNameFallback', lang)}
               </h1>
               {occupation?.designation && (
                 <div className="text-[11px] text-[#8c6b2d] font-medium mt-0.5">
@@ -171,7 +177,7 @@ export default function IvoryGoldRoyalBiodata({
                   <div className={`w-full ${config.photoMaxW} aspect-[4/5] rounded-sm p-0.5 border border-[#d4af37] bg-white shadow-2xs`}>
                     <img
                       src={personalInfo.photoUrl}
-                      alt={personalInfo.fullName || 'Candidate'}
+                      alt={personalInfo.fullName || t('candidateNameFallback', lang)}
                       className="w-full h-full object-cover rounded-xs"
                     />
                   </div>
@@ -182,35 +188,35 @@ export default function IvoryGoldRoyalBiodata({
               {hasHoroscope && (
                 <div className={`bg-[#fcf8f0] ${config.cardPadding} rounded-sm border border-[#e8dcc4] space-y-1 text-xs`}>
                   <div className="text-[10px] font-bold tracking-wider text-[#8c6b2d] uppercase border-b border-[#e8dcc4] pb-0.5">
-                    Horoscope Details
+                    {t('horoscopeDetails', lang)}
                   </div>
                   {horoscope.gothra && (
                     <div className="flex justify-between items-baseline text-[10.5px]">
-                      <span className="text-[#666]">Gotra:</span>
+                      <span className="text-[#666]">{t('gothra', lang)}:</span>
                       <span className="font-semibold text-[#1c1917]">{horoscope.gothra}</span>
                     </div>
                   )}
                   {horoscope.rashi && (
                     <div className="flex justify-between items-baseline text-[10.5px]">
-                      <span className="text-[#666]">Rashi:</span>
+                      <span className="text-[#666]">{t('rashi', lang)}:</span>
                       <span className="font-semibold text-[#1c1917]">{horoscope.rashi}</span>
                     </div>
                   )}
                   {horoscope.nakshatra && (
                     <div className="flex justify-between items-baseline text-[10.5px]">
-                      <span className="text-[#666]">Nakshatra:</span>
+                      <span className="text-[#666]">{t('nakshatra', lang)}:</span>
                       <span className="font-semibold text-[#1c1917]">{horoscope.nakshatra}</span>
                     </div>
                   )}
                   {horoscope.manglik && (
                     <div className="flex justify-between items-baseline text-[10.5px]">
-                      <span className="text-[#666]">Manglik:</span>
-                      <span className="font-bold text-[#966b1e]">{horoscope.manglik}</span>
+                      <span className="text-[#666]">{t('manglikStatus', lang)}:</span>
+                      <span className="font-bold text-[#966b1e]">{translateValue(horoscope.manglik, lang)}</span>
                     </div>
                   )}
                   {horoscope.kuldevta && (
                     <div className="pt-0.5 border-t border-[#e8dcc4]/60 text-[10.5px]">
-                      <span className="text-[#666] block text-[9.5px]">Kuldevta / Devi:</span>
+                      <span className="text-[#666] block text-[9.5px]">{t('kuldevta', lang)}:</span>
                       <span className="font-semibold text-[#8c6b2d]">{horoscope.kuldevta}</span>
                     </div>
                   )}
@@ -221,17 +227,17 @@ export default function IvoryGoldRoyalBiodata({
               {hasCulturalIdentity && (
                 <div className={`bg-[#fcf8f0] ${config.cardPadding} rounded-sm border border-[#e8dcc4] space-y-1 text-xs`}>
                   <div className="text-[10px] font-bold tracking-wider text-[#8c6b2d] uppercase border-b border-[#e8dcc4] pb-0.5">
-                    Social & Cultural
+                    {t('personalParticulars', lang)}
                   </div>
                   {personalInfo.religion && (
                     <div className="flex justify-between items-baseline text-[10.5px]">
-                      <span className="text-[#666]">Religion:</span>
+                      <span className="text-[#666]">{t('religion', lang)}:</span>
                       <span className="font-semibold text-[#1c1917]">{personalInfo.religion}</span>
                     </div>
                   )}
                   {personalInfo.caste && (
                     <div className="flex justify-between items-baseline text-[10.5px]">
-                      <span className="text-[#666]">Caste:</span>
+                      <span className="text-[#666]">{t('caste', lang)}:</span>
                       <span className="font-semibold text-[#1c1917]">
                         {personalInfo.caste}
                         {personalInfo.subCaste ? ` (${personalInfo.subCaste})` : ''}
@@ -240,19 +246,19 @@ export default function IvoryGoldRoyalBiodata({
                   )}
                   {personalInfo.bloodGroup && (
                     <div className="flex justify-between items-baseline text-[10.5px]">
-                      <span className="text-[#666]">Blood Group:</span>
+                      <span className="text-[#666]">{t('bloodGroup', lang)}:</span>
                       <span className="font-semibold text-[#1c1917]">{personalInfo.bloodGroup}</span>
                     </div>
                   )}
                   {personalInfo.motherTongue && (
                     <div className="flex justify-between items-baseline text-[10.5px]">
-                      <span className="text-[#666]">Mother Tongue:</span>
+                      <span className="text-[#666]">{t('motherTongue', lang)}:</span>
                       <span className="font-semibold text-[#1c1917]">{personalInfo.motherTongue}</span>
                     </div>
                   )}
                   {personalInfo.languagesKnown && (
                     <div className="text-[10px] pt-0.5">
-                      <span className="text-[#666] block">Languages:</span>
+                      <span className="text-[#666] block">{t('languages', lang)}:</span>
                       <span className="font-medium text-[#1c1917]">{personalInfo.languagesKnown}</span>
                     </div>
                   )}
@@ -263,29 +269,29 @@ export default function IvoryGoldRoyalBiodata({
               {hasContact && (
                 <div className={`bg-[#fcf8f0] ${config.cardPadding} rounded-sm border border-[#e8dcc4] space-y-1 text-xs`}>
                   <div className="text-[10px] font-bold tracking-wider text-[#8c6b2d] uppercase border-b border-[#e8dcc4] pb-0.5">
-                    Contact
+                    {t('contactDetails', lang)}
                   </div>
                   {contact?.referencePhone && (
                     <div>
-                      <span className="text-[9px] text-[#777] block leading-none">Contact Phone:</span>
+                      <span className="text-[9px] text-[#777] block leading-none">{t('contactPhone', lang)}:</span>
                       <span className="font-semibold text-[#1c1917] text-[10.5px]">{contact.referencePhone}</span>
                     </div>
                   )}
                   {personalInfo.phone && !contact?.referencePhone?.includes(personalInfo.phone) && (
                     <div>
-                      <span className="text-[9px] text-[#777] block leading-none">Direct Phone:</span>
+                      <span className="text-[9px] text-[#777] block leading-none">{t('candidatePhone', lang)}:</span>
                       <span className="font-semibold text-[#1c1917] text-[10.5px]">{personalInfo.phone}</span>
                     </div>
                   )}
                   {personalInfo.email && (
                     <div>
-                      <span className="text-[9px] text-[#777] block leading-none">Email:</span>
+                      <span className="text-[9px] text-[#777] block leading-none">{t('email', lang)}:</span>
                       <span className="font-semibold text-[#1c1917] text-[10px] break-all">{personalInfo.email}</span>
                     </div>
                   )}
                   {contact?.address && (
                     <div>
-                      <span className="text-[9px] text-[#777] block leading-none">Residence:</span>
+                      <span className="text-[9px] text-[#777] block leading-none">{t('address', lang)}:</span>
                       <span className="font-medium text-[#1c1917] text-[10px] leading-snug">{contact.address}</span>
                     </div>
                   )}
@@ -296,7 +302,7 @@ export default function IvoryGoldRoyalBiodata({
               {hasHobbies && (
                 <div className={`bg-[#fcf8f0] ${config.cardPadding} rounded-sm border border-[#e8dcc4] space-y-1 text-xs`}>
                   <div className="text-[10px] font-bold tracking-wider text-[#8c6b2d] uppercase border-b border-[#e8dcc4] pb-0.5">
-                    Hobbies & Interests
+                    {t('hobbiesInterests', lang)}
                   </div>
                   <div className="flex flex-wrap gap-1 pt-0.5">
                     {hobbies.map((h, i) => (
@@ -320,45 +326,45 @@ export default function IvoryGoldRoyalBiodata({
                     className="text-xs font-bold tracking-wider text-[#1c1917] uppercase"
                     style={{ fontFamily: "'Cinzel', serif" }}
                   >
-                    Personal Information
+                    {t('personalDetails', lang)}
                   </h2>
                 </div>
 
                 <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs">
                   {personalInfo.dateOfBirth && (
                     <div className="flex items-baseline">
-                      <span className="w-22 text-[#777] flex-shrink-0">DOB:</span>
+                      <span className="w-22 text-[#777] flex-shrink-0">{t('dateOfBirth', lang)}:</span>
                       <span className="font-semibold text-[#1c1917]">{personalInfo.dateOfBirth}</span>
                     </div>
                   )}
                   {personalInfo.timeOfBirth && (
                     <div className="flex items-baseline">
-                      <span className="w-22 text-[#777] flex-shrink-0">Birth Time:</span>
+                      <span className="w-22 text-[#777] flex-shrink-0">{t('timeOfBirth', lang)}:</span>
                       <span className="font-semibold text-[#1c1917]">{personalInfo.timeOfBirth}</span>
                     </div>
                   )}
                   {personalInfo.placeOfBirth && (
                     <div className="flex items-baseline">
-                      <span className="w-22 text-[#777] flex-shrink-0">Birth Place:</span>
+                      <span className="w-22 text-[#777] flex-shrink-0">{t('placeOfBirth', lang)}:</span>
                       <span className="font-semibold text-[#1c1917]">{personalInfo.placeOfBirth}</span>
                     </div>
                   )}
                   {personalInfo.height && (
                     <div className="flex items-baseline">
-                      <span className="w-22 text-[#777] flex-shrink-0">Height:</span>
+                      <span className="w-22 text-[#777] flex-shrink-0">{t('height', lang)}:</span>
                       <span className="font-semibold text-[#1c1917]">{personalInfo.height}</span>
                     </div>
                   )}
                   {personalInfo.complexion && (
                     <div className="flex items-baseline">
-                      <span className="w-22 text-[#777] flex-shrink-0">Complexion:</span>
-                      <span className="font-semibold text-[#1c1917]">{personalInfo.complexion}</span>
+                      <span className="w-22 text-[#777] flex-shrink-0">{t('complexion', lang)}:</span>
+                      <span className="font-semibold text-[#1c1917]">{translateValue(personalInfo.complexion, lang)}</span>
                     </div>
                   )}
                   {personalInfo.diet && (
                     <div className="flex items-baseline">
-                      <span className="w-22 text-[#777] flex-shrink-0">Diet:</span>
-                      <span className="font-semibold text-[#1c1917]">{personalInfo.diet}</span>
+                      <span className="w-22 text-[#777] flex-shrink-0">{t('diet', lang)}:</span>
+                      <span className="font-semibold text-[#1c1917]">{translateValue(personalInfo.diet, lang)}</span>
                     </div>
                   )}
                 </div>
@@ -373,7 +379,7 @@ export default function IvoryGoldRoyalBiodata({
                       className="text-xs font-bold tracking-wider text-[#1c1917] uppercase"
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                      Education & Career
+                      {t('educationCareer', lang)}
                     </h2>
                   </div>
 
@@ -398,19 +404,19 @@ export default function IvoryGoldRoyalBiodata({
                       <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 pt-0.5 border-t border-[#f0e6d2]">
                         {occupation.designation && (
                           <div className="flex items-baseline">
-                            <span className="w-20 text-[#777] flex-shrink-0">Role:</span>
+                            <span className="w-20 text-[#777] flex-shrink-0">{t('designation', lang)}:</span>
                             <span className="font-semibold text-[#1c1917]">{occupation.designation}</span>
                           </div>
                         )}
                         {occupation.company && (
                           <div className="flex items-baseline">
-                            <span className="w-20 text-[#777] flex-shrink-0">Company:</span>
+                            <span className="w-20 text-[#777] flex-shrink-0">{t('organization', lang)}:</span>
                             <span className="font-semibold text-[#1c1917]">{occupation.company}</span>
                           </div>
                         )}
                         {occupation.income && (
                           <div className="flex items-baseline col-span-2">
-                            <span className="w-20 text-[#777] flex-shrink-0">Income:</span>
+                            <span className="w-20 text-[#777] flex-shrink-0">{t('annualPackage', lang)}:</span>
                             <span className="font-bold text-[#8c6b2d]">{occupation.income}</span>
                           </div>
                         )}
@@ -419,7 +425,7 @@ export default function IvoryGoldRoyalBiodata({
 
                     {hasAchievements && (
                       <div className="pt-0.5 border-t border-[#f0e6d2]">
-                        <span className="text-[10.5px] font-semibold text-[#8c6b2d] block mb-0.5">Honors & Achievements:</span>
+                        <span className="text-[10.5px] font-semibold text-[#8c6b2d] block mb-0.5">{t('honorsAchievements', lang)}:</span>
                         <div className="space-y-0.5 pl-2">
                           {achievements
                             .filter((a) => a.trim().length > 0)
@@ -444,14 +450,14 @@ export default function IvoryGoldRoyalBiodata({
                       className="text-xs font-bold tracking-wider text-[#1c1917] uppercase"
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                      Family Details
+                      {t('familyBackground', lang)}
                     </h2>
                   </div>
 
                   <div className="space-y-0.5 text-xs">
                     {family.fatherName && (
                       <div className="flex items-baseline">
-                        <span className="w-20 text-[#777] flex-shrink-0">Father:</span>
+                        <span className="w-20 text-[#777] flex-shrink-0">{t('fatherName', lang)}:</span>
                         <span className="font-semibold text-[#1c1917]">
                           {family.fatherName}
                           {family.fatherOccupation && (
@@ -463,7 +469,7 @@ export default function IvoryGoldRoyalBiodata({
 
                     {family.motherName && (
                       <div className="flex items-baseline">
-                        <span className="w-20 text-[#777] flex-shrink-0">Mother:</span>
+                        <span className="w-20 text-[#777] flex-shrink-0">{t('motherName', lang)}:</span>
                         <span className="font-semibold text-[#1c1917]">
                           {family.motherName}
                           {family.motherOccupation && (
@@ -475,7 +481,7 @@ export default function IvoryGoldRoyalBiodata({
 
                     {hasSiblings && (
                       <div>
-                        <span className="text-[#777] block mb-0.5">Siblings:</span>
+                        <span className="text-[#777] block mb-0.5">{t('siblings', lang)}:</span>
                         <div className="space-y-0.5 pl-2.5 border-l border-[#d4af37]">
                           {family.siblings
                             .filter((s) => s.name.trim() || s.relation.trim() || s.occupation.trim())
@@ -496,7 +502,7 @@ export default function IvoryGoldRoyalBiodata({
 
                     {hasRelatives && (
                       <div>
-                        <span className="text-[#777] block mb-0.5">Notable Relatives:</span>
+                        <span className="text-[#777] block mb-0.5">{t('notableRelatives', lang)}:</span>
                         <div className="space-y-0.5 pl-2.5 border-l border-[#d4af37]">
                           {family.relatives
                             .filter((r) => r.name.trim() || r.relation.trim() || r.occupation.trim())
@@ -517,7 +523,7 @@ export default function IvoryGoldRoyalBiodata({
 
                     {family.nativePlace && (
                       <div className="flex items-baseline pt-0.5">
-                        <span className="w-20 text-[#777] flex-shrink-0">Native Place:</span>
+                        <span className="w-20 text-[#777] flex-shrink-0">{t('nativePlace', lang)}:</span>
                         <span className="font-semibold text-[#1c1917]">{family.nativePlace}</span>
                       </div>
                     )}
@@ -534,7 +540,7 @@ export default function IvoryGoldRoyalBiodata({
                       className="text-xs font-bold tracking-wider text-[#1c1917] uppercase"
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                      Partner Expectations
+                      {t('partnerExpectations', lang)}
                     </h2>
                   </div>
                   <p className={`text-xs text-[#333] leading-relaxed italic bg-[#fcf8f0] ${config.cardPadding} rounded-sm border border-[#e8dcc4]`}>
@@ -545,7 +551,7 @@ export default function IvoryGoldRoyalBiodata({
             </div>
           </div>
 
-          {/* Footer Blessing anchored at bottom inside border frame */}
+          {/* Footer Blessing anchored at bottom inside border frame (Sanskrit shloka stays in Sanskrit) */}
           <div className="text-center pt-1.5 border-t border-[#e5d5b5]/60 mt-1">
             <div
               className="text-[#966b1e] text-xs tracking-widest"

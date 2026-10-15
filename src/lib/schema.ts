@@ -23,11 +23,27 @@ export function isValidCategory(category: string): category is DocumentCategory 
   return VALID_CATEGORIES.includes(category as DocumentCategory);
 }
 
+export type IndianResumeLanguage =
+  | 'en'
+  | 'hi'
+  | 'ta'
+  | 'kn'
+  | 'bn'
+  | 'or'
+  | 'gu'
+  | 'mr'
+  | 'as'
+  | 'pa'
+  | 'te'
+  | 'ml'
+  | 'ur';
+
 // Base Document Envelope
 export interface BaseDocument {
   id: string;
   category: DocumentCategory;
   templateId: string;
+  language?: IndianResumeLanguage;
   createdAt: string;
   updatedAt: string;
 }

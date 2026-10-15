@@ -97,6 +97,42 @@ const breadcrumbSchemaData = breadcrumbSchema && breadcrumbSchema.length > 0 ? {
     <title>{title}</title>
     <link rel="canonical" href={canonicalURL.href} />
 
+    <!-- Pre-paint inline script to prevent theme flash (Phase 4) and protect print output -->
+    <script is:inline>
+      (function () {
+        try {
+          var theme = localStorage.getItem('theme');
+          var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (theme === 'dark' || (!theme && supportDarkMode) || (theme === 'system' && supportDarkMode)) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.setAttribute('data-theme', 'light');
+          }
+        } catch (e) {}
+
+        // Guarantee 100% pure light theme rendering for PDF export & Ctrl+P printing
+        var wasDarkBeforePrint = false;
+        window.addEventListener('beforeprint', function () {
+          if (document.documentElement.classList.contains('dark')) {
+            wasDarkBeforePrint = true;
+            document.documentElement.classList.remove('dark');
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.documentElement.style.colorScheme = 'light';
+          }
+        });
+        window.addEventListener('afterprint', function () {
+          if (wasDarkBeforePrint) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.documentElement.style.colorScheme = 'dark';
+            wasDarkBeforePrint = false;
+          }
+        });
+      })();
+    </script>
+
     <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={siteTitle} />
@@ -125,10 +161,10 @@ const breadcrumbSchemaData = breadcrumbSchema && breadcrumbSchema.length > 0 ? {
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/core.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/mono.css" />
-    <!-- Traditional Biodata Classical & Devanagari Fonts + Signature Fonts -->
+    <!-- Traditional Biodata Classical & Devanagari Fonts + Signature Fonts + Multi-Script Indian Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@500;600;700;800&family=Dancing+Script:wght@600;700&family=Noto+Serif+Devanagari:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@500;600;700;800&family=Dancing+Script:wght@600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Noto+Sans+Kannada:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Noto+Sans+Oriya:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Serif+Devanagari:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   </head>
   <body class="min-h-screen bg-canvas text-ink antialiased flex flex-col">
     {!hideNavFooter && <SiteHeader activePath={Astro.url.pathname} />}

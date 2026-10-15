@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #171717;
   --color-on-primary: #ffffff;
@@ -30,6 +32,21 @@
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+/* Dark mode theme token overrides (Geist Dark Palette) */
+html.dark {
+  --color-primary: #ffffff;
+  --color-on-primary: #0a0a0a;
+  --color-ink: #ededed;
+  --color-body: #a1a1a1;
+  --color-mute: #737373;
+  --color-faint: #525252;
+  --color-hairline: #262626;
+  --color-hairline-soft: #171717;
+  --color-canvas: #0a0a0a;
+  --color-canvas-elevated: #141414;
+  color-scheme: dark;
+}
+
 :root {
   --page-top-margin: 28px;
   --page-bottom-margin: 24px;
@@ -43,6 +60,31 @@ body {
   font-family: var(--font-sans);
   margin: 0;
   padding: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* ---------------------------------------------------------------------------
+   Document Paper & Print Protection
+   The live preview and exported PDF/image ALWAYS render in fixed light theme.
+   --------------------------------------------------------------------------- */
+.resume-page-sheet,
+#resume-print-area,
+#resume-measure-sandbox,
+[data-resume-sheet],
+[data-preview-sheet] {
+  --color-primary: #171717 !important;
+  --color-on-primary: #ffffff !important;
+  --color-ink: #171717 !important;
+  --color-body: #4d4d4d !important;
+  --color-mute: #8f8f8f !important;
+  --color-faint: #a1a1a1 !important;
+  --color-hairline: #ebebeb !important;
+  --color-hairline-soft: #f2f2f2 !important;
+  --color-canvas: #ffffff !important;
+  --color-canvas-elevated: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #171717 !important;
+  color-scheme: light !important;
 }
 
 /* ---------------------------------------------------------------------------
@@ -60,6 +102,28 @@ body {
     margin: 0 !important;
   }
 
+  /* Force light color-scheme on root so Chromium NEVER paints a dark page canvas background */
+  :root,
+  html,
+  html.dark,
+  html[data-theme='dark'],
+  body,
+  body.dark {
+    color-scheme: light !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    --color-primary: #171717 !important;
+    --color-on-primary: #ffffff !important;
+    --color-ink: #171717 !important;
+    --color-body: #4d4d4d !important;
+    --color-mute: #8f8f8f !important;
+    --color-faint: #a1a1a1 !important;
+    --color-hairline: #ebebeb !important;
+    --color-hairline-soft: #f2f2f2 !important;
+    --color-canvas: #ffffff !important;
+    --color-canvas-elevated: #ffffff !important;
+  }
+
   *,
   *::before,
   *::after {
@@ -71,6 +135,7 @@ body {
   html,
   body {
     background: #ffffff !important;
+    background-color: #ffffff !important;
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
@@ -98,8 +163,9 @@ body {
     display: none !important;
   }
 
-  /* Reset all ancestor wrappers of the preview canvas */
+  /* Reset all ancestor wrappers of the preview canvas and force pure white background */
   body > div,
+  body > div > div,
   main,
   main > div,
   main > div > div,
@@ -132,6 +198,8 @@ body {
     margin: 0 auto !important;
     padding: 0 !important;
     transform: none !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
   }
 
   /* Discrete A4 Resume Page Sheets in Print */
@@ -142,10 +210,12 @@ body {
     height: 297mm !important;
     min-height: 297mm !important;
     max-height: 297mm !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     padding: 0 !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
     page-break-after: always !important;
@@ -332,4 +402,30 @@ body {
   font-size: calc(1.875rem * var(--fs, 1)) !important;
   line-height: calc(2.25rem * var(--fs, 1)) !important;
 }
+
+/* ---------------------------------------------------------------------------
+   Indian Multi-Script Typographic Support
+   --------------------------------------------------------------------------- */
+.indic-text,
+[data-lang="hi"],
+[data-lang="mr"],
+[data-lang="ta"],
+[data-lang="kn"],
+[data-lang="bn"],
+[data-lang="or"],
+[data-lang="gu"],
+[data-lang="as"],
+[data-lang="pa"],
+[data-lang="te"],
+[data-lang="ml"],
+[data-lang="ur"] {
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+[data-lang="ur"] {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Noto Nastaliq Urdu', 'Urdu Typesetting', Tahoma, sans-serif;
+}
+
 

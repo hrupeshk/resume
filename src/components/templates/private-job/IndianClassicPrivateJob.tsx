@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ResumeDocument } from '../../../lib/schema';
+import { t, translateValue, getScriptFontFamily, isRTL, getDefaultDeclarationText } from '../../../lib/translations';
 
 interface IndianClassicPrivateJobProps {
   data: ResumeDocument;
@@ -7,6 +8,7 @@ interface IndianClassicPrivateJobProps {
   totalPages?: number;
   spacingDensity?: 'compact' | 'balanced' | 'spacious';
   fontSizeScale?: number;
+  language?: string;
 }
 
 export default function IndianClassicPrivateJob({
@@ -15,9 +17,19 @@ export default function IndianClassicPrivateJob({
   totalPages = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
+  language,
 }: IndianClassicPrivateJobProps) {
   const { personalInfo, summary, sections } = data;
   const { education, experience, skills, references, declaration } = sections || {};
+
+  const lang = (data.language || language || 'en') as any;
+  const rtl = isRTL(lang);
+  const fontFamily = getScriptFontFamily(lang, 'sans');
+
+  const defaultEnglishDeclaration = getDefaultDeclarationText('en');
+  const declarationText = !declaration?.text || declaration.text === defaultEnglishDeclaration
+    ? getDefaultDeclarationText(lang)
+    : declaration.text;
 
   // Check which sections have content on this slice (Strict empty-section suppression)
   const hasSummary = Boolean(summary && summary.trim().length > 0);
@@ -73,8 +85,11 @@ export default function IndianClassicPrivateJob({
 
   return (
     <article
-      className="indian-classic-private-job w-full min-h-0 p-0 bg-white text-neutral-900 font-sans box-border"
+      dir={rtl ? 'rtl' : 'ltr'}
+      data-lang={lang}
+      className="indian-classic-private-job w-full min-h-0 p-0 bg-white text-neutral-900 font-sans box-border indic-text"
       style={{
+        fontFamily: fontFamily || 'inherit',
         fontSize: `${12.5 * scale}px`,
         lineHeight: 1.45,
         color: '#1a1a1a',
@@ -85,7 +100,7 @@ export default function IndianClassicPrivateJob({
         <header className="flex items-center justify-between gap-4 pb-3 border-b-2 border-neutral-900 mb-3">
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-wide text-neutral-950">
-              {personalInfo.fullName || 'Candidate Name'}
+              {personalInfo.fullName || t('candidateNameFallback', lang)}
             </h1>
             {personalInfo.title && (
               <p className="text-xs font-semibold text-neutral-700 mt-0.5">
@@ -96,17 +111,17 @@ export default function IndianClassicPrivateJob({
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-neutral-600">
               {personalInfo.phone && (
                 <span className="flex items-center gap-1">
-                  <strong>Mob:</strong> {personalInfo.phone}
+                  <strong>{t('mob', lang)}</strong> {personalInfo.phone}
                 </span>
               )}
               {personalInfo.email && (
                 <span className="flex items-center gap-1">
-                  <strong>Email:</strong> {personalInfo.email}
+                  <strong>{t('email', lang)}:</strong> {personalInfo.email}
                 </span>
               )}
               {personalInfo.location && (
                 <span className="flex items-center gap-1">
-                  <strong>Location:</strong> {personalInfo.location}
+                  <strong>{t('location', lang)}</strong> {personalInfo.location}
                 </span>
               )}
               {personalInfo.links &&
@@ -127,7 +142,7 @@ export default function IndianClassicPrivateJob({
               <div className="w-22 h-22 sm:w-24 sm:h-24 rounded-full border-2 border-neutral-800 p-0.5 overflow-hidden bg-neutral-50 shadow-xs flex items-center justify-center">
                 <img
                   src={personalInfo.photoUrl}
-                  alt={personalInfo.fullName || 'Candidate'}
+                  alt={personalInfo.fullName || t('candidateNameFallback', lang)}
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>
@@ -140,7 +155,7 @@ export default function IndianClassicPrivateJob({
       {hasSummary && (
         <section data-section-type="summary" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
-            Career Objective
+            {t('careerObjective', lang)}
           </h2>
           <p className="text-xs text-neutral-800 leading-relaxed text-justify px-1">
             {summary}
@@ -152,7 +167,7 @@ export default function IndianClassicPrivateJob({
       {hasExperience && (
         <section data-section-type="experience" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
-            Work Experience
+            {t('workExperience', lang)}
           </h2>
           <div className={`${sp.itemSpace} px-1`}>
             {experience
@@ -194,16 +209,16 @@ export default function IndianClassicPrivateJob({
       {hasEducation && (
         <section data-section-type="education" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
-            Educational Qualifications
+            {t('educationalQualifications', lang)}
           </h2>
           <div className="overflow-x-auto px-1">
             <table className="w-full text-xs text-left border-collapse border border-neutral-300">
               <thead>
                 <tr className="bg-neutral-100 text-neutral-900 font-bold border-b border-neutral-300">
-                  <th className={`${sp.tablePy} ${sp.tablePx} border-r border-neutral-300`}>Qualification</th>
-                  <th className={`${sp.tablePy} ${sp.tablePx} border-r border-neutral-300`}>School / College / Board</th>
-                  <th className={`${sp.tablePy} ${sp.tablePx} border-r border-neutral-300 text-center w-24`}>Duration / Year</th>
-                  <th className={`${sp.tablePy} ${sp.tablePx} text-center w-24`}>Division / %</th>
+                  <th className={`${sp.tablePy} ${sp.tablePx} border-r border-neutral-300`}>{t('qualification', lang)}</th>
+                  <th className={`${sp.tablePy} ${sp.tablePx} border-r border-neutral-300`}>{t('institutionBoard', lang)}</th>
+                  <th className={`${sp.tablePy} ${sp.tablePx} border-r border-neutral-300 text-center w-24`}>{t('durationYear', lang)}</th>
+                  <th className={`${sp.tablePy} ${sp.tablePx} text-center w-24`}>{t('divisionPercentage', lang)}</th>
                 </tr>
               </thead>
               <tbody>
@@ -232,7 +247,7 @@ export default function IndianClassicPrivateJob({
                           : edu.endDate || edu.startDate || '—'}
                       </td>
                       <td className={`${sp.tablePy} ${sp.tablePx} text-center text-neutral-800 font-medium`}>
-                        {edu.grade || 'Passed'}
+                        {translateValue(edu.grade || 'Passed', lang)}
                       </td>
                     </tr>
                   ))}
@@ -246,7 +261,7 @@ export default function IndianClassicPrivateJob({
       {hasSkills && (
         <section data-section-type="skills" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
-            Key Skills & Practical Strengths
+            {t('keySkills', lang)}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 text-xs px-2">
             {skills
@@ -265,48 +280,48 @@ export default function IndianClassicPrivateJob({
       {hasPersonalDetails && (
         <section data-section-type="personalDetails" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
-            Personal Details
+            {t('personalDetailsCv', lang)}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs px-2">
             {personalInfo.fatherName && (
               <div className="flex">
-                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">Father&apos;s Name:</span>
+                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">{t('fatherName', lang)}:</span>
                 <span className="font-semibold text-neutral-900">{personalInfo.fatherName}</span>
               </div>
             )}
             {personalInfo.dateOfBirth && (
               <div className="flex">
-                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">Date of Birth:</span>
+                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">{t('dateOfBirth', lang)}:</span>
                 <span className="font-semibold text-neutral-900">{personalInfo.dateOfBirth}</span>
               </div>
             )}
             {personalInfo.gender && (
               <div className="flex">
-                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">Gender:</span>
-                <span className="font-semibold text-neutral-900">{personalInfo.gender}</span>
+                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">{t('gender', lang)}:</span>
+                <span className="font-semibold text-neutral-900">{translateValue(personalInfo.gender, lang)}</span>
               </div>
             )}
             {personalInfo.maritalStatus && (
               <div className="flex">
-                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">Marital Status:</span>
-                <span className="font-semibold text-neutral-900">{personalInfo.maritalStatus}</span>
+                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">{t('maritalStatus', lang)}:</span>
+                <span className="font-semibold text-neutral-900">{translateValue(personalInfo.maritalStatus, lang)}</span>
               </div>
             )}
             {personalInfo.nationality && (
               <div className="flex">
-                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">Nationality:</span>
-                <span className="font-semibold text-neutral-900">{personalInfo.nationality}</span>
+                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">{t('nationality', lang)}:</span>
+                <span className="font-semibold text-neutral-900">{translateValue(personalInfo.nationality, lang)}</span>
               </div>
             )}
             {personalInfo.languagesKnown && (
               <div className="flex sm:col-span-2">
-                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">Languages Known:</span>
+                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">{t('languagesKnown', lang)}:</span>
                 <span className="font-semibold text-neutral-900">{personalInfo.languagesKnown}</span>
               </div>
             )}
             {personalInfo.permanentAddress && (
               <div className="flex sm:col-span-2">
-                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">Permanent Address:</span>
+                <span className="w-32 text-neutral-600 font-medium flex-shrink-0">{t('permanentAddress', lang)}:</span>
                 <span className="font-medium text-neutral-800">{personalInfo.permanentAddress}</span>
               </div>
             )}
@@ -318,7 +333,7 @@ export default function IndianClassicPrivateJob({
       {hasReferences && (
         <section data-section-type="references" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-900 px-2 py-0.5 border-l-4 border-neutral-900 ${sp.headingMb}`}>
-            References
+            {t('references', lang)}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs px-2">
             {references
@@ -333,7 +348,7 @@ export default function IndianClassicPrivateJob({
                   <div className="text-neutral-600 text-[11px]">
                     {ref.role} {ref.company ? `— ${ref.company}` : ''}
                   </div>
-                  {ref.phone && <div className="text-neutral-700 text-[11px]">Mob: {ref.phone}</div>}
+                  {ref.phone && <div className="text-neutral-700 text-[11px]">{t('mob', lang)} {ref.phone}</div>}
                 </div>
               ))}
           </div>
@@ -343,18 +358,18 @@ export default function IndianClassicPrivateJob({
       {/* Formal Closing Declaration & Signature Block (Rendered strictly on final page) */}
       {showDeclaration && (
         <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-2 text-xs">
-          <h2 className="font-bold uppercase tracking-wider text-neutral-900 mb-0.5 text-[11px]">Declaration</h2>
+          <h2 className="font-bold uppercase tracking-wider text-neutral-900 mb-0.5 text-[11px]">{t('declaration', lang)}</h2>
           <p className="text-neutral-700 italic leading-relaxed text-justify mb-2 text-[11.5px]">
-            &ldquo;{declaration?.text || 'I hereby declare that all the information mentioned above is true and correct to the best of my knowledge and belief.'}&rdquo;
+            &ldquo;{declarationText}&rdquo;
           </p>
 
           <div className="flex justify-between items-end pt-1 text-xs">
             <div className="space-y-0.5">
               <div>
-                <strong>Date:</strong> {declaration?.date || '_______________'}
+                <strong>{t('date', lang)}</strong> {declaration?.date || '_______________'}
               </div>
               <div>
-                <strong>Place:</strong> {declaration?.place || '_______________'}
+                <strong>{t('place', lang)}</strong> {declaration?.place || '_______________'}
               </div>
             </div>
 
@@ -377,7 +392,7 @@ export default function IndianClassicPrivateJob({
               )}
               <div className="w-36 border-b border-neutral-800 mx-auto" />
               <div className="text-[10px] text-neutral-500 font-medium">
-                (Signature)
+                {t('signature', lang)}
               </div>
             </div>
           </div>

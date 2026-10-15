@@ -11,11 +11,17 @@ import {
   partitionResumeIntoPages,
   MAX_PAGE_CONTENT_HEIGHT,
 } from '../../lib/paginationEngine';
+import {
+  INDIAN_RESUME_LANGUAGES,
+  type IndianResumeLanguage,
+  isLanguageSupported,
+} from '../../lib/translations';
 
 interface PreviewPaneProps {
   data: DocumentData;
   onCycleTemplate: () => void;
   onSelectTemplate: (templateId: string) => void;
+  onSelectLanguage?: (lang: IndianResumeLanguage) => void;
   onPrint: () => void;
   onOpenShare?: () => void;
   onExportPng?: () => void;
@@ -29,6 +35,7 @@ export default function PreviewPane({
   data,
   onCycleTemplate,
   onSelectTemplate,
+  onSelectLanguage,
   onPrint,
   onOpenShare,
   onExportPng,
@@ -146,7 +153,7 @@ export default function PreviewPane({
       window.cancelAnimationFrame(frameId);
       ro.disconnect();
     };
-  }, [data, spacingDensity, columnSplit, fontSizeScale, data.templateId]);
+  }, [data, spacingDensity, columnSplit, fontSizeScale, data.templateId, data.language]);
 
   const visualCanvasHeight =
     pageCount === 1
@@ -156,36 +163,68 @@ export default function PreviewPane({
   return (
     <div
       data-preview-root="true"
-      className="flex flex-col h-full bg-canvas rounded-md border border-hairline overflow-hidden shadow-xs print:border-none print:shadow-none print:bg-white print:overflow-visible print:!min-h-0 print:!h-auto"
+      className="flex flex-col h-full bg-canvas rounded-md border border-hairline overflow-hidden shadow-xs print:border-none print:shadow-none print:!bg-white print:overflow-visible print:!min-h-0 print:!h-auto"
     >
       {/* Preview Action Header */}
       <div className="no-print p-3 sm:p-4 bg-canvas-elevated border-b border-hairline space-y-2.5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <label htmlFor="template-select" className="text-xs font-semibold text-ink">
-              Template:
-            </label>
-            <select
-              id="template-select"
-              value={data.templateId}
-              onChange={(e) => onSelectTemplate(e.target.value)}
-              className="text-xs px-2.5 py-1.5 rounded-sm border border-hairline bg-canvas text-ink font-semibold focus:outline-none focus:border-ink cursor-pointer"
-            >
-              {categoryTemplates.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name} {t.badge ? `• ${t.badge}` : ''}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <label htmlFor="template-select" className="text-xs font-semibold text-ink">
+                Template:
+              </label>
+              <select
+                id="template-select"
+                value={data.templateId}
+                onChange={(e) => onSelectTemplate(e.target.value)}
+                className="text-xs px-2.5 py-1.5 rounded-sm border border-hairline bg-canvas text-ink font-semibold focus:outline-none focus:border-ink cursor-pointer"
+              >
+                {categoryTemplates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name} {t.badge ? `• ${t.badge}` : ''}
+                  </option>
+                ))}
+              </select>
 
-            <button
-              type="button"
-              onClick={onCycleTemplate}
-              title="Cycle through templates instantly with zero data loss"
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm border border-hairline bg-canvas hover:border-mute text-xs font-mono text-ink transition-colors cursor-pointer"
-            >
-              <span>Cycle ↻</span>
-            </button>
+              <button
+                type="button"
+                onClick={onCycleTemplate}
+                title="Cycle through templates instantly with zero data loss"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm border border-hairline bg-canvas hover:border-mute text-xs font-mono text-ink transition-colors cursor-pointer"
+              >
+                <span>Cycle ↻</span>
+              </button>
+            </div>
+
+            {/* Indian Languages Selector - Strictly for Private Job Resume & Marriage Biodata */}
+            {isLanguageSupported(data.category) && (
+              <div className="flex items-center gap-1.5 sm:pl-2.5 sm:border-l sm:border-hairline">
+                <label
+                  htmlFor="preview-language-select"
+                  className="text-xs font-semibold text-ink flex items-center gap-1"
+                >
+                  <svg className="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                  </svg>
+                  <span>Language:</span>
+                </label>
+                <select
+                  id="preview-language-select"
+                  value={data.language || 'en'}
+                  onChange={(e) =>
+                    onSelectLanguage && onSelectLanguage(e.target.value as IndianResumeLanguage)
+                  }
+                  className="text-xs px-2.5 py-1.5 rounded-sm border border-hairline bg-canvas text-ink font-semibold focus:outline-none focus:border-ink cursor-pointer"
+                  title="Select resume language (English or 12 Indian Languages)"
+                >
+                  {INDIAN_RESUME_LANGUAGES.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.name} {lang.code !== 'en' ? `(${lang.nativeName})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Zoom & Print Controls */}
@@ -219,7 +258,7 @@ export default function PreviewPane({
                 type="button"
                 onClick={() => setZoomMode('fit-width')}
                 className={`text-[10.5px] px-1.5 py-0.5 rounded-xs transition-colors cursor-pointer ${
-                  zoomMode === 'fit-width' ? 'bg-neutral-900 text-white font-semibold' : 'text-mute hover:text-ink'
+                  zoomMode === 'fit-width' ? 'bg-primary text-on-primary font-semibold' : 'text-mute hover:text-ink'
                 }`}
                 title="Fit view to window width"
               >
@@ -231,8 +270,8 @@ export default function PreviewPane({
             <div
               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm border text-xs font-mono font-semibold shadow-2xs ${
                 pageCount === 1
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                  : 'bg-amber-50 text-amber-900 border-amber-300'
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
+                  : 'bg-amber-50 text-amber-900 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800'
               }`}
               title={
                 pageCount === 1
@@ -356,7 +395,7 @@ export default function PreviewPane({
                 onClick={() => onSelectTemplate(t.id)}
                 className={`text-[11px] px-2.5 py-0.5 rounded-full border transition-all flex items-center gap-1.5 cursor-pointer ${
                   isSelected
-                    ? 'bg-neutral-900 text-white border-neutral-900 font-semibold shadow-xs'
+                    ? 'bg-primary text-on-primary border-primary font-semibold shadow-xs'
                     : 'bg-canvas text-body border-hairline hover:border-mute'
                 }`}
               >
@@ -365,8 +404,8 @@ export default function PreviewPane({
                   <span
                     className={`text-[9px] px-1 py-0.2 rounded-xs font-mono uppercase ${
                       isSelected
-                        ? 'bg-neutral-700 text-neutral-200'
-                        : 'bg-neutral-100 text-neutral-600'
+                        ? 'bg-neutral-800 text-neutral-200 dark:bg-neutral-200 dark:text-neutral-900'
+                        : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
                     }`}
                   >
                     {t.badge}
@@ -378,11 +417,11 @@ export default function PreviewPane({
         </div>
 
         {/* Minimal Column Split, Spacing & Font Size Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2 bg-neutral-100/90 rounded-sm border border-neutral-200 text-xs text-neutral-700">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2 bg-neutral-100/90 dark:bg-neutral-900/90 rounded-sm border border-neutral-200 dark:border-neutral-800 text-xs text-neutral-700 dark:text-neutral-300">
           {/* Column Width Split Drag Slider - only for templates that support it */}
           {currentTemplate?.supportsColumnSplit ? (
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-[11px] text-neutral-800 flex items-center gap-1">
+              <span className="font-semibold text-[11px] text-neutral-800 dark:text-neutral-200 flex items-center gap-1">
                 <svg className="w-3.5 h-3.5 text-[#0d9488]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                 </svg>
@@ -398,18 +437,18 @@ export default function PreviewPane({
                   step="1"
                   value={columnSplit}
                   onChange={(e) => setColumnSplit(Number(e.target.value))}
-                  className="w-24 sm:w-36 h-1.5 bg-neutral-300 rounded-lg appearance-none cursor-pointer accent-[#0d9488]"
+                  className="w-24 sm:w-36 h-1.5 bg-neutral-300 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-[#0d9488]"
                   title="Drag slider left/right to adjust column widths and balance bottom lining"
                 />
                 <span className="text-[10px] text-neutral-400 font-mono">68%</span>
               </div>
 
-              <span className="text-[10.5px] font-mono font-semibold text-[#0d9488] bg-teal-50 px-1.5 py-0.5 rounded-xs border border-teal-200 shadow-2xs">
+              <span className="text-[10.5px] font-mono font-semibold text-[#0d9488] dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 px-1.5 py-0.5 rounded-xs border border-teal-200 dark:border-teal-800 shadow-2xs">
                 {columnSplit}% / {100 - columnSplit}%
               </span>
             </div>
           ) : (
-            <div className="text-[11px] text-neutral-500 italic flex items-center gap-1.5">
+            <div className="text-[11px] text-neutral-500 dark:text-neutral-400 italic flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               <span>{currentTemplate?.name || 'Template'} layout optimized for single-page standard</span>
             </div>
@@ -418,30 +457,30 @@ export default function PreviewPane({
           <div className="flex flex-wrap items-center gap-3">
             {/* Font Size Adjuster (Feature 7) */}
             <div className="flex items-center gap-1.5" title="Adjust font size to fill page or compact content to 1 page">
-              <span className="text-neutral-500 font-medium text-[11px] flex items-center gap-1">
-                <svg className="w-3.5 h-3.5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <span className="text-neutral-500 dark:text-neutral-400 font-medium text-[11px] flex items-center gap-1">
+                <svg className="w-3.5 h-3.5 text-neutral-600 dark:text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 5v14m4-8h8m-4 0v8" />
                 </svg>
                 <span>Font Size:</span>
               </span>
-              <div className="flex items-center gap-0.5 bg-white border border-neutral-300 rounded-xs px-1 py-0.5 shadow-2xs">
+              <div className="flex items-center gap-0.5 bg-canvas-elevated border border-hairline rounded-xs px-1 py-0.5 shadow-2xs">
                 <button
                   type="button"
                   disabled={fontSizeScale <= 85}
                   onClick={() => setFontSizeScale((s) => Math.max(85, s - 5))}
-                  className="w-4 h-4 flex items-center justify-center text-xs font-bold text-neutral-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                  className="w-4 h-4 flex items-center justify-center text-xs font-bold text-neutral-600 dark:text-neutral-300 hover:text-ink disabled:opacity-30 cursor-pointer"
                   title="Decrease font size"
                 >
                   −
                 </button>
-                <span className="text-[10.5px] font-mono font-semibold px-1 min-w-[34px] text-center text-neutral-800">
+                <span className="text-[10.5px] font-mono font-semibold px-1 min-w-[34px] text-center text-ink">
                   {fontSizeScale}%
                 </span>
                 <button
                   type="button"
                   disabled={fontSizeScale >= 115}
                   onClick={() => setFontSizeScale((s) => Math.min(115, s + 5))}
-                  className="w-4 h-4 flex items-center justify-center text-xs font-bold text-neutral-600 hover:text-black disabled:opacity-30 cursor-pointer"
+                  className="w-4 h-4 flex items-center justify-center text-xs font-bold text-neutral-600 dark:text-neutral-300 hover:text-ink disabled:opacity-30 cursor-pointer"
                   title="Increase font size"
                 >
                   +
@@ -451,7 +490,7 @@ export default function PreviewPane({
 
             {/* Density Spacing */}
             <div className="flex items-center gap-1.5">
-              <span className="text-neutral-500 font-medium text-[11px]">Spacing:</span>
+              <span className="text-neutral-500 dark:text-neutral-400 font-medium text-[11px]">Spacing:</span>
               {(['compact', 'balanced', 'spacious'] as const).map((density) => (
                 <button
                   key={density}
@@ -459,8 +498,8 @@ export default function PreviewPane({
                   onClick={() => setSpacingDensity(density)}
                   className={`px-2 py-0.5 rounded-xs capitalize text-[10.5px] font-medium transition-colors cursor-pointer ${
                     spacingDensity === density
-                      ? 'bg-neutral-900 text-white shadow-2xs font-semibold'
-                      : 'hover:bg-neutral-200 text-neutral-600'
+                      ? 'bg-primary text-on-primary shadow-2xs font-semibold'
+                      : 'hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-ink'
                   }`}
                 >
                   {density}
@@ -476,7 +515,7 @@ export default function PreviewPane({
         ref={containerRef}
         onScroll={handleScroll}
         data-preview-container="true"
-        className="flex-1 overflow-auto p-4 sm:p-6 bg-neutral-200/70 flex justify-center items-start min-h-0 [scrollbar-gutter:stable] print:bg-white print:p-0 print:overflow-visible print:!min-h-0 print:!h-auto relative"
+        className="flex-1 overflow-auto p-4 sm:p-6 bg-neutral-200/70 dark:bg-neutral-950 flex justify-center items-start min-h-0 [scrollbar-gutter:stable] print:!bg-white print:p-0 print:overflow-visible print:!min-h-0 print:!h-auto relative"
       >
         {/* Floating Active Page Indicator while scrolling / sliding */}
         {pageCount > 1 && (
@@ -498,11 +537,11 @@ export default function PreviewPane({
             width: `${Math.round(A4_WIDTH_PX * activeScale)}px`,
             height: `${Math.round(visualCanvasHeight * activeScale)}px`,
           }}
-          className="relative flex-shrink-0 flex flex-col items-center mb-12 sm:mb-16 print:!mb-0 print:!w-full print:!h-auto print:!min-h-0 print:static"
+          className="relative flex-shrink-0 flex flex-col items-center mb-12 sm:mb-16 print:!mb-0 print:!w-full print:!h-auto print:!min-h-0 print:static print:!bg-white"
         >
           {/* Discrete Visual A4 Sheet Cards for Screen Preview and Chromium Print */}
           <div
-            className="flex flex-col items-center print:!w-[210mm] print:!max-w-[210mm] print:!block print:!transform-none print:!m-0 print:!p-0"
+            className="flex flex-col items-center print:!w-[210mm] print:!max-w-[210mm] print:!block print:!transform-none print:!m-0 print:!p-0 print:!bg-white"
             style={{
               transform: `scale(${activeScale})`,
               transformOrigin: 'top center',

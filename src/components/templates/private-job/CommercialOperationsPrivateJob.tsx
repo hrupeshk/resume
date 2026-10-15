@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ResumeDocument } from '../../../lib/schema';
+import { t, translateValue, getScriptFontFamily, isRTL, getDefaultDeclarationText } from '../../../lib/translations';
 
 interface CommercialOperationsPrivateJobProps {
   data: ResumeDocument;
@@ -7,6 +8,7 @@ interface CommercialOperationsPrivateJobProps {
   totalPages?: number;
   spacingDensity?: 'compact' | 'balanced' | 'spacious';
   fontSizeScale?: number;
+  language?: string;
 }
 
 export default function CommercialOperationsPrivateJob({
@@ -15,9 +17,19 @@ export default function CommercialOperationsPrivateJob({
   totalPages = 1,
   spacingDensity = 'balanced',
   fontSizeScale = 100,
+  language,
 }: CommercialOperationsPrivateJobProps) {
   const { personalInfo, summary, sections } = data;
   const { education, experience, skills, references, declaration } = sections || {};
+
+  const lang = (data.language || language || 'en') as any;
+  const rtl = isRTL(lang);
+  const fontFamily = getScriptFontFamily(lang, 'sans');
+
+  const defaultEnglishDeclaration = getDefaultDeclarationText('en');
+  const declarationText = !declaration?.text || declaration.text === defaultEnglishDeclaration
+    ? getDefaultDeclarationText(lang)
+    : declaration.text;
 
   const hasSummary = Boolean(summary && summary.trim().length > 0);
   const hasExperience = Boolean(
@@ -65,8 +77,11 @@ export default function CommercialOperationsPrivateJob({
 
   return (
     <article
-      className="commercial-operations-private-job w-full min-h-0 bg-white text-neutral-900 font-sans p-0 box-border"
+      dir={rtl ? 'rtl' : 'ltr'}
+      data-lang={lang}
+      className="commercial-operations-private-job w-full min-h-0 bg-white text-neutral-900 font-sans p-0 box-border indic-text"
       style={{
+        fontFamily: fontFamily || 'inherit',
         fontSize: `${12.5 * scale}px`,
         lineHeight: 1.45,
       }}
@@ -76,7 +91,7 @@ export default function CommercialOperationsPrivateJob({
         <header className="flex items-center justify-between border-b-2 border-neutral-900 pb-2 mb-2.5 gap-3">
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-black text-neutral-950 uppercase tracking-tight">
-              {personalInfo.fullName || 'Candidate Name'}
+              {personalInfo.fullName || t('candidateNameFallback', lang)}
             </h1>
             {personalInfo.title && (
               <p className="text-xs font-bold text-neutral-700 uppercase tracking-wider mt-0.5">
@@ -84,9 +99,9 @@ export default function CommercialOperationsPrivateJob({
               </p>
             )}
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-neutral-600">
-              {personalInfo.phone && <span><strong>Phone:</strong> {personalInfo.phone}</span>}
-              {personalInfo.email && <span><strong>Email:</strong> {personalInfo.email}</span>}
-              {personalInfo.location && <span><strong>Location:</strong> {personalInfo.location}</span>}
+              {personalInfo.phone && <span><strong>{t('mobile', lang)}:</strong> {personalInfo.phone}</span>}
+              {personalInfo.email && <span><strong>{t('email', lang)}:</strong> {personalInfo.email}</span>}
+              {personalInfo.location && <span><strong>{t('location', lang)}</strong> {personalInfo.location}</span>}
               {personalInfo.links &&
                 personalInfo.links
                   .filter((l) => l.url)
@@ -103,7 +118,7 @@ export default function CommercialOperationsPrivateJob({
             <div className="w-22 h-22 sm:w-24 sm:h-24 rounded-full border-2 border-neutral-800 p-0.5 overflow-hidden flex-shrink-0 shadow-sm bg-neutral-100 flex items-center justify-center">
               <img
                 src={personalInfo.photoUrl}
-                alt={personalInfo.fullName || 'Candidate'}
+                alt={personalInfo.fullName || t('candidateNameFallback', lang)}
                 className="w-full h-full object-cover rounded-full"
               />
             </div>
@@ -115,7 +130,7 @@ export default function CommercialOperationsPrivateJob({
       {hasSummary && (
         <section data-section-type="summary" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-400 pb-0.5 ${sp.headingMb}`}>
-            Career Objective
+            {t('careerObjective', lang)}
           </h2>
           <p className="text-xs text-neutral-800 leading-relaxed text-justify">
             {summary}
@@ -127,7 +142,7 @@ export default function CommercialOperationsPrivateJob({
       {hasExperience && (
         <section data-section-type="experience" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-400 pb-0.5 ${sp.headingMb}`}>
-            Employment History
+            {t('employmentHistory', lang)}
           </h2>
           <div className={sp.itemSpace}>
             {experience
@@ -162,7 +177,7 @@ export default function CommercialOperationsPrivateJob({
       {hasEducation && (
         <section data-section-type="education" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-400 pb-0.5 ${sp.headingMb}`}>
-            Academic Background
+            {t('educationalQualifications', lang)}
           </h2>
           <div className="grid grid-cols-1 gap-1.5 text-xs">
             {education
@@ -193,7 +208,7 @@ export default function CommercialOperationsPrivateJob({
                         : edu.endDate || edu.startDate || ''}
                     </span>
                     {edu.grade && (
-                      <span className="text-[10px] text-neutral-500 font-medium">{edu.grade}</span>
+                      <span className="text-[10px] text-neutral-500 font-medium">{translateValue(edu.grade, lang)}</span>
                     )}
                   </div>
                 </div>
@@ -206,7 +221,7 @@ export default function CommercialOperationsPrivateJob({
       {hasSkills && (
         <section data-section-type="skills" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-400 pb-0.5 ${sp.headingMb}`}>
-            Skills & Abilities
+            {t('keySkills', lang)}
           </h2>
           <div className="flex flex-wrap gap-1.5 text-xs">
             {skills
@@ -227,29 +242,29 @@ export default function CommercialOperationsPrivateJob({
       {hasPersonalDetails && (
         <section data-section-type="personalDetails" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-400 pb-0.5 ${sp.headingMb}`}>
-            Personal Information
+            {t('personalDetailsCv', lang)}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs">
             {personalInfo.fatherName && (
-              <div><span className="text-neutral-500 font-medium">Father&apos;s Name:</span> <strong className="text-neutral-900">{personalInfo.fatherName}</strong></div>
+              <div><span className="text-neutral-500 font-medium">{t('fatherName', lang)}:</span> <strong className="text-neutral-900">{personalInfo.fatherName}</strong></div>
             )}
             {personalInfo.dateOfBirth && (
-              <div><span className="text-neutral-500 font-medium">Date of Birth:</span> <strong className="text-neutral-900">{personalInfo.dateOfBirth}</strong></div>
+              <div><span className="text-neutral-500 font-medium">{t('dateOfBirth', lang)}:</span> <strong className="text-neutral-900">{personalInfo.dateOfBirth}</strong></div>
             )}
             {personalInfo.gender && (
-              <div><span className="text-neutral-500 font-medium">Gender:</span> <strong className="text-neutral-900">{personalInfo.gender}</strong></div>
+              <div><span className="text-neutral-500 font-medium">{t('gender', lang)}:</span> <strong className="text-neutral-900">{translateValue(personalInfo.gender, lang)}</strong></div>
             )}
             {personalInfo.maritalStatus && (
-              <div><span className="text-neutral-500 font-medium">Marital Status:</span> <strong className="text-neutral-900">{personalInfo.maritalStatus}</strong></div>
+              <div><span className="text-neutral-500 font-medium">{t('maritalStatus', lang)}:</span> <strong className="text-neutral-900">{translateValue(personalInfo.maritalStatus, lang)}</strong></div>
             )}
             {personalInfo.nationality && (
-              <div><span className="text-neutral-500 font-medium">Nationality:</span> <strong className="text-neutral-900">{personalInfo.nationality}</strong></div>
+              <div><span className="text-neutral-500 font-medium">{t('nationality', lang)}:</span> <strong className="text-neutral-900">{translateValue(personalInfo.nationality, lang)}</strong></div>
             )}
             {personalInfo.languagesKnown && (
-              <div className="sm:col-span-2"><span className="text-neutral-500 font-medium">Languages Known:</span> <strong className="text-neutral-900">{personalInfo.languagesKnown}</strong></div>
+              <div className="sm:col-span-2"><span className="text-neutral-500 font-medium">{t('languagesKnown', lang)}:</span> <strong className="text-neutral-900">{personalInfo.languagesKnown}</strong></div>
             )}
             {personalInfo.permanentAddress && (
-              <div className="sm:col-span-2"><span className="text-neutral-500 font-medium">Permanent Address:</span> <span className="text-neutral-800 font-medium">{personalInfo.permanentAddress}</span></div>
+              <div className="sm:col-span-2"><span className="text-neutral-500 font-medium">{t('permanentAddress', lang)}:</span> <span className="text-neutral-800 font-medium">{personalInfo.permanentAddress}</span></div>
             )}
           </div>
         </section>
@@ -259,7 +274,7 @@ export default function CommercialOperationsPrivateJob({
       {hasReferences && (
         <section data-section-type="references" className={sp.sectionMb}>
           <h2 className={`text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-400 pb-0.5 ${sp.headingMb}`}>
-            Professional References
+            {t('references', lang)}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             {references
@@ -268,7 +283,7 @@ export default function CommercialOperationsPrivateJob({
                 <div key={idx} data-entry-item="true" className="border border-neutral-200 p-2 rounded-xs bg-neutral-50">
                   <div className="font-bold text-neutral-900">{ref.name}</div>
                   <div className="text-[11px] text-neutral-600">{ref.role} {ref.company ? `(${ref.company})` : ''}</div>
-                  {ref.phone && <div className="text-[11px] text-neutral-700">Mob: {ref.phone}</div>}
+                  {ref.phone && <div className="text-[11px] text-neutral-700">{t('mob', lang)} {ref.phone}</div>}
                 </div>
               ))}
           </div>
@@ -279,13 +294,13 @@ export default function CommercialOperationsPrivateJob({
       {showDeclaration && (
         <section data-section-type="declaration" className="pt-2 border-t border-neutral-300 mt-2.5 text-xs">
           <p className="text-neutral-700 italic leading-relaxed text-justify mb-2">
-            &ldquo;{declaration?.text || 'I hereby declare that all the information provided above is true and correct to the best of my knowledge and belief.'}&rdquo;
+            &ldquo;{declarationText}&rdquo;
           </p>
 
           <div className="flex justify-between items-end">
             <div className="space-y-0.5 text-neutral-700">
-              <div><strong>Place:</strong> {declaration?.place || '_______________'}</div>
-              <div><strong>Date:</strong> {declaration?.date || '_______________'}</div>
+              <div><strong>{t('place', lang)}</strong> {declaration?.place || '_______________'}</div>
+              <div><strong>{t('date', lang)}</strong> {declaration?.date || '_______________'}</div>
             </div>
 
             <div className="text-center">
@@ -306,7 +321,7 @@ export default function CommercialOperationsPrivateJob({
               )}
               <div className="w-32 border-b border-neutral-800 mb-0.5 mx-auto" />
               <div className="text-[10px] text-neutral-500 font-medium">
-                (Signature)
+                {t('signature', lang)}
               </div>
             </div>
           </div>

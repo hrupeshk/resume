@@ -28,6 +28,13 @@ import { exportResumeToDocx } from '../../lib/docxExport';
 import { parseResumePdf } from '../../lib/pdfParser';
 import { compressAndResizeImage } from '../../lib/imageUtils';
 import { sanitizeImportedDocument } from '../../lib/jsonSecurity';
+import {
+  INDIAN_RESUME_LANGUAGES,
+  type IndianResumeLanguage,
+  isLanguageSupported,
+  getDefaultDeclarationText,
+  isDefaultDeclaration,
+} from '../../lib/translations';
 
 import StepNavigator, { type StepItem } from '../forms/StepNavigator';
 import PersonalForm from '../forms/PersonalForm';
@@ -40,6 +47,7 @@ import BiodataFamilyForm from '../forms/biodata/BiodataFamilyForm';
 import BiodataHoroscopePreferencesForm from '../forms/biodata/BiodataHoroscopePreferencesForm';
 import PreviewPane from '../preview/PreviewPane';
 import BiodataShareModal from '../modals/BiodataShareModal';
+import ThemeToggle from '../navigation/ThemeToggle';
 
 interface ResumeBuilderProps {
   category: DocumentCategory;
@@ -416,6 +424,31 @@ export default function ResumeBuilder({ category, initialTemplateId }: ResumeBui
     setDoc((prev) => ({ ...prev, templateId: nextId }));
   };
 
+  // Language handler for Private Job Resume & Marriage Biodata
+  const handleSelectLanguage = (language: IndianResumeLanguage) => {
+    setDoc((prev) => {
+      // If private job resume with declaration, update default declaration text if unmodified
+      if (!isBiodataDocument(prev) && prev.sections.declaration) {
+        const currentDeclText = prev.sections.declaration.text;
+        const isDefault = !currentDeclText || isDefaultDeclaration(currentDeclText);
+        if (isDefault) {
+          return {
+            ...prev,
+            language,
+            sections: {
+              ...prev.sections,
+              declaration: {
+                ...prev.sections.declaration,
+                text: getDefaultDeclarationText(language),
+              },
+            },
+          };
+        }
+      }
+      return { ...prev, language };
+    });
+  };
+
   // Reset / Sample handlers with Undo Safeguard
   const handleClearAll = () => {
     if (isBiodataDocument(doc)) {
@@ -672,7 +705,7 @@ export default function ResumeBuilder({ category, initialTemplateId }: ResumeBui
   };
 
   return (
-    <div className="min-h-screen bg-canvas text-ink flex flex-col print:bg-white print:min-h-0 print:block">
+    <div className="min-h-screen bg-canvas text-ink flex flex-col print:!bg-white print:min-h-0 print:block">
       {/* Toast Notification for Undo Safeguard */}
       {undoBackup && (
         <div
@@ -736,6 +769,26 @@ export default function ResumeBuilder({ category, initialTemplateId }: ResumeBui
           <h1 className="text-xs sm:text-sm font-medium text-ink">
             {categoryLabels[category] || 'Resume Builder'}
           </h1>
+          {isLanguageSupported(category) && (
+            <div className="flex items-center gap-1.5 pl-2 sm:pl-3 border-l border-hairline">
+              <label htmlFor="builder-header-lang" className="text-xs font-medium text-mute hidden sm:inline">
+                Language:
+              </label>
+              <select
+                id="builder-header-lang"
+                value={doc.language || 'en'}
+                onChange={(e) => handleSelectLanguage(e.target.value as IndianResumeLanguage)}
+                className="text-xs px-2 py-1 rounded-sm border border-hairline bg-canvas text-ink font-semibold focus:outline-none focus:border-ink cursor-pointer"
+                title="Select resume language (English or 12 Indian Languages)"
+              >
+                {INDIAN_RESUME_LANGUAGES.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.name} {lang.code !== 'en' ? `(${lang.nativeName})` : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         {/* Center: View Mode Segmented Control */}
@@ -745,7 +798,7 @@ export default function ResumeBuilder({ category, initialTemplateId }: ResumeBui
             onClick={() => setViewMode('editor')}
             className={`px-2.5 py-1 rounded-xs flex items-center gap-1.5 transition-colors cursor-pointer ${
               viewMode === 'editor'
-                ? 'bg-neutral-900 text-white font-semibold shadow-2xs'
+                ? 'bg-primary text-on-primary font-semibold shadow-2xs'
                 : 'text-mute hover:text-ink'
             }`}
             title="Focus on form editor"
@@ -760,7 +813,7 @@ export default function ResumeBuilder({ category, initialTemplateId }: ResumeBui
             onClick={() => setViewMode('split')}
             className={`px-2.5 py-1 rounded-xs flex items-center gap-1.5 transition-colors cursor-pointer ${
               viewMode === 'split'
-                ? 'bg-neutral-900 text-white font-semibold shadow-2xs'
+                ? 'bg-primary text-on-primary font-semibold shadow-2xs'
                 : 'text-mute hover:text-ink'
             }`}
             title="Side-by-side editing and preview (Alt+P)"
@@ -775,7 +828,7 @@ export default function ResumeBuilder({ category, initialTemplateId }: ResumeBui
             onClick={() => setViewMode('preview')}
             className={`px-2.5 py-1 rounded-xs flex items-center gap-1.5 transition-colors cursor-pointer ${
               viewMode === 'preview'
-                ? 'bg-neutral-900 text-white font-semibold shadow-2xs'
+                ? 'bg-primary text-on-primary font-semibold shadow-2xs'
                 : 'text-mute hover:text-ink'
             }`}
             title="Full preview mode with expanded canvas (Alt+P)"
@@ -803,10 +856,10 @@ export default function ResumeBuilder({ category, initialTemplateId }: ResumeBui
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isImporting}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-[#008c9e] bg-teal-50/70 text-[#008c9e] hover:bg-teal-100 text-xs font-semibold transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm border border-[#008c9e] bg-teal-50/70 dark:bg-teal-950/40 text-[#008c9e] dark:text-teal-300 dark:border-teal-700 hover:bg-teal-100 dark:hover:bg-teal-900/50 text-xs font-semibold transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
                 title="Upload any existing resume PDF to automatically populate all form fields"
               >
-                <svg className="w-3.5 h-3.5 text-[#008c9e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-[#008c9e] dark:text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
                 <span>{isImporting ? 'Importing…' : 'Import PDF'}</span>
@@ -868,6 +921,9 @@ export default function ResumeBuilder({ category, initialTemplateId }: ResumeBui
 
           <div className="h-4 w-px bg-hairline hidden sm:block" />
 
+          {/* Theme Toggle (Three-way mode inside builder) */}
+          <ThemeToggle compact={true} />
+
           <button
             type="button"
             onClick={handleLoadSample}
@@ -890,7 +946,7 @@ export default function ResumeBuilder({ category, initialTemplateId }: ResumeBui
 
       {/* Main Dual-Column Builder Workspace */}
       <main
-        className={`flex-1 w-full mx-auto p-4 sm:p-6 lg:p-8 transition-all duration-300 print:bg-white print:p-0 print:m-0 print:max-w-none print:w-full print:block ${
+        className={`flex-1 w-full mx-auto p-4 sm:p-6 lg:p-8 transition-all duration-300 print:!bg-white print:p-0 print:m-0 print:max-w-none print:w-full print:block ${
           viewMode === 'preview' ? 'max-w-5xl' : viewMode === 'editor' ? 'max-w-4xl' : 'max-w-7xl'
         }`}
       >
@@ -1101,7 +1157,7 @@ export default function ResumeBuilder({ category, initialTemplateId }: ResumeBui
             <div
               className={`${
                 viewMode === 'preview' ? 'lg:col-span-12' : 'lg:col-span-7 xl:col-span-6'
-              } lg:sticky lg:top-18 lg:h-[calc(100vh-5.5rem)] flex flex-col transition-all duration-300`}
+              } lg:sticky lg:top-18 lg:h-[calc(100vh-5.5rem)] flex flex-col transition-all duration-300 print:!w-full print:!block print:!static print:!p-0 print:!m-0 print:!bg-white`}
             >
               {viewMode === 'preview' && (
                 <div className="mb-2 flex items-center justify-between no-print px-1">
@@ -1121,6 +1177,7 @@ export default function ResumeBuilder({ category, initialTemplateId }: ResumeBui
                 data={doc}
                 onCycleTemplate={handleCycleTemplate}
                 onSelectTemplate={handleSelectTemplate}
+                onSelectLanguage={handleSelectLanguage}
                 onPrint={handleExportPdf}
                 onOpenShare={() => setIsShareModalOpen(true)}
                 onExportPng={handleExportPng}
